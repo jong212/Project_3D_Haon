@@ -1,8 +1,6 @@
 using Cinemachine;
 using echo17.EndlessBook;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class BookController : MonoBehaviour
 {
@@ -12,21 +10,25 @@ public class BookController : MonoBehaviour
     [SerializeField] CinemachineVirtualCamera startView;
     [SerializeField] CinemachineVirtualCamera bookView;
 
+    public AudioSource audioSource;
+    public AudioClip openBook;
+    public AudioClip pagingBook;
+
     private void Start()
     {
-        StartCoroutine(ChangeScene());
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
-        
-        
-        
+
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (book.CurrentState == EndlessBook.StateEnum.ClosedFront)
             {
                 book.SetState(EndlessBook.StateEnum.OpenMiddle);
+                BookSound(openBook);
                 startView.Priority = 0;
                 bookView.Priority = 1;
             }
@@ -35,24 +37,23 @@ public class BookController : MonoBehaviour
             if (!book.IsLastPageGroup)
             {
                 book.TurnToPage(book.CurrentLeftPageNumber + 2, EndlessBook.PageTurnTimeTypeEnum.TimePerPage, 1f);
-                Invoke("LoadPageOneUI",1f);
+                BookSound(pagingBook);
             }
         }
-    }
 
-    void LoadPageOneUI()
-    {
-        
-    }
-
-    IEnumerator ChangeScene()
-    {
-        
-        if (book.CurrentLeftPageNumber == 7)
+        if (book.CurrentLeftPageNumber == 9)
         {
-            yield return new WaitForSeconds(2f);
-            SceneManager.LoadSceneAsync("TestScene_WJH");
+            
+            FadeInFadeOutSceneManager.Instance.ChangeScene("TestScene_WJH");
+          
         }
     }
 
+
+    void BookSound(AudioClip audioClip)
+    {
+        audioSource.clip = audioClip;
+        audioSource.PlayOneShot(audioClip);
+    }
+    
 }

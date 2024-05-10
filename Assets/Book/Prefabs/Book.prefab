@@ -1101,6 +1101,8 @@ MonoBehaviour:
   - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
   - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
   - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
+  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
+  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
   pages:
   - {fileID: 415003819834992611}
   - {fileID: 414921478256292201}
@@ -2852,8 +2854,8 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 50adf31fba8d3684d9f06b6f29dfad50, type: 2}
-  - {fileID: 2100000, guid: 6753bb115f2ec654390a3f36da1874ec, type: 2}
+  - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
+  - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
