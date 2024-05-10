@@ -6,7 +6,7 @@ public class playerAnimator : MonoBehaviour
     private Animator _animator;
     private Vector3 moveDirection;
     private bool isRunning = false; // 뛰기 상태를 추적하는 변수
-
+    private bool skillA = false;
 
     float attackTime = 0;
 
@@ -34,7 +34,6 @@ public class playerAnimator : MonoBehaviour
 
     }
 
-
     #region SEND_MESSAGE
     void OnMove(InputValue value)
     {
@@ -46,6 +45,10 @@ public class playerAnimator : MonoBehaviour
             // 이동 입력이 있을 때만 뛰기 상태로 변경
             isRunning = input.magnitude > 0;
         }
+    }
+    void OnFire(InputValue value)
+    {
+        _animator.SetBool("skillA", true);
     }
     public void onWeaponAttack()
     {
