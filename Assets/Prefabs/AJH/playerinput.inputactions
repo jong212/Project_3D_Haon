@@ -15,9 +15,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Fire",
-                    "type": "Value",
+                    "name": "SkillA",
+                    "type": "Button",
                     "id": "d81747e3-f2c3-4847-bf16-811e11b7a7d7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "SkillB",
+                    "type": "Button",
+                    "id": "193f7f29-e7ba-4467-9f88-3b5f577a249d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -147,55 +156,22 @@
                 {
                     "name": "",
                     "id": "00f40da4-688f-42e9-990a-d0606de06946",
-                    "path": "<Keyboard>/2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "38058486-19e8-4324-a8dd-b74e55b4d3de",
                     "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Fire",
+                    "action": "SkillA",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b7962f5e-4c13-4251-8fd5-aa1e5a6cf1c3",
-                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "id": "a2ee3cad-87ef-4a2c-8007-f226eb4a26f0",
+                    "path": "<Keyboard>/2",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Touch",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d0e00255-c106-46eb-ac17-40e32e4f924f",
-                    "path": "<Joystick>/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Fire",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "554b7158-ba17-4523-a84d-bff4e20aaeeb",
-                    "path": "<XRController>/{PrimaryAction}",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "XR",
-                    "action": "Fire",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SkillB",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

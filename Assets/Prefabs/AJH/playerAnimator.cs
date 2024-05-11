@@ -6,7 +6,8 @@ public class playerAnimator : MonoBehaviour
     private Animator _animator;
     private Vector3 moveDirection;
     private bool isRunning = false; // 뛰기 상태를 추적하는 변수
-    private bool skillA = false;
+    private int skillA = -1;
+    private int skillB = -1;
 
     float attackTime = 0;
 
@@ -29,6 +30,7 @@ public class playerAnimator : MonoBehaviour
         else
         {
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
+            
         }
 
 
@@ -46,13 +48,18 @@ public class playerAnimator : MonoBehaviour
             isRunning = input.magnitude > 0;
         }
     }
-    void OnFire(InputValue value)
+    void OnSkillA(InputValue value)
     {
-        _animator.SetBool("skillA", true);
+        _animator.SetInteger("skillA", 0);
+        _animator.Play("ChargeSkillA_Skill");
+    }
+    void OnSkillB(InputValue value)
+    {
+        _animator.SetInteger("skillB", 0);
+        _animator.Play("SkillA_unlock 1");
     }
     public void onWeaponAttack()
     {
-        Debug.Log("ddd");
         _animator.SetTrigger("onWeaponAttack");
     }
 
