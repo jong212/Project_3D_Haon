@@ -1,14 +1,16 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class playerAnimator : MonoBehaviour
 {
-    private Animator _animator;
+    public Animator _animator;
     private CharacterController _characterController;
     private Vector3 _moveDirection;
     private bool _isRunning = false; // 뛰기 상태를 추적하는 변수
     private int _skillA = -1;
     private int _skillB = -1;
+    public bool isAction = false;
     private float _gravity = -9.81f;
     private float _velocity;
 
@@ -21,6 +23,7 @@ public class playerAnimator : MonoBehaviour
     void Update()
     {
         ApplyGravity();
+        if (isAction) return;
 
         bool hasControl = (_moveDirection != Vector3.zero);
         if (hasControl)
@@ -81,8 +84,12 @@ public class playerAnimator : MonoBehaviour
 
     void OnSkillB(InputValue value)
     {
-        _animator.SetInteger("skillB", 0);
-        _animator.Play("SkillA_unlock 1");
+
+        //        _animator.SetInteger("skillB", 0);
+        //      _animator.Play("SkillA_unlock 1");
+        if (isAction) return;
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
+
     }
 
     public void onWeaponAttack()
@@ -92,7 +99,18 @@ public class playerAnimator : MonoBehaviour
 
     void OnClick()
     {
+        //if (isAction) return;
+        //StartCoroutine(ActionTimer("onWeaponAttack", 2.2f));
         onWeaponAttack();
+    }
+    IEnumerator ActionTimer(string actionName, float time)
+    {
+        isAction = true;
+
+        if (actionName != "none") _animator.Play(actionName);
+
+        yield return new WaitForSeconds(time);
+        isAction = false;
     }
     #endregion
 }
