@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class playerAnimator : MonoBehaviour
 {
     public Animator _animator;
-    private CharacterController _characterController;
+    private CharacterController _characterController;   
     private Vector3 _moveDirection;
     private bool _isRunning = false; // 뛰기 상태를 추적하는 변수
     private int _skillA = -1;
@@ -13,9 +13,12 @@ public class playerAnimator : MonoBehaviour
     public bool isAction = false;
     private float _gravity = -9.81f;
     private float _velocity;
+    [SerializeField]
+    private Collider WeaponCollider;
 
     void Start()
     {
+
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
     }
@@ -46,7 +49,7 @@ public class playerAnimator : MonoBehaviour
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
     }
-
+  
     void ApplyGravity()
     {
         // 중력을 적용합니다.
@@ -111,6 +114,14 @@ public class playerAnimator : MonoBehaviour
 
         yield return new WaitForSeconds(time);
         isAction = false;
+    }
+    public void EnableWeapon() 
+    {
+        WeaponCollider.enabled = true;
+    }
+    public void DisableWeapon()
+    {
+        WeaponCollider.enabled = false;
     }
     #endregion
 }

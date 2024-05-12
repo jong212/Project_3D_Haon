@@ -55,13 +55,10 @@ public class MonsterDataManager : Singleton<MonsterDataManager>
     }
     public class MonsterData
     {
-        
         public string name;
         public int level;
         public int hp;
         public int str;
-
-
 
         public MonsterData(string name, int level, int hp, int str)
         {

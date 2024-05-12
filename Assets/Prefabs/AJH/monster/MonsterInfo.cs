@@ -11,19 +11,22 @@ public class MonsterInfo : MonoBehaviour
     private static int _hp; // hp 변수를 _hp로 변경
     private static int _level; // level 변수를 _level로 변경
     private static int _str; // str 변수를 _str로 변경
-
+    private static Animator animator;
 
 
     void Awake()
     {
+        //몬스터 정보를 게임오브젝트 이름으로 가져오기 위한 변수
         MyObjectName = gameObject.name;
+        
+        // 위에서 언급했듯 게임오브젝트 이름으로 몬스터 정보를 가져온다.
         MonsterData monsterData = MonsterDataManager.Instance.GetMonster($"{MyObjectName}");
+
+        //가져온 정보를 함수에 넘겨서 hp,level,str 등등 세팅
         SetMonsterData(monsterData);
-        Debug.Log("Monster Name: " + _monsterName);
-        Debug.Log("Monster HP: " + _hp);
-        Debug.Log("Monster Level: " + _level);
-        Debug.Log("Monster Strength: " + _str);
+        Debug.Log("1...몬스터 정보 세팅.." + _monsterName);        
     }
+    //몬스터 정보 세팅
     private static void SetMonsterData(MonsterData monsterData)
     {
         _monsterName = monsterData.name;
@@ -31,11 +34,17 @@ public class MonsterInfo : MonoBehaviour
         _level = monsterData.level;
         _str = monsterData.str;
     }
-    public void testc()
+   
+    public static void TakeDamage(int damageAmout)
     {
-    
+        _hp -= damageAmout;
+        if ( _hp <= 0 )
+        {
+            animator.SetTrigger("die");
+        } else
+        {
+            animator.SetTrigger("damage");
+        }
     }
 
-    //GameObject monster = ObjectPool.Instance.GetInactiveObject($"mon{def}");
-    //monster.GetComponent<monsterinfo>().Init(monsterData);
 }
