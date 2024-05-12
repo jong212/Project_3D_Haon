@@ -1,5 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Scenes/TestScene_WJH.unity.meta
 guid: db9cf38d50024f94bb79b06070d95dac
+========
+guid: 8e7e8f5a82a3a134e91c54efd2274ea9
+folderAsset: yes
+>>>>>>>> Stashed changes:Assets/Assets/Assets/TextMesh Pro/Documentation.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
