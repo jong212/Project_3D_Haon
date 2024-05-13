@@ -99,7 +99,7 @@ public class playerAnimator : MonoBehaviour
     // 플레이어가 피해를 받을 때 호출되는 함수
     public void TakeDamage(int damageAmout)
     {
-        Debug.Log($"공격 당함!!! Current Hp : {_hp}");
+        //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
         _hp -= damageAmout;
         if (_hp <= 0)
         {

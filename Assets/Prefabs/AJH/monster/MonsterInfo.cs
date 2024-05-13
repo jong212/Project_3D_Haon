@@ -11,7 +11,7 @@ public class MonsterInfo : MonoBehaviour
     public int _hp; // hp 변수를 _hp로 변경
     public int _level; // level 변수를 _level로 변경
     public int _str; // str 변수를 _str로 변경
-    public static Animator animator;
+    public Animator animator;
 
 
     void Awake()
@@ -37,7 +37,8 @@ public class MonsterInfo : MonoBehaviour
    
     public void TakeDamage(int damageAmout)
     {
-        Debug.Log($"공격 당함!!! Current Hp : {_hp}");
+        //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
+        Debug.Log(gameObject.name);
         _hp -= damageAmout;
         if ( _hp <= 0 )
         {

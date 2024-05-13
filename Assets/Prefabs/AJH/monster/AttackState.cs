@@ -36,7 +36,7 @@ public class AttackState : StateMachineBehaviour
         if (timer >= interval)
         {
             
-            Debug.Log("ddd");
+           // Debug.Log("ddd");
             timer = 0f;
             playerinfo.TakeDamage(monsterinfo._str);
 

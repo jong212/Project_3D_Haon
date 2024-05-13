@@ -38,10 +38,11 @@ public class isAttackStop : StateMachineBehaviour
         // 충돌이 처음 감지될 때만 처리합니다.
         if (!hasCollided)
         {
-            Debug.Log("콤보 공격중.. " + otherCollider.gameObject.name);
+            Debug.Log(otherCollider.gameObject.name);
+            //Debug.Log("콤보 공격중.. " + otherCollider.gameObject.name);
             if(otherCollider.gameObject.tag == "Monster")
             {
-                // Static 
+                
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
 
             }
