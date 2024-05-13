@@ -39,7 +39,7 @@ public class playerAnimator : MonoBehaviour
             }
 
             // 캐릭터를 이동시킵니다.
-            _characterController.Move(_moveDirection * 2f * Time.deltaTime);
+            _characterController.Move(_moveDirection * 6f * Time.deltaTime);
 
             // 뛰기 상태를 설정합니다.
             _animator.SetBool("isRunning", _isRunning);

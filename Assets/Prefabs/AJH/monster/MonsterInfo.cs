@@ -42,6 +42,7 @@ public class MonsterInfo : MonoBehaviour
         if ( _hp <= 0 )
         {
             animator.SetTrigger("die");
+            transform.GetComponent<CapsuleCollider>().enabled = false;
         } else
         {
             animator.SetTrigger("damage");
