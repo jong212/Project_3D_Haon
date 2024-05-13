@@ -28,6 +28,7 @@ public class SkillA : StateMachineBehaviour
         //playerAnimator.DisableWeapon();
 
         isSkillAttack = false;
+        weaponColliderScript.SkillTriggerA -= OnTriggerEnterEventHandler;
     }
 
     private void OnTriggerEnterEventHandler(Collider otherCollider)

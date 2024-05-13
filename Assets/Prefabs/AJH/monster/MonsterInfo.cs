@@ -21,7 +21,7 @@ public class MonsterInfo : MonoBehaviour
         
         // 위에서 언급했듯 게임오브젝트 이름으로 몬스터 정보를 가져온다.
         MonsterData monsterData = MonsterDataManager.Instance.GetMonster($"{MyObjectName}");
-
+        animator = GetComponent<Animator>();
         //가져온 정보를 함수에 넘겨서 hp,level,str 등등 세팅
         SetMonsterData(monsterData);
         Debug.Log("1...몬스터 정보 세팅.." + _monsterName);        
@@ -35,8 +35,9 @@ public class MonsterInfo : MonoBehaviour
         _str = monsterData.str;
     }
    
-    public static void TakeDamage(int damageAmout)
+    public void TakeDamage(int damageAmout)
     {
+        Debug.Log($"공격 당함!!! Current Hp : {_hp}");
         _hp -= damageAmout;
         if ( _hp <= 0 )
         {

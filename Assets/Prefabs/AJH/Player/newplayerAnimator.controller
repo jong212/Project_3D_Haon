@@ -218,6 +218,18 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-4368044376856721577
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c0d735742b068440b88dcd1f80338f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &-3396815775931999440
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -314,10 +326,7 @@ AnimatorStateTransition:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: 
-  m_Conditions:
-  - m_ConditionMode: 1
-    m_ConditionEvent: onWeaponAttack
-    m_EventTreshold: 0
+  m_Conditions: []
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -7086050651140537437}
   m_Solo: 0
@@ -516,7 +525,8 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 7903648757017465584}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: -4368044376856721577}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -699,7 +709,7 @@ AnimatorStateMachine:
     m_Position: {x: 20, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2382971646614454286}
-    m_Position: {x: 30, y: 130, z: 0}
+    m_Position: {x: 30, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3062061396861761875}
     m_Position: {x: 20, y: -30, z: 0}

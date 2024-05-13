@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - WayPoint
+  - Monster
   layers:
   - Default
   - TransparentFX
