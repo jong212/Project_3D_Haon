@@ -4,24 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum LobbyButton
-{
-    Home,
-    BackSpace,
-    Equip,
-    Status,
-    EnterSetting,
-    ExitSetting,
-    SelectStage,
-    Stage1,
-    Stage2,
-    Boss,
-    Tutorial,
-    Title,
-    Quit
 
-
-}
 public class LobbyController : MonoBehaviour
 {
     public GameObject lobbyMainUI;
@@ -30,58 +13,25 @@ public class LobbyController : MonoBehaviour
     public GameObject settingUI;
     public GameObject gameSelect;
     public GameObject statUI;
-    public GameObject StageSelect;
-    public LobbyButton currentType;
-    public void OnClickLobbyButton()
-    {
-        switch (currentType)
-        {
-            case LobbyButton.Home:
-                settingUI.SetActive(false);
-                lobbyMainUI.SetActive(true);
-                lobbyEquipUI.SetActive(false);
-                lobbyStatusUI.SetActive(false);
-                statUI.SetActive(false);
-                break;
-            case LobbyButton.BackSpace:
-                break;
-            case LobbyButton.Equip:
-                break;
-            case LobbyButton.Status:
-                break;
-            case LobbyButton.EnterSetting:
-                break;
-            case LobbyButton.ExitSetting:
-                break;
-            case LobbyButton.SelectStage:
-                break;
-            case LobbyButton.Stage1:
-                break;
-            case LobbyButton.Stage2:
-                break;
-            case LobbyButton.Boss:
-                break;
-            case LobbyButton.Tutorial:
-                break;
-            case LobbyButton.Title:
-                break;
-            case LobbyButton.Quit:
-                break;
-            default:
-                break;
-        }
-    }
+    public GameObject stageSelect;
+    public GameObject tutorialSelect;
+
 
     //홈버튼
     public void OnClickHome()
     {
-       
+        settingUI.SetActive(false);
+        lobbyMainUI.SetActive(true);
+        lobbyEquipUI.SetActive(false);
+        lobbyStatusUI.SetActive(false);
+        statUI.SetActive(false);
     }
     //설정버튼
     public void OnClickSet()
     {
         settingUI.SetActive(true);
     }
+    //설정 종료
     public void OnClickSetout()
     {
         settingUI.SetActive(false);
@@ -89,7 +39,7 @@ public class LobbyController : MonoBehaviour
     //뒤로가기버튼
     public void OnClickBackSpace()
     {
-        
+
         lobbyEquipUI.SetActive(false);
         lobbyStatusUI.SetActive(false);
         statUI.SetActive(false);
@@ -119,14 +69,30 @@ public class LobbyController : MonoBehaviour
         lobbyStatusUI.SetActive(true);
         statUI.SetActive(true);
     }
-    //게임시작
+    //시작버튼
     public void OnClickGameStartEnter()
     {
         gameSelect.SetActive(true);
+        //tutorialSelect.SetActive(true);
+        //stageSelect.SetActive(false);
     }
+    
+    //스테이지셀렉트
+    public void OnClickStageSelect()
+    {
+        tutorialSelect.SetActive(false);
+        stageSelect.SetActive(true);
+    }
+    //스테이지뒤로가기
+    public void OnClickStageBackSpace()
+    {
+        tutorialSelect.SetActive(true);
+        stageSelect.SetActive(false);
+    }
+    //시작버튼 종료
     public void OnClickGameStartExit()
     {
         gameSelect.SetActive(false);
     }
-
+    
 }

@@ -57,15 +57,7 @@ public class Setting_1 : MonoBehaviour
         }
     }
 
-    //void Awake()
-    //{
-    //    //cointext = GetComponent<TextMeshProUGUI>();
-    //    //jeweltext = GetComponent<TextMeshProUGUI>();
-    //    //currentatk = GetComponent<TextMeshProUGUI>();
-    //    //currenthp = GetComponent<TextMeshProUGUI>();
-    //    //afteratk = GetComponent<TextMeshProUGUI>();
-    //    //afterhp = GetComponent<TextMeshProUGUI>();
-    //}
+  
 
     public void Start()
     {
@@ -78,12 +70,6 @@ public class Setting_1 : MonoBehaviour
         coinAtkUpgradeCount = 1;
         coinHPUpgradeCount = 1;
 
-        //cointext = GetComponent<TextMeshProUGUI>();
-        //jeweltext = GetComponent<TextMeshProUGUI>();
-        //currentatk = GetComponent<TextMeshProUGUI>();
-        //currenthp = GetComponent<TextMeshProUGUI>();
-        //afteratk = GetComponent<TextMeshProUGUI>();
-        //afterhp = GetComponent<TextMeshProUGUI>();
     }
     void Update()
     {
@@ -119,7 +105,7 @@ public class Setting_1 : MonoBehaviour
     }
     public void JewelUpGradeHP()
     {
-        if (jewels > 1)
+        if (jewels > jewelAtkUpgradeCount*5)
         {
             hp += 5;
             jewels-=jewelHPUpgradeCount;
