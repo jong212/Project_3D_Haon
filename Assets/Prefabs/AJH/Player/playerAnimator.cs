@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static DataManager;
 
 public class playerAnimator : MonoBehaviour
 {
@@ -13,14 +14,59 @@ public class playerAnimator : MonoBehaviour
     public bool isAction = false;
     private float _gravity = -9.81f;
     private float _velocity;
+    private static string MyObjectName;
+    private static string _PlayerName;
+    private static int _hp;
+    private static int _level; 
+    private static int _str;
+    private static bool isSkillACooldown = false;
+    private static bool isSkillBCooldown = false;
+
+
     [SerializeField]
     private Collider WeaponCollider;
 
     void Start()
     {
-
+        StartCoroutine(SkillCooldown());
+        MyObjectName = gameObject.name;
+        PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}");
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
+        SetPlayerData(playerData);
+        Debug.Log(_PlayerName);
+        Debug.Log(_hp);
+        Debug.Log(_level);
+        Debug.Log(_str);
+
+    }
+    IEnumerator SkillCooldown()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1f); // 1초마다 체크
+
+            // 스킬 A의 쿨다운이 활성화되어 있는 경우
+            if (isSkillACooldown)
+            {
+                yield return new WaitForSeconds(5f); //5초간 대기
+                isSkillACooldown = false; // 쿨다운 종료
+            }
+
+            // 스킬 B의 쿨다운이 활성화되어 있는 경우
+            if (isSkillBCooldown)
+            {
+                yield return new WaitForSeconds(5f); // 5초간 대기
+                isSkillBCooldown = false; // 쿨다운 종료
+            }
+        }
+    }
+    private static void SetPlayerData(PlayerData playerData)
+    {
+        _PlayerName = playerData.name;
+        _hp = playerData.hp;
+        _level = playerData.level;
+        _str = playerData.str;
     }
 
     void Update()
@@ -49,7 +95,19 @@ public class playerAnimator : MonoBehaviour
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
     }
-  
+    public void TakeDamage(int damageAmout)
+    {
+        Debug.Log($"공격 당함!!! Current Hp : {_hp}");
+        _hp -= damageAmout;
+        if (_hp <= 0)
+        {
+           
+        }
+        else
+        {
+            _animator.SetTrigger("hitCharacter");
+        }
+    }
     void ApplyGravity()
     {
         // 중력을 적용합니다.
@@ -81,18 +139,24 @@ public class playerAnimator : MonoBehaviour
 
     void OnSkillA(InputValue value)
     {
-        _animator.SetInteger("skillA", 0);
-        _animator.Play("ChargeSkillA_Skill");
+        if (!isSkillACooldown)
+        {
+            _animator.SetInteger("skillA", 0);
+            _animator.Play("ChargeSkillA_Skill");
+            isSkillACooldown = true; // 스킬 A 쿨다운 활성화
+        }
     }
 
     void OnSkillB(InputValue value)
     {
-
-        //        _animator.SetInteger("skillB", 0);
-        //      _animator.Play("SkillA_unlock 1");
-        if (isAction) return;
-        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-
+        if (!isSkillBCooldown)
+        {
+            //        _animator.SetInteger("skillB", 0);
+            //      _animator.Play("SkillA_unlock 1");
+            if (isAction) return;
+            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
+            isSkillBCooldown = true;
+        }
     }
 
     public void onWeaponAttack()
