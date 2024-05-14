@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/AJH/monster.meta
 guid: 4d3b6db9f7f04894d88fdec190bbe1a0
+========
+guid: f39e2d113f0b8dc49bf0ab4bd6ca267d
+>>>>>>>> Network_Lobby_WJH_0514:Assets/Settings.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
