@@ -6,15 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Init.unity
-    guid: 83c6c08b2b260ba469f85005f152824f
-  - enabled: 1
-    path: Assets/Scenes/Loading_WJH.unity
-    guid: 9db3b36689bb562438ae53465c6859b9
+    path: Assets/Scenes/StartScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/TestScene_WJH.unity
     guid: db9cf38d50024f94bb79b06070d95dac
-  - enabled: 1
-    path: Assets/Scenes/RoomScene_WJH.unity
-    guid: a30bc3bac037925448a673638e04ea90
   m_configObjects: {}

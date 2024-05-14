@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Prefabs/AJH/Player/Player1.prefab.meta
 guid: 290b195b4ae651846ba94009ea23b82c
-========
-guid: ed3c39778b0e8f843b256c2482cf4ad5
->>>>>>>> Network_Lobby_WJH_0514:Assets/Prefabs/PlayerInLobby.prefab.meta
 PrefabImporter:
   externalObjects: {}
   userData: 

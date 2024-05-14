@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Prefabs/AJH/Player.meta
 guid: 3ad19b82c379caf488527fc6a62e81b3
-========
-guid: 38e95eab910e8db4f83e56e504116b33
->>>>>>>> Network_Lobby_WJH_0514:Assets/Scripts/Lobby.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
