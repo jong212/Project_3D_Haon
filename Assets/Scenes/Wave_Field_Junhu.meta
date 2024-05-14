@@ -1,8 +1,14 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/Wave_Field_Junhu.meta
 guid: 010b7c5d7b487a34992454af2d9e1104
 folderAsset: yes
 DefaultImporter:
+========
+guid: d07d7196d594792489bf8206364f081b
+NativeFormatImporter:
+>>>>>>>> UIsettiogElse_KHT_0513:Assets/RPG Monster Wave PBR/Animators/Maplestory_Font.asset.meta
   externalObjects: {}
+  mainObjectFileID: 11400000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
