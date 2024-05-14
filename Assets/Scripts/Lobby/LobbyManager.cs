@@ -67,6 +67,7 @@ public class LobbyManager : Singleton<LobbyManager>
             if (newLobby.LastUpdated > lobby.LastUpdated)
             {
                 lobby = newLobby;
+                LobbyEvents.OnLobbyUpdated?.Invoke(lobby);
             }
             yield return new WaitForSecondsRealtime(waitTimeSecond);
         }
@@ -94,5 +95,36 @@ public class LobbyManager : Singleton<LobbyManager>
         }
     }
 
+    public async Task<bool> JoinLobby(string code, Dictionary<string, string> playerData)
+    {
+        JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions();
+        Player player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData));
+        options.Player = player;
 
+        try
+        {
+            lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code, options);
+        }
+        catch (System.Exception)
+        {
+
+            return false;
+        }
+        refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 1f));
+
+        return true;
+    }
+
+    public List<Dictionary<string, PlayerDataObject>> GetPlayerData()
+    {
+        List<Dictionary<string, PlayerDataObject>> data = new List<Dictionary<string, PlayerDataObject>>();
+
+        foreach (Player player in lobby.Players)
+        {
+            data.Add(player.Data);
+        }
+
+        return data;
+
+    }
 }
