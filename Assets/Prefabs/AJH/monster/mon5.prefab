@@ -2196,7 +2196,7 @@ Animator:
   m_GameObject: {fileID: 1951009016852862}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 73d2f4319473c3948940539f22e8ae4e, type: 3}
-  m_Controller: {fileID: 9100000, guid: 83dda7db3ba1e8547811aed118f4cfcd, type: 2}
+  m_Controller: {fileID: 9100000, guid: a74330490ad722c408f3725fbd058fb4, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2246,6 +2246,7 @@ MonoBehaviour:
   _hp: 0
   _level: 0
   _str: 0
+  animator: {fileID: 0}
 --- !u!136 &4733985354863694313
 CapsuleCollider:
   m_ObjectHideFlags: 0
