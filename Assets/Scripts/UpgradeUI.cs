@@ -18,17 +18,7 @@ public enum UpgardeButton
 public class UpgradeUI : MonoBehaviour
 {
     public UpgardeButton currentType;
-    void Start()
-    {
-        
-    }
-
     
-    void Update()
-    {
-        
-    }
-
     public void OnUpgradeButton()
     {
         switch (currentType)

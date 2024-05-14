@@ -7,8 +7,8 @@ public class Setting_1 : MonoBehaviour
 {
     
 
-    public float hp;
-    public float atk;
+    public float hp=10;
+    public float atk=1;
     public float coins;
     public float jewels;
 
@@ -61,8 +61,7 @@ public class Setting_1 : MonoBehaviour
 
     public void Start()
     {
-        hp = 10;
-        atk = 1;
+       
         coins = 100;
         jewels = 50;
         jewelAtkUpgradeCount = 1;
@@ -83,6 +82,10 @@ public class Setting_1 : MonoBehaviour
         currenthp.text = $"HP  :  {hp}  >";
         afteratk.text = $"{atk + 1}";
         afterhp.text = $"{hp + 5}";
+
+        
+
+
     }
 
     public void JewelUpGradeATK()
