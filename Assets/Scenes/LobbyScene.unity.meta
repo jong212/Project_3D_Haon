@@ -1,5 +1,9 @@
 fileFormatVersion: 2
-guid: 714630a87695fbc4583ef6634db3916a
+<<<<<<<< Updated upstream:Assets/Scenes/LobbyScene.unity.meta
+guid: 01d32ee388556f140987012be5c1808a
+========
+guid: 84a3be5e76d386a4692bba7d8b4e19e7
+>>>>>>>> Stashed changes:Assets/StandbyScene.unity.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
