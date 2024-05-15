@@ -28,4 +28,5 @@ public class LobbySpawner : MonoBehaviour
             _player[i].SetData(data);
         }
     }
+
 }

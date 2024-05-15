@@ -15,7 +15,7 @@ MonoBehaviour:
   Maps:
   - MapThumbnail: {r: 0.13561477, g: 0.08770915, b: 0.6886792, a: 1}
     MapName: Blue Map
-    SceneName: BlueScene
+    SceneName: Battle Field_Junhu
   - MapThumbnail: {r: 0.7169812, g: 0.71357757, b: 0.11160557, a: 1}
     MapName: Yellow Map
     SceneName: YellowScene

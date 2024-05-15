@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: TeamProject
+  productName: UnityTeamProject
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -158,7 +158,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Standalone: com.DefaultCompany.TeamProject
+    Standalone: com.DefaultCompany.UnityTeamProject
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -799,7 +799,12 @@ PlayerSettings:
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
   cloudServicesEnabled:
+    Build: 0
+    Game Performance: 0
+    Purchasing: 0
+    UDP: 0
     UNet: 1
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -814,10 +819,10 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: f27dfaa7-752f-4ba5-81aa-da43b2313d2b
+  cloudProjectId: 87b01f00-f9eb-4aae-b632-910f65b61c19
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: TeamProject
+  projectName: UnityTeamProject
   organizationId: w95616
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

@@ -8,6 +8,7 @@ public class LobbyCodeUI : MonoBehaviour
     [Header("Lobby")]
     [SerializeField] private TextMeshProUGUI lobbyCode;
     [SerializeField] private Button readyButton;
+    [SerializeField] private Button startButton;
 
     [Header("Map")]
     [SerializeField] private Image mapImage;
@@ -21,12 +22,14 @@ public class LobbyCodeUI : MonoBehaviour
 
     private void OnEnable()
     {
+        readyButton.onClick.AddListener(OnReadyPressed);
 
         if (GameLobbyManager.Instance.IsHost)
         {
-            readyButton.onClick.AddListener(OnReadyPressed);
             leftButton.onClick.AddListener(OnLeftButtonClicked);
             rightButton.onClick.AddListener(OnRightButtonClicked);
+            startButton.onClick.AddListener(OnStartButtonClicked);
+            LobbyEvent.OnLobbyReady += OnLobbyReady;
         }
 
         LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
@@ -37,17 +40,16 @@ public class LobbyCodeUI : MonoBehaviour
 
     private void OnDisable()
     {
-        if (GameLobbyManager.Instance.IsHost)
-        {
-            readyButton.onClick.RemoveAllListeners();
-            leftButton.onClick.RemoveAllListeners();
-            rightButton.onClick.RemoveAllListeners();
-        }
+        readyButton.onClick.RemoveAllListeners();
+        leftButton.onClick.RemoveAllListeners();
+        rightButton.onClick.RemoveAllListeners();
+        startButton.onClick.RemoveAllListeners();
 
         LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
+        LobbyEvent.OnLobbyReady -= OnLobbyReady;
     }
 
-    void Start()
+    async void Start()
     {
         lobbyCode.text = $"Lobby Code : {GameLobbyManager.Instance.GetLobbyCode()}";
 
@@ -56,6 +58,11 @@ public class LobbyCodeUI : MonoBehaviour
             leftButton.gameObject.SetActive(false);
             rightButton.gameObject.SetActive(false);
         }
+        else
+        {
+            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+        }
+
     }
 
 
@@ -71,7 +78,7 @@ public class LobbyCodeUI : MonoBehaviour
         }
 
         UpdateMap();
-        await GameLobbyManager.Instance.SelectedMap(currentMapIndex);
+        await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
     }
 
 
@@ -89,7 +96,7 @@ public class LobbyCodeUI : MonoBehaviour
 
         UpdateMap();
 
-        await GameLobbyManager.Instance.SelectedMap(currentMapIndex);
+        await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
     }
     private void UpdateMap()
     {
@@ -114,4 +121,13 @@ public class LobbyCodeUI : MonoBehaviour
 
     }
 
+    private void OnLobbyReady()
+    {
+        startButton.gameObject.SetActive(true);
+    }
+
+    private async void OnStartButtonClicked()
+    {
+        await GameLobbyManager.Instance.StartGame();
+    }
 }

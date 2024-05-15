@@ -143,15 +143,18 @@ public class LobbyManager : Singleton<LobbyManager>
 
         return data;
 
+
     }
 
-    public async Task<bool> UpdatePlayerData(string playerId, Dictionary<string, string> data)
+    public async Task<bool> UpdatePlayerData(string playerId, Dictionary<string, string> data, string allocationId = default, string connectionData = default)
     {
         Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
 
         UpdatePlayerOptions options = new UpdatePlayerOptions()
         {
-            Data = playerData
+            Data = playerData,
+            AllocationId = allocationId,
+            ConnectionInfo = connectionData,
         };
 
         try

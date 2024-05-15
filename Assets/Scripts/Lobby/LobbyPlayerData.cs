@@ -16,6 +16,7 @@ public class LobbyPlayerData
         set => _isReady = value;
     }
 
+
     public void Initialize(string id, string gamerTag)
     {
         _id = id;
@@ -53,7 +54,6 @@ public class LobbyPlayerData
             { "GamerTag", _gamerTag },
             { "IsReady", _isReady.ToString() },
         };
-
     }
 
 }

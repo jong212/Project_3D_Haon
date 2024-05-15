@@ -31,7 +31,6 @@ public class Init : MonoBehaviour
 
         }
 
-
     }
 
     private void OnSignedIn()
@@ -39,14 +38,5 @@ public class Init : MonoBehaviour
         Debug.Log($"Player Id : {AuthenticationService.Instance.PlayerId}");
         Debug.Log($"Token : {AuthenticationService.Instance.AccessToken}");
     }
-
-    void Update()
-    {
-
-    }
-
-    
-
-
 
 }

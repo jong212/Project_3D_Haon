@@ -8,7 +8,6 @@ public class MapSelectionData : ScriptableObject
 {
     public List<MapInfo> Maps;
 
-
 }
 
 [Serializable]
