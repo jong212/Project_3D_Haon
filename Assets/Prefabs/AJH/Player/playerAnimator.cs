@@ -1,11 +1,15 @@
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static DataManager;
 
 public class playerAnimator : MonoBehaviour
 {
-//변수들 선언
+
+    //변수들 선언
+    public GameObject skillControlObject;
+    public SkillControl skill;
     public Animator _animator; 
     private CharacterController _characterController;    
     private Vector3 _moveDirection;              // 플레이어의 이동 방향
@@ -30,6 +34,11 @@ public class playerAnimator : MonoBehaviour
 
     void Start()
     {
+        if (skillControlObject != null)
+        {
+            skill = skillControlObject.GetComponent<SkillControl>();
+        }
+
         StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
         PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
@@ -182,30 +191,29 @@ public class playerAnimator : MonoBehaviour
 
         // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
     }
-    void OnSkillA(InputValue value)
+    public void OnSkillA(InputValue value = null)
     {
-        if (!isSkillACooldown)
+        if(value != null && !skill.isHideSkills[1])
         {
+            skill.HideSkillSetting(1);
+            return;
+        }
             _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
             _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
-            isSkillACooldown = true; // 스킬 A 쿨다운 시작
-        }
     }
 
-    void OnSkillB(InputValue value)
+    public void OnSkillB(InputValue value = null)
     {
-        if (!isSkillBCooldown)
+        if (value != null && !skill.isHideSkills[2])
         {
-            if (isAction) return;
-            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-            isSkillBCooldown = true;
+            skill.HideSkillSetting(2);
+            return;
         }
+
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
+
     }
 
-   // public void onWeaponAttack()
-    //{
-       
-   // }
 
     public void SkillClick()
     {
