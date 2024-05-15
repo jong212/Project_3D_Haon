@@ -18,13 +18,14 @@ public class LobbyManager : Singleton<LobbyManager>
         return lobby?.LobbyCode;
     }
 
-    public async Task<bool> CreateLobby(int maxPlayer, bool isPrivate, Dictionary<string, string> data)
+    public async Task<bool> CreateLobby(int maxPlayer, bool isPrivate, Dictionary<string, string> data, Dictionary<string, string> lobbyData)
     {
         Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
         Player player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
 
         CreateLobbyOptions options = new CreateLobbyOptions()
         {
+            Data = SerialzeLobbyData(lobbyData),
             IsPrivate = isPrivate,
             Player = player,
 
@@ -46,6 +47,8 @@ public class LobbyManager : Singleton<LobbyManager>
 
         return true;
     }
+
+
 
     private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSecond)
     {
@@ -87,6 +90,20 @@ public class LobbyManager : Singleton<LobbyManager>
         return playerData;
     }
 
+    private Dictionary<string, DataObject> SerialzeLobbyData(Dictionary<string, string> data)
+    {
+        Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>();
+        foreach (var (key, value) in data)
+        {
+            lobbyData.Add(key, new DataObject(
+                visibility: DataObject.VisibilityOptions.Member,
+                value: value
+                ));
+        }
+
+        return lobbyData;
+    }
+
     public void OnApplicationQuit()
     {
         if (lobby != null && lobby.HostId == AuthenticationService.Instance.PlayerId)
@@ -126,5 +143,59 @@ public class LobbyManager : Singleton<LobbyManager>
 
         return data;
 
+    }
+
+    public async Task<bool> UpdatePlayerData(string playerId, Dictionary<string, string> data)
+    {
+        Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
+
+        UpdatePlayerOptions options = new UpdatePlayerOptions()
+        {
+            Data = playerData
+        };
+
+        try
+        {
+            await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, playerId, options);
+
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
+
+        LobbyEvents.OnLobbyUpdated(lobby);
+
+        return true;
+    }
+
+    public async Task<bool> UpdateLobbyData(Dictionary<string, string> data)
+    {
+        Dictionary<string, DataObject> lobbyData = SerialzeLobbyData(data);
+
+        UpdateLobbyOptions options = new UpdateLobbyOptions()
+        {
+            Data = lobbyData
+        };
+
+        try
+        {
+            lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, options);
+        }
+        catch (System.Exception)
+        {
+            return false;
+
+        }
+
+        LobbyEvents.OnLobbyUpdated(lobby);
+
+        return true;
+
+    }
+
+    public string GetHostId()
+    {
+        return lobby.HostId;
     }
 }
