@@ -36,10 +36,10 @@ public class playerAnimator : MonoBehaviour
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
         SetPlayerData(playerData);
-        Debug.Log(_PlayerName);
+      /*  Debug.Log(_PlayerName);
         Debug.Log(_hp);
         Debug.Log(_level);
-        Debug.Log(_str);
+        Debug.Log(_str);*/
 
     }
 // 스킬 쿨다운을 관리하는 코루틴
@@ -202,14 +202,16 @@ public class playerAnimator : MonoBehaviour
         }
     }
 
-    public void onWeaponAttack()
-    {
-        _animator.SetTrigger("onWeaponAttack");
-    }
+   // public void onWeaponAttack()
+    //{
+       
+   // }
 
-    void OnClick()
+    public void SkillClick()
     {
-        onWeaponAttack();
+        /*Debug.Log("test");*/
+        //onWeaponAttack();
+        _animator.SetTrigger("onWeaponAttack");
     }
     IEnumerator ActionTimer(string actionName, float time)
     {

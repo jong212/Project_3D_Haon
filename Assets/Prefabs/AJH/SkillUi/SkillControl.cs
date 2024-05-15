@@ -12,16 +12,17 @@ public class SkillControl : MonoBehaviour
     public GameObject[] textPros;
     public TextMeshProUGUI[] hideSkillTimeTexts;
     public Image[] hideSkillImages;
-
+    playerAnimator playerSkill;
 
     //스킬 사용중인지 
     private bool[] isHideSkills = { false, false, false, false };
 
-    private float[] skillTimers = { 3, 3, 9, 12 };
+    private float[] skillTimes = { 3, 3, 9, 0 };
     private float[] getSkillTimes = { 0, 0, 0, 0, };
 
     void Start()
     {
+        playerSkill = GameObject.FindWithTag("Player").GetComponent<playerAnimator>();
         for (int i = 0; i < textPros.Length; i++)
         {
             hideSkillTimeTexts[i] = textPros[i].GetComponent<TextMeshProUGUI>();
@@ -36,8 +37,26 @@ public class SkillControl : MonoBehaviour
     }
     public void HideSkillSetting(int skillNum)
     {
+        if (!isHideSkills[skillNum])
+        {
+            switch (skillNum)
+            {
+               /* case 0:
+                    playerSkill.SkillDash();
+                    break;
+                case 1:
+                    playerSkill.SkillA();
+                    break;
+                case 2:
+                    playerSkill.SkillB();
+                    break;*/
+                case 3:
+                    playerSkill.SkillClick();
+                    break;
+            }
+        }
         hideSkillButtons[skillNum].SetActive(true);
-        getSkillTimes[skillNum] = skillTimers[skillNum];
+        getSkillTimes[skillNum] = skillTimes[skillNum];
         isHideSkills[skillNum] = true;
     }
 
@@ -59,29 +78,27 @@ public class SkillControl : MonoBehaviour
         {
             StartCoroutine(SkillTimeChk(3));
         }
-        if (isHideSkills[4])
-        {
-            StartCoroutine(SkillTimeChk(4));
-        }
     }
 
     IEnumerator SkillTimeChk(int skillNum)
     {
         yield return null;
 
-        if (getSkillTimes[skillNum] == 0)
+
+        if (getSkillTimes[skillNum] > 0 || skillNum == 3)
         {
             getSkillTimes[skillNum] -= Time.deltaTime;
             if (getSkillTimes[skillNum] < 0)
             {
+                /*Debug.Log("test1");*/
                 getSkillTimes[skillNum] = 0;
                 isHideSkills[skillNum] = false;
                 hideSkillButtons[skillNum].SetActive(false);
             }
 
             hideSkillTimeTexts[skillNum].text = getSkillTimes[skillNum].ToString("00");
-            float time = getSkillTimes[skillNum] / skillTimers[skillNum];
-            hideSkillImages[skillNum].fillAmount = time * Time.deltaTime;
+            float time = getSkillTimes[skillNum] / skillTimes[skillNum];
+            hideSkillImages[skillNum].fillAmount = time;
         }
     }
 }
