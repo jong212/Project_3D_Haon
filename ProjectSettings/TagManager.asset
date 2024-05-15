@@ -6,6 +6,7 @@ TagManager:
   tags:
   - WayPoint
   - Monster
+  - skill
   layers:
   - Default
   - TransparentFX

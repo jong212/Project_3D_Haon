@@ -17,8 +17,8 @@ public class SkillControl : MonoBehaviour
     //스킬 사용중인지 
     public bool[] isHideSkills = { false, false, false, false };
 
-    private float[] skillTimes = { 3, 3, 9, 0 };
-    private float[] getSkillTimes = { 0, 0, 0, 0, };
+    private float[] skillTimes = { 2, 4, 4, 0 };
+    public float[] getSkillTimes = { 0, 0, 0, 0, };
 
     void Start()
     {
@@ -41,9 +41,9 @@ public class SkillControl : MonoBehaviour
         {
             switch (skillNum)
             {
-               /* case 0:
-                    playerSkill.SkillDash();
-                    break;*/
+              case 0:
+                    playerSkill.OnDash();
+                    break;  
                 case 1:
                     playerSkill.OnSkillA();
                     break; 

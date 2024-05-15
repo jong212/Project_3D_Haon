@@ -146,21 +146,27 @@ public class playerAnimator : MonoBehaviour
             _isRunning = _moveDirection.magnitude > 0;// 이동 입력이 있을 때만 뛰기 상태로 변경
         }
     }
-    void OnDash()
+    public void OnDash(InputValue value = null)
     {
-        if (!isDashCooldown) // 대시가 쿨다운 중이 아닌지 확인
+        if (value != null && !skill.isHideSkills[0])
         {
-            Dash(); // 대시 실행
-            StartCoroutine(StartDashCooldown()); // 대시 쿨다운 시작
+            skill.HideSkillSetting(0);
+            return;
         }
+        if (skill.getSkillTimes[0] > 0) return;
+        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+        float dashDistance = 5f;  // 대시 거리
+        float dashDuration = 0.2f; // 대시 지속 시
+
+        // 대시 목적지 위치 계산
+        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
+
+        // 플레이어의 위치를 빠르게 이동하여 대시 실행
+        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
+
+        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
     }
-    // 대시 쿨다운을 시작하는 코루틴
-    IEnumerator StartDashCooldown()
-    {
-        isDashCooldown = true; // 대시 쿨다운 시작
-        yield return new WaitForSeconds(dashCooldownDuration); // 쿨다운 시간 동안 대기
-        isDashCooldown = false; // 대시 쿨다운 리셋
-    }
+     
     // 플레이어를 대시 목적지 위치로 부드럽게 이동시키는 코루틴
     IEnumerator MovePlayerToPosition(Vector3 startPosition, Vector3 endPosition, float duration)
     {
@@ -177,20 +183,7 @@ public class playerAnimator : MonoBehaviour
     }
 
     //대시스킬 Shift 추후 변경예정
-    void Dash()
-    {
-        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-        float dashDistance = 5f;  // 대시 거리
-        float dashDuration = 0.2f; // 대시 지속 시
-
-        // 대시 목적지 위치 계산
-        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
-
-        // 플레이어의 위치를 빠르게 이동하여 대시 실행
-        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
-
-        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
-    }
+    
     public void OnSkillA(InputValue value = null)
     {
         if(value != null && !skill.isHideSkills[1])
@@ -209,7 +202,7 @@ public class playerAnimator : MonoBehaviour
             skill.HideSkillSetting(2);
             return;
         }
-
+        if (skill.getSkillTimes[2] > 0) return;
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
 
     }
