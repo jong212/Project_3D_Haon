@@ -1,11 +1,14 @@
 using Cinemachine;
 using echo17.EndlessBook;
+using TMPro;
 using UnityEngine;
 
 public class BookController : MonoBehaviour
 {
 
     public EndlessBook book;
+
+    [SerializeField] TextMeshProUGUI gameStart;
 
     [SerializeField] CinemachineVirtualCamera startView;
     [SerializeField] CinemachineVirtualCamera bookView;
@@ -19,41 +22,39 @@ public class BookController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    void Update()
+    private void OnMouseDown()
     {
-
-
-        if (Input.GetKeyDown(KeyCode.Space))
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Book")))
         {
             if (book.CurrentState == EndlessBook.StateEnum.ClosedFront)
             {
+                gameStart.gameObject.SetActive(false);
                 book.SetState(EndlessBook.StateEnum.OpenMiddle);
                 BookSound(openBook);
                 startView.Priority = 0;
                 bookView.Priority = 1;
             }
-            // book.CurrentLeftPageNumber 에 따라 페이지 넘기면서 UI설정가능
-            Debug.Log(book.CurrentLeftPageNumber);
-            if (!book.IsLastPageGroup)
-            {
-                book.TurnToPage(book.CurrentLeftPageNumber + 2, EndlessBook.PageTurnTimeTypeEnum.TimePerPage, 1f);
-                BookSound(pagingBook);
-            }
+        }
+
+        if (!book.IsLastPageGroup && book.CurrentState == EndlessBook.StateEnum.OpenMiddle)
+        {
+            book.TurnToPage(book.CurrentLeftPageNumber + 2, EndlessBook.PageTurnTimeTypeEnum.TimePerPage, 1f);
+            BookSound(pagingBook);
         }
 
         if (book.CurrentLeftPageNumber == 9)
         {
-            
             FadeInFadeOutSceneManager.Instance.ChangeScene("TestScene_WJH");
-          
         }
-    }
 
+    }
 
     void BookSound(AudioClip audioClip)
     {
         audioSource.clip = audioClip;
         audioSource.PlayOneShot(audioClip);
     }
-    
+
 }
