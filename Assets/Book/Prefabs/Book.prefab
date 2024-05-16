@@ -958,7 +958,10 @@ GameObject:
   m_Component:
   - component: {fileID: 308019442458818429}
   - component: {fileID: 415041330959768631}
-  m_Layer: 0
+  - component: {fileID: 2027159219}
+  - component: {fileID: 2027159222}
+  - component: {fileID: 2027159221}
+  m_Layer: 14
   m_Name: Book
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1010,8 +1013,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 994cb9cc3369e7046a93b91ab44ddfbb, type: 2}
   - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
   - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
+  - {fileID: 2100000, guid: 8e3b504e98b400941a56b540819a8433, type: 2}
+  - {fileID: 2100000, guid: 23511cf1c7cbb52478d09128311aa021, type: 2}
   materialMappings:
   - materialType: 0
     mappings:
@@ -1093,16 +1096,14 @@ MonoBehaviour:
   - materialType: 7
     mappings: []
   pageData:
-  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - material: {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
-  - material: {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
+  - material: {fileID: 2100000, guid: 8e3b504e98b400941a56b540819a8433, type: 2}
+  - material: {fileID: 2100000, guid: 23511cf1c7cbb52478d09128311aa021, type: 2}
+  - material: {fileID: 2100000, guid: f38f54d9291369f48b5554a36ce491b3, type: 2}
+  - material: {fileID: 2100000, guid: 6b9cfea6c77bf9146b70bdd7911ebe43, type: 2}
+  - material: {fileID: 2100000, guid: 830139d7da1b0b04ea591b42faf7388a, type: 2}
+  - material: {fileID: 2100000, guid: d458ac494b02b604080e1d3fb0767425, type: 2}
+  - material: {fileID: 2100000, guid: b627fc86799d3a443bf679de522a8f1b, type: 2}
+  - material: {fileID: 2100000, guid: 3657e20c2e7971f48aa545930bf47d68, type: 2}
   pages:
   - {fileID: 415003819834992611}
   - {fileID: 414921478256292201}
@@ -1113,6 +1114,135 @@ MonoBehaviour:
   maxPagesTurningCount: 4
   deltaTime: 0
   pageFillerMaterial: {fileID: 2100000, guid: 994cb9cc3369e7046a93b91ab44ddfbb, type: 2}
+--- !u!64 &2027159219
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311184656859670933}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 7ae403f82513a44429cdf1bdf6739e66, type: 3}
+--- !u!82 &2027159222
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311184656859670933}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &2027159221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311184656859670933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad23f0ce52f93c7478c4986355f74569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  book: {fileID: 415041330959768631}
+  gameStart: {fileID: 0}
+  startView: {fileID: 0}
+  bookView: {fileID: 0}
+  audioSource: {fileID: 2027159222}
+  openBook: {fileID: 8300000, guid: 32935a71386d82f459a8f003bad033f5, type: 3}
+  pagingBook: {fileID: 8300000, guid: 186cf22ffaae264449e086a0c4206a6d, type: 3}
 --- !u!1 &311190217107762381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2962,8 +3092,8 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 994cb9cc3369e7046a93b91ab44ddfbb, type: 2}
   - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
+  - {fileID: 2100000, guid: 23511cf1c7cbb52478d09128311aa021, type: 2}
+  - {fileID: 2100000, guid: 8e3b504e98b400941a56b540819a8433, type: 2}
   - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -3328,8 +3458,8 @@ SkinnedMeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 994cb9cc3369e7046a93b91ab44ddfbb, type: 2}
   - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - {fileID: 2100000, guid: 79aad6a2b295ee44a810411f1e5bba6e, type: 2}
-  - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
+  - {fileID: 2100000, guid: 23511cf1c7cbb52478d09128311aa021, type: 2}
+  - {fileID: 2100000, guid: 8e3b504e98b400941a56b540819a8433, type: 2}
   - {fileID: 2100000, guid: e79cc879590d5ec4cb9db92865f0dd50, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0

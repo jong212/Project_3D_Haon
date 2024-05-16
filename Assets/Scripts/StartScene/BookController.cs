@@ -44,7 +44,7 @@ public class BookController : MonoBehaviour
             BookSound(pagingBook);
         }
 
-        if (book.CurrentLeftPageNumber == 9)
+        if (book.CurrentLeftPageNumber == 7)
         {
             FadeInFadeOutSceneManager.Instance.ChangeScene("TestScene_WJH");
         }
