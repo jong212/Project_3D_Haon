@@ -47,41 +47,12 @@ public class playerAnimator : MonoBehaviour
             skill = skillControlObject.GetComponent<SkillControl>();
         }
 
-        StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
         PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
         SetPlayerData(playerData);
-      /*  Debug.Log(_PlayerName);
-        Debug.Log(_hp);
-        Debug.Log(_level);
-        Debug.Log(_str);*/
-
     }
-// 스킬 쿨다운을 관리하는 코루틴
-    IEnumerator SkillCooldown()                      
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1f);     // 1초마다 체크    
-
-             
-            if (isSkillACooldown)                    // 스킬 A 쿨다운 상태 확인 및 처리
-            {
-                yield return new WaitForSeconds(5f); //5초간 대기
-                isSkillACooldown = false;            // 쿨다운 종료
-            }
-
-            
-            if (isSkillBCooldown)                    // 스킬 B의 쿨다운이 활성화되어 있는 경우
-            {
-                yield return new WaitForSeconds(5f); // 5초간 대기
-                isSkillBCooldown = false;            // 쿨다운 종료
-            }
-        }
-    }
-
 // 플레이어 데이터 설정 함수
     private static void SetPlayerData(PlayerData playerData)
     {
@@ -190,8 +161,6 @@ public class playerAnimator : MonoBehaviour
         transform.position = endPosition;// 플레이어가 정확한 위치에 도달하도록 보장
     }
 
-    //대시스킬 Shift 추후 변경예정
-    
     public void OnSkillA(InputValue value = null)
     {
         if(value != null && !skill.isHideSkills[1])
@@ -221,8 +190,6 @@ public class playerAnimator : MonoBehaviour
     }
     public void SkillClick()
     {
-        /*Debug.Log("test");*/
-        //onWeaponAttack();
         _animator.SetTrigger("onWeaponAttack");
     }
     IEnumerator ActionTimer(string actionName, float time)
