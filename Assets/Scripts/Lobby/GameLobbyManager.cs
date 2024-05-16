@@ -12,6 +12,9 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     private LobbyPlayerData localLobbyPlayerData;
     private LobbyData lobbyData;
     private int maxNumberOfPlayers = 3;
+    private bool inGame = false;
+
+
     public bool IsHost => localLobbyPlayerData.Id == LobbyManager.Instance.GetHostId();
 
     private void OnEnable()
@@ -89,7 +92,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             LobbyEvent.OnLobbyReady?.Invoke();
         }
 
-        if (lobbyData.RelayJoinCode != default)
+        if (lobbyData.RelayJoinCode != default && !inGame)
         {
             await JoinRelayServer(lobbyData.RelayJoinCode);
             SceneManager.LoadSceneAsync(lobbyData.SceneName);
@@ -126,6 +129,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     public async Task StartGame()
     {
         string relayRelayCode = await RelayManager.Instance.CreateRelay(maxNumberOfPlayers);
+        inGame = true;
 
         lobbyData.RelayJoinCode = relayRelayCode;
         await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
@@ -141,6 +145,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
     private async Task<bool> JoinRelayServer(string relayJoinCode)
     {
+        inGame = true;
         await RelayManager.Instance.JoinRelay(relayJoinCode);
 
         string allocationId = RelayManager.Instance.GetAllocationId();

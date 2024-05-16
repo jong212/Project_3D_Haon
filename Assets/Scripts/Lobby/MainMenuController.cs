@@ -16,6 +16,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] Button submitCodeButton;
     [SerializeField] TextMeshProUGUI codeText;
 
+
     void OnEnable()
     {
         hostButton.onClick.AddListener(OnHostClicked);
@@ -35,6 +36,7 @@ public class MainMenuController : MonoBehaviour
         bool succeeded = await GameLobbyManager.Instance.CreateLobby();
         if (succeeded)
         {
+            Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
             SceneManager.LoadSceneAsync("LobbyRoomScene");
         }
 
@@ -57,6 +59,7 @@ public class MainMenuController : MonoBehaviour
 
         if (succeeded)
         {
+            Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
             SceneManager.LoadSceneAsync("LobbyRoomScene");
         }
     }
