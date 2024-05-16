@@ -215,7 +215,10 @@ public class playerAnimator : MonoBehaviour
 
     }
 
-
+    public void OnClick()
+    {
+        _animator.SetTrigger("onWeaponAttack");
+    }
     public void SkillClick()
     {
         /*Debug.Log("test");*/
