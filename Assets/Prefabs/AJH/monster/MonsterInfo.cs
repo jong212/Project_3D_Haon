@@ -38,7 +38,7 @@ public class MonsterInfo : MonoBehaviour
     public void TakeDamage(int damageAmout)
     {
         //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
-        Debug.Log(gameObject.name);
+        //Debug.Log(gameObject.name);
         _hp -= damageAmout;
         if ( _hp <= 0 )
         {

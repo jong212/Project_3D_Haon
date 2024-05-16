@@ -1,11 +1,15 @@
 using System.Collections;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static DataManager;
 
 public class playerAnimator : MonoBehaviour
 {
-//변수들 선언
+
+    //변수들 선언
+    public GameObject skillControlObject;
+    public SkillControl skill;
     public Animator _animator; 
     private CharacterController _characterController;    
     private Vector3 _moveDirection;              // 플레이어의 이동 방향
@@ -24,22 +28,35 @@ public class playerAnimator : MonoBehaviour
     private static bool isSkillBCooldown = false;// 스킬 B 쿨다운 여부를 추적하는 플래그
     public float dashCooldownDuration = 5f;      // 대시 쿨다운 지속 시간(초)
     private bool isDashCooldown = false;         // 대시 쿨다운 상태를 추적하는 플래
-
+    FloatingHealthBar healthBar;
     [SerializeField]
     private Collider WeaponCollider;             // 무기 콜라이더
 
+    [SerializeField]
+    private Canvas _hpCanvas;
+
     void Start()
     {
+        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
+        hpObject.transform.SetParent(_hpCanvas.transform);
+        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
+        healthBar.SetTarget(transform);
+
+        if (skillControlObject != null)
+        {
+            skill = skillControlObject.GetComponent<SkillControl>();
+        }
+
         StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
         PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
         SetPlayerData(playerData);
-        Debug.Log(_PlayerName);
+      /*  Debug.Log(_PlayerName);
         Debug.Log(_hp);
         Debug.Log(_level);
-        Debug.Log(_str);
+        Debug.Log(_str);*/
 
     }
 // 스킬 쿨다운을 관리하는 코루틴
@@ -137,21 +154,27 @@ public class playerAnimator : MonoBehaviour
             _isRunning = _moveDirection.magnitude > 0;// 이동 입력이 있을 때만 뛰기 상태로 변경
         }
     }
-    void OnDash()
+    public void OnDash(InputValue value = null)
     {
-        if (!isDashCooldown) // 대시가 쿨다운 중이 아닌지 확인
+        if (value != null && !skill.isHideSkills[0])
         {
-            Dash(); // 대시 실행
-            StartCoroutine(StartDashCooldown()); // 대시 쿨다운 시작
+            skill.HideSkillSetting(0);
+            return;
         }
+        if (skill.getSkillTimes[0] > 0) return;
+        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+        float dashDistance = 5f;  // 대시 거리
+        float dashDuration = 0.2f; // 대시 지속 시
+
+        // 대시 목적지 위치 계산
+        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
+
+        // 플레이어의 위치를 빠르게 이동하여 대시 실행
+        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
+
+        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
     }
-    // 대시 쿨다운을 시작하는 코루틴
-    IEnumerator StartDashCooldown()
-    {
-        isDashCooldown = true; // 대시 쿨다운 시작
-        yield return new WaitForSeconds(dashCooldownDuration); // 쿨다운 시간 동안 대기
-        isDashCooldown = false; // 대시 쿨다운 리셋
-    }
+     
     // 플레이어를 대시 목적지 위치로 부드럽게 이동시키는 코루틴
     IEnumerator MovePlayerToPosition(Vector3 startPosition, Vector3 endPosition, float duration)
     {
@@ -168,48 +191,36 @@ public class playerAnimator : MonoBehaviour
     }
 
     //대시스킬 Shift 추후 변경예정
-    void Dash()
+    
+    public void OnSkillA(InputValue value = null)
     {
-        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-        float dashDistance = 5f;  // 대시 거리
-        float dashDuration = 0.2f; // 대시 지속 시
-
-        // 대시 목적지 위치 계산
-        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
-
-        // 플레이어의 위치를 빠르게 이동하여 대시 실행
-        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
-
-        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
-    }
-    void OnSkillA(InputValue value)
-    {
-        if (!isSkillACooldown)
+        if(value != null && !skill.isHideSkills[1])
         {
+            skill.HideSkillSetting(1);
+            return;
+        }
             _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
             _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
-            isSkillACooldown = true; // 스킬 A 쿨다운 시작
-        }
     }
 
-    void OnSkillB(InputValue value)
+    public void OnSkillB(InputValue value = null)
     {
-        if (!isSkillBCooldown)
+        if (value != null && !skill.isHideSkills[2])
         {
-            if (isAction) return;
-            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-            isSkillBCooldown = true;
+            skill.HideSkillSetting(2);
+            return;
         }
+        if (skill.getSkillTimes[2] > 0) return;
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
+
     }
 
-    public void onWeaponAttack()
+
+    public void SkillClick()
     {
+        /*Debug.Log("test");*/
+        //onWeaponAttack();
         _animator.SetTrigger("onWeaponAttack");
-    }
-
-    void OnClick()
-    {
-        onWeaponAttack();
     }
     IEnumerator ActionTimer(string actionName, float time)
     {

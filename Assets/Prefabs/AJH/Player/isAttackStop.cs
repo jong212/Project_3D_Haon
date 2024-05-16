@@ -19,11 +19,18 @@ public class isAttackStop : StateMachineBehaviour
         // 충돌 이벤트를 처리하는 메서드를 설정합니다.
         weaponColliderScript.OnTriggerEnterEvent += OnTriggerEnterEventHandler;
     }
-
+   
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         playerAnimator = animator.GetComponent<playerAnimator>();
-        playerAnimator.isAction = false;
+        if (stateInfo.IsTag("a"))
+        {
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("p_Idle") || animator.GetCurrentAnimatorStateInfo(0).IsName("p_run") || animator.GetCurrentAnimatorStateInfo(0).IsName("ChargeSkillA_Skill"))
+            {
+                playerAnimator.isAction = false;
+
+            }
+        }
         // 충돌 이벤트를 처리하는 메서드를 제거합니다.
         weaponColliderScript.OnTriggerEnterEvent -= OnTriggerEnterEventHandler;
 
