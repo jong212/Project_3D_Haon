@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public class MainMenuController : MonoBehaviour
 {
 
-    [SerializeField] private GameObject mainScreen;
+    [SerializeField] private GameObject mainHostButton;
+    [SerializeField] private GameObject mainJoinButton;
     [SerializeField] private GameObject joinScreen;
 
     [SerializeField] Button hostButton;
@@ -34,14 +35,16 @@ public class MainMenuController : MonoBehaviour
         bool succeeded = await GameLobbyManager.Instance.CreateLobby();
         if (succeeded)
         {
-            SceneManager.LoadSceneAsync("RoomScene_WJH");
+            SceneManager.LoadSceneAsync("LobbyRoomScene");
         }
 
     }
 
     private void OnJoinClicked()
     {
-        mainScreen.SetActive(false);
+
+        mainHostButton.SetActive(false);
+        mainJoinButton.SetActive(false);
         joinScreen.SetActive(true);
     }
 
@@ -54,7 +57,7 @@ public class MainMenuController : MonoBehaviour
 
         if (succeeded)
         {
-            SceneManager.LoadSceneAsync("RoomScene_WJH");
+            SceneManager.LoadSceneAsync("LobbyRoomScene");
         }
     }
 

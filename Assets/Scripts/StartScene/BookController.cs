@@ -46,7 +46,7 @@ public class BookController : MonoBehaviour
 
         if (book.CurrentLeftPageNumber == 7)
         {
-            FadeInFadeOutSceneManager.Instance.ChangeScene("TestScene_WJH");
+            FadeInFadeOutSceneManager.Instance.ChangeScene("TutorialScene");
         }
 
     }

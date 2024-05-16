@@ -26,7 +26,7 @@ public class Init : MonoBehaviour
                     PlayerPrefs.SetString("Username", userName);
                 }
 
-                SceneManager.LoadSceneAsync("TestScene_WJH");
+               // SceneManager.LoadSceneAsync("TestScene_WJH");
             }
 
         }

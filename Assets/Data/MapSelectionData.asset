@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Maps:
   - MapThumbnail: {r: 0.13561477, g: 0.08770915, b: 0.6886792, a: 1}
-    MapName: Blue Map
-    SceneName: Battle Field_Junhu
+    MapName: "\uC77C\uBC18"
+    SceneName: Wave_Field
   - MapThumbnail: {r: 0.7169812, g: 0.71357757, b: 0.11160557, a: 1}
-    MapName: Yellow Map
-    SceneName: YellowScene
+    MapName: "\uBCF4\uC2A4"
+    SceneName: Boss Field

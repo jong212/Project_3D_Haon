@@ -1,21 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine;
 public class Setting_1 : MonoBehaviour
 {
-    
 
-    public float hp=10;
-    public float atk=1;
-    public float coins;
-    public float jewels;
 
-    public float jewelAtkUpgradeCount;
-    public float jewelHPUpgradeCount;
-    public float coinAtkUpgradeCount;
-    public float coinHPUpgradeCount;
+    public static float hp = 10;
+    public static float atk = 1;
+    public static float coins;
+    public static float jewels;
+
+    public static float jewelAtkUpgradeCount;
+    public static float jewelHPUpgradeCount;
+    public static float coinAtkUpgradeCount;
+    public static float coinHPUpgradeCount;
 
     public TextMeshProUGUI cointext;
     public TextMeshProUGUI jeweltext;
@@ -27,41 +24,11 @@ public class Setting_1 : MonoBehaviour
     public TextMeshProUGUI jewelHPUpgradetext;
     public TextMeshProUGUI coinAtkUpgradetext;
     public TextMeshProUGUI coinHPUpgradetext;
-    private static Setting_1 instance = null;
-    void Awake()
-    {
-        if (null == instance)
-        {
 
-            instance = this;
-
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-
-            Destroy(this.gameObject);
-        }
-    }
-
-
-    public static Setting_1 Instance
-    {
-        get
-        {
-            if (null == instance)
-            {
-                return null;
-            }
-            return instance;
-        }
-    }
-
-  
 
     public void Start()
     {
-       
+
         coins = 100;
         jewels = 50;
         jewelAtkUpgradeCount = 1;
@@ -76,88 +43,86 @@ public class Setting_1 : MonoBehaviour
         jeweltext.text = $"{jewels}";
         jewelAtkUpgradetext.text = $"-{jewelAtkUpgradeCount}";
         jewelHPUpgradetext.text = $"-{jewelHPUpgradeCount}";
-        coinAtkUpgradetext.text = $"-{coinAtkUpgradeCount*5}";
-        coinHPUpgradetext.text = $"-{coinHPUpgradeCount*5}";
+        coinAtkUpgradetext.text = $"-{coinAtkUpgradeCount * 5}";
+        coinHPUpgradetext.text = $"-{coinHPUpgradeCount * 5}";
         currentatk.text = $"ATK  :  {atk}  >";
         currenthp.text = $"HP  :  {hp}  >";
         afteratk.text = $"{atk + 1}";
         afterhp.text = $"{hp + 5}";
 
-        
-
 
     }
 
-    public void JewelUpGradeATK()
+    public static void JewelUpGradeATK()
     {
         if (jewels > jewelAtkUpgradeCount)
         {
             atk++;
-            jewels-=jewelAtkUpgradeCount;
+            jewels -= jewelAtkUpgradeCount;
             jewelAtkUpgradeCount++;
         }
     }
-    public void JewelDownGradeATK()
+    public static void JewelDownGradeATK()
     {
         if (atk > 1)
         {
             atk--;
-            jewels+=(jewelAtkUpgradeCount-1);
+            jewels += (jewelAtkUpgradeCount - 1);
             jewelAtkUpgradeCount--;
         }
     }
-    public void JewelUpGradeHP()
+    public static void JewelUpGradeHP()
     {
-        if (jewels > jewelHPUpgradeCount*5)
+        if (jewels > jewelHPUpgradeCount * 5)
         {
             hp += 5;
-            jewels-=jewelHPUpgradeCount;
+            jewels -= jewelHPUpgradeCount;
             jewelHPUpgradeCount++;
 
         }
     }
-    public void JewelDownGradeHP()
+    public static void JewelDownGradeHP()
     {
         if (hp > 10)
         {
             hp -= 5;
-            jewels+=(jewelHPUpgradeCount-1);
+            jewels += (jewelHPUpgradeCount - 1);
             jewelHPUpgradeCount--;
         }
     }
-    public void CoinUpGradeATK()
+    public static void CoinUpGradeATK()
     {
-        if (coins > coinAtkUpgradeCount*5)
+        if (coins > coinAtkUpgradeCount * 5)
         {
             atk++;
-            coins -= coinAtkUpgradeCount*5;
+            coins -= coinAtkUpgradeCount * 5;
             coinAtkUpgradeCount++;
         }
     }
-    public void CoinDownGradeATK()
+    public static void CoinDownGradeATK()
     {
         if (atk > 1)
         {
             atk--;
-            coins += (coinAtkUpgradeCount - 1)*5;
+            coins += (coinAtkUpgradeCount - 1) * 5;
             coinAtkUpgradeCount--;
         }
     }
-    public void CoinUpGradeHP()
+    public static void CoinUpGradeHP()
     {
-        if (coins > coinHPUpgradeCount*5)
+        if (coins > coinHPUpgradeCount * 5)
         {
-            hp+=5;
+            hp += 5;
             coins -= coinHPUpgradeCount * 5;
             coinHPUpgradeCount++;
         }
     }
-    public void CoinDownGradeHP()
+    public static void CoinDownGradeHP()
     {
         if (hp > 10)
         {
             hp -= 5;
-            coins += (coinHPUpgradeCount - 1)*5;
+            coins += (coinHPUpgradeCount - 1) * 5;
             coinHPUpgradeCount--;
         }
     }
