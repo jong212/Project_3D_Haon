@@ -108,7 +108,7 @@ public class Setting_1 : MonoBehaviour
     }
     public void JewelUpGradeHP()
     {
-        if (jewels > jewelAtkUpgradeCount*5)
+        if (jewels > jewelHPUpgradeCount*5)
         {
             hp += 5;
             jewels-=jewelHPUpgradeCount;
