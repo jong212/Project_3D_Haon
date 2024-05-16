@@ -28,12 +28,20 @@ public class playerAnimator : MonoBehaviour
     private static bool isSkillBCooldown = false;// 스킬 B 쿨다운 여부를 추적하는 플래그
     public float dashCooldownDuration = 5f;      // 대시 쿨다운 지속 시간(초)
     private bool isDashCooldown = false;         // 대시 쿨다운 상태를 추적하는 플래
-
+    FloatingHealthBar healthBar;
     [SerializeField]
     private Collider WeaponCollider;             // 무기 콜라이더
 
+    [SerializeField]
+    private Canvas _hpCanvas;
+
     void Start()
     {
+        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
+        hpObject.transform.SetParent(_hpCanvas.transform);
+        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
+        healthBar.SetTarget(transform);
+
         if (skillControlObject != null)
         {
             skill = skillControlObject.GetComponent<SkillControl>();
