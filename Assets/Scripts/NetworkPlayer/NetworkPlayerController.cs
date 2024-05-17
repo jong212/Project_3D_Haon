@@ -186,7 +186,7 @@ public class NetworkPlayerController : NetworkBehaviour
             {
 
                 Quaternion targetRotation = Quaternion.LookRotation(movement);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+                transform.GetChild(2).transform.rotation = Quaternion.Lerp(transform.GetChild(2).transform.rotation, targetRotation, Time.deltaTime * 10f);
 
                 _characterController.Move(movement * 6f * Time.deltaTime);// 캐릭터를 이동시킵니다.
                 _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
