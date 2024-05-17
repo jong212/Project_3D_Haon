@@ -53,6 +53,12 @@ public class isAttackStop : StateMachineBehaviour
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
 
             }
+            //파괴 되는 오브젝트 조건 추가(준후)
+            else if (otherCollider.gameObject.name == "DestroyBox")
+            {
+                otherCollider.GetComponent<BoxInfo>().BoxDamaged(1);
+            }
+            //=======================================================================(준후작업 라인 끝)
             hasCollided = true;
 
             // 여기에서 충돌을 처리하는 코드를 추가하세요.
