@@ -28,6 +28,7 @@ public class DangerLine : MonoBehaviour, IPoolObject
             Debug.Log(bos.position);
             transform.position = Vector3.Lerp(transform.position, EndPosition, Time.deltaTime * 3.5f);
     }
+    //처음 생성되었을 때
     public void OnCreatedInPool()
     {
         Init();
