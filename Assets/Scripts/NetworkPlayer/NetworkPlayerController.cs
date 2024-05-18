@@ -44,9 +44,8 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField] private GameObject spawnPoint;
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
+        transform.position = new Vector3(-17, 1, -154);
         CinemachineVirtualCamera cvm = camTransform.gameObject.GetComponent<CinemachineVirtualCamera>();
-        gameObject.transform.position = new Vector3(-17, 1, -154);
         if (IsOwner)
         {
             cvm.Priority = 1;
@@ -139,6 +138,7 @@ public class NetworkPlayerController : NetworkBehaviour
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수
+
     public void TakeDamage(int damageAmout)
     {
         //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
@@ -186,8 +186,7 @@ public class NetworkPlayerController : NetworkBehaviour
             {
 
                 Quaternion targetRotation = Quaternion.LookRotation(movement);
-                transform.GetChild(2).transform.rotation = Quaternion.Lerp(transform.GetChild(2).transform.rotation, targetRotation, Time.deltaTime * 10f);
-
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
                 _characterController.Move(movement * 6f * Time.deltaTime);// 캐릭터를 이동시킵니다.
                 _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
             }
