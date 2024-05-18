@@ -17,6 +17,11 @@ public class Boss : MonoBehaviour
     private Animator animator; // 애니메이터
     public bool IsUsingLaser { get; private set; } // 레이저 사용 여부
 
+    /*기믹1 start*/
+    public GameObject laserEffectPrefab; // 레이저 이펙트 프리팹
+    public float laserDistance = 10f; // 레이저 거리
+    public LayerMask floorLayerMask; // 바닥 레이어 마스크
+    /*기믹1 end*/
     void Start()
     {
         GimmickThreshold1 = 30f; // 체력 임계값 설정
@@ -147,6 +152,7 @@ public class NormalState : IBossState
     public void Execute(Boss boss)
     {
         Debug.Log("test");
+        FireLasersInEightDirections(boss);
         //        boss.CheckHealthAndChangeState(); // 체력 체크 및 상태 변경
     }
 
@@ -154,6 +160,39 @@ public class NormalState : IBossState
     {
         Debug.Log("Exiting Normal State");
     }
+    void FireLasersInEightDirections(Boss boss)
+    {
+        // 8방향 벡터 설정
+        Vector3[] directions = new Vector3[]
+        {
+            Vector3.forward,
+            Vector3.back,
+            Vector3.left,
+            Vector3.right,
+            (Vector3.forward + Vector3.left).normalized,
+            (Vector3.forward + Vector3.right).normalized,
+            (Vector3.back + Vector3.left).normalized,
+            (Vector3.back + Vector3.right).normalized
+        };
+
+        foreach (Vector3 direction in directions)
+        {
+            RaycastHit hit;
+            // Raycast를 사용하여 바닥에 닿는 지점 찾기
+            if (Physics.Raycast(boss.transform.position, direction, out hit, boss.laserDistance, boss.floorLayerMask))
+            {
+                Debug.Log("Laser hit at: " + hit.point);
+
+                // 레이저 이펙트 생성
+                Object.Instantiate(boss.laserEffectPrefab, hit.point, Quaternion.identity);
+            }
+            else
+            {
+                Debug.Log("Laser did not hit anything in direction: " + direction);
+            }
+        }
+    }
+
 }
 public class GimmickState1 : IBossState
 {
