@@ -1,9 +1,8 @@
-using Redcode.Pools;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DangerLine : MonoBehaviour, IPoolObject
+public class DangerLine : MonoBehaviour
 {
     TrailRenderer tr;
     [SerializeField] Transform bos; 
@@ -29,16 +28,7 @@ public class DangerLine : MonoBehaviour, IPoolObject
             transform.position = Vector3.Lerp(transform.position, EndPosition, Time.deltaTime * 3.5f);
     }
     //처음 생성되었을 때
-    public void OnCreatedInPool()
-    {
-        Init();
-    }
-    //재사용 되어서 가져 올 때 마다
-    public void OnGettingFromPool()
-    {
-        Init();
-        tr.Clear();
-    }
+    
 
 
 }

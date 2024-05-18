@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //GimikAgain(); 기믹 재실행
 //★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
@@ -11,9 +12,11 @@ public interface IBossState
 }
 public class Boss : MonoBehaviour
 {
-    /* Player */
-    [SerializeField] public Transform Target_Temp;
-    /* Player End*/
+    // # Normal State //
+    private bool bosssRoomStartCheck { get; set; }
+    public List<GameObject> players = new List<GameObject>();
+    public string[] playerTags = { "Player", "Player2", "Player3", "Player4" };
+    // # Normal State End //
 
     private IBossState currentState; // 현재 상태
     private IBossState previousState; // 이전 상태
@@ -26,8 +29,8 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
-        Health = 100f;
-        
+        bosssRoomStartCheck = false; // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
+        Health = 100f;        
         GimmickThreshold1 = 30f; // 체력 임계값 설정
         GimmickThreshold2 = 50f;
         GimmickThreshold3 = 70f;
@@ -154,9 +157,21 @@ public class Boss : MonoBehaviour
 /********************Normar*********************************/
 public class NormalState : IBossState
 {
+    private GameObject activeDangerLine;
+
+
     public void Enter(Boss boss)
     {
-        Debug.Log("Entering Normal State");
+        foreach (string tag in boss.playerTags)
+        {
+
+            Debug.Log(tag);
+            GameObject player = GameObject.FindGameObjectWithTag(tag);
+            if (player != null)
+            {
+                boss.players.Add(player);
+            }
+        }
         boss.SetAnimation("Idle"); // Idle 애니메이션 설정
         boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
     }
@@ -164,7 +179,7 @@ public class NormalState : IBossState
     public void Execute(Boss boss)
     {
         Debug.Log("test");
-        //        boss.CheckHealthAndChangeState(); // 체력 체크 및 상태 변경
+        //boss.CheckHealthAndChangeState(); // 체력 체크 및 상태 변경
     }
 
     public void Exit(Boss boss)
@@ -174,24 +189,27 @@ public class NormalState : IBossState
     private IEnumerator SomeCoroutine(Boss boss)
     {
         yield return null;
-
-        yield return new WaitForSeconds(4f);
-        //boss.transform.LookAt(boss.transform.position);
-        DangerMarkerShoot();
+        int r = Random.Range(0, boss.players.Count);
+        boss.transform.LookAt(boss.transform.position);
+        DangerLineStart();
 
         yield return new WaitForSeconds(2f);
-       /**//* Shoot();*/
+       
     }
-    void DangerMarkerShoot()
+    void DangerLineStart()
     {
-        /*Vector3 NewPosition = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
-        Physics.Raycast(NewPosition, transform.forward, out RaycastHit hit, 30f, layerMask);
 
-        if (hit.transform.CompareTag("Wall"))
+        activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
+        activeDangerLine.SetActive(true);
+
+    }
+    void DangerLineEnd()
+    {
+        if (activeDangerLine != null)
         {
-            GameObject DangerMarkerClone = Instantiate(DangerMarker, NewPosition, transform.rotation);
-            DangerMarkerClone.GetComponent<DangerLine>().EndPosition = hit.point;
-        }*/
+            PoolManager.Instance.CoolObject(activeDangerLine, PoolObjectType.DangerLine);
+            activeDangerLine = null;
+        }
     }
 }
 public class GimmickState1 : IBossState
