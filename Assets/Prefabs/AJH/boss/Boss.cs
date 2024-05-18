@@ -1,5 +1,8 @@
 using UnityEngine;
 using System.Collections;
+
+//GimikAgain(); 기믹 재실행
+//★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
 public interface IBossState
 {
     void Enter(Boss boss);   // 상태에 진입할 때 호출되는 메서드
@@ -8,6 +11,10 @@ public interface IBossState
 }
 public class Boss : MonoBehaviour
 {
+    /* Player */
+    [SerializeField] public Transform Target_Temp;
+    /* Player End*/
+
     private IBossState currentState; // 현재 상태
     private IBossState previousState; // 이전 상태
     public float Health { get; private set; } // 보스의 체력
@@ -19,6 +26,8 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        Health = 100f;
+        
         GimmickThreshold1 = 30f; // 체력 임계값 설정
         GimmickThreshold2 = 50f;
         GimmickThreshold3 = 70f;
@@ -63,6 +72,11 @@ public class Boss : MonoBehaviour
         }
     }
 
+    public void StartBossCoroutine(IEnumerator coroutine)
+    {
+        StartCoroutine(coroutine);
+    }
+
     public void StartLaser(Vector3 position)
     {
         Debug.Log("Starting Laser at Position: " + position);
@@ -85,7 +99,7 @@ public class Boss : MonoBehaviour
         // 레이저 발사 로직 구현
     }
 
-    public void StopLaser()
+    public void GimikAgain()
     {
         Debug.Log("Stopping Laser");
         IsUsingLaser = false; // 레이저 사용 여부 해제
@@ -98,7 +112,7 @@ public class Boss : MonoBehaviour
     private IEnumerator WaitAndReExecuteGimmick()
     {
         IBossState currentGimmickState = currentState; // 현재 상태 저장
-        float waitTime = 3f; // 대기 시간 설정 (초 단위)
+        float waitTime = 10f; // 대기 시간 설정 (초 단위)
         Debug.Log("Waiting for " + waitTime + " seconds before re-executing the gimmick.");
         yield return new WaitForSeconds(waitTime); // 지정된 시간 대기
 
@@ -136,12 +150,15 @@ public class Boss : MonoBehaviour
         }
     }
 }
+
+/********************Normar*********************************/
 public class NormalState : IBossState
 {
     public void Enter(Boss boss)
     {
         Debug.Log("Entering Normal State");
         boss.SetAnimation("Idle"); // Idle 애니메이션 설정
+        boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
     }
 
     public void Execute(Boss boss)
@@ -153,6 +170,28 @@ public class NormalState : IBossState
     public void Exit(Boss boss)
     {
         Debug.Log("Exiting Normal State");
+    }
+    private IEnumerator SomeCoroutine(Boss boss)
+    {
+        yield return null;
+
+        yield return new WaitForSeconds(4f);
+        //boss.transform.LookAt(boss.transform.position);
+        DangerMarkerShoot();
+
+        yield return new WaitForSeconds(2f);
+       /**//* Shoot();*/
+    }
+    void DangerMarkerShoot()
+    {
+        /*Vector3 NewPosition = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
+        Physics.Raycast(NewPosition, transform.forward, out RaycastHit hit, 30f, layerMask);
+
+        if (hit.transform.CompareTag("Wall"))
+        {
+            GameObject DangerMarkerClone = Instantiate(DangerMarker, NewPosition, transform.rotation);
+            DangerMarkerClone.GetComponent<DangerLine>().EndPosition = hit.point;
+        }*/
     }
 }
 public class GimmickState1 : IBossState
@@ -179,7 +218,7 @@ public class GimmickState1 : IBossState
     public void Exit(Boss boss)
     {
         Debug.Log("Exiting Gimmick State 1");
-        boss.StopLaser(); // 상태 종료 시 레이저 중지
+        boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
 }
 
@@ -202,7 +241,7 @@ public class GimmickState2 : IBossState
     public void Exit(Boss boss)
     {
         Debug.Log("Exiting Gimmick State 2");
-        boss.StopLaser(); // 상태 종료 시 레이저 중지
+        boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
 }
 public class GimmickState3 : IBossState
@@ -224,6 +263,6 @@ public class GimmickState3 : IBossState
     public void Exit(Boss boss)
     {
         Debug.Log("Exiting Gimmick State 3");
-        boss.StopLaser(); // 상태 종료 시 레이저 중지
+        boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
 }

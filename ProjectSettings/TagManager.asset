@@ -7,6 +7,7 @@ TagManager:
   - WayPoint
   - Monster
   - skill
+  - Player2
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - 
   - 
   - Book
-  - 
+  - Wall
   - 
   - 
   - 
