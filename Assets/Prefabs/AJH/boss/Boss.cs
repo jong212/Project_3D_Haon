@@ -1,9 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 //GimikAgain(); 기믹 재실행
 //★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
+// public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그들은 플레이어에 꼭 추가 되어있어야 함
 public interface IBossState
 {
     void Enter(Boss boss);   // 상태에 진입할 때 호출되는 메서드
@@ -15,7 +17,7 @@ public class Boss : MonoBehaviour
     // # Normal State //
     private bool bosssRoomStartCheck { get; set; }
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags = { "Player", "Player2", "Player3", "Player4" };
+    public string[] playerTags5 = { "Player2", "Player3", "Player4","Player5" };
     // # Normal State End //
 
     private IBossState currentState; // 현재 상태
@@ -29,6 +31,7 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        Debug.Log(playerTags5);
         bosssRoomStartCheck = false; // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
         Health = 100f;        
         GimmickThreshold1 = 30f; // 체력 임계값 설정
@@ -162,15 +165,15 @@ public class NormalState : IBossState
 
     public void Enter(Boss boss)
     {
-        foreach (string tag in boss.playerTags)
+        foreach (string tag in boss.playerTags5)
         {
 
-            Debug.Log(tag);
             GameObject player = GameObject.FindGameObjectWithTag(tag);
             if (player != null)
             {
                 boss.players.Add(player);
             }
+            
         }
         boss.SetAnimation("Idle"); // Idle 애니메이션 설정
         boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
@@ -189,19 +192,34 @@ public class NormalState : IBossState
     private IEnumerator SomeCoroutine(Boss boss)
     {
         yield return null;
-        int r = Random.Range(0, boss.players.Count);
-        boss.transform.LookAt(boss.transform.position);
-        DangerLineStart();
+
+        boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
+
+        DangerLineStart(boss);
 
         yield return new WaitForSeconds(2f);
        
     }
-    void DangerLineStart()
+    void DangerLineStart(Boss boss)
     {
+        foreach (GameObject player in boss.players)
+        {
+            if (player != null)
+            {
+                GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
+                DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
+                if (dangerLineComponent != null)
+                {
+                    Vector3 direction = (player.transform.position - boss.transform.position).normalized;
+                    float extendLength = 5f; // Adjust this value as needed
+                    Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
+                    dangerLineComponent.EndPosition = extendedEndPosition;
 
-        activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
-        activeDangerLine.SetActive(true);
-
+                    activeDangerLine.transform.position = boss.transform.position;
+                    activeDangerLine.SetActive(true);
+                }
+            }
+        }
     }
     void DangerLineEnd()
     {
