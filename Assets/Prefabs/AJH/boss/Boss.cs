@@ -20,10 +20,16 @@ public class Boss : MonoBehaviour
 {
 /*  선언  */
     [SerializeField] public bool bosssRoomStartCheck;
+    
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = { "Player2", "Player3", "Player4","Player5" };   
+
+    
     private IBossState currentState;                                // 현재 상태
     private IBossState previousState;                               // 이전 상태
+
+    public List<Vector3> setDangerPosition = new List<Vector3>();   // 기믹1 공격범위 저장 후처리용
+    
     public float Health { get; private set; }                       // 보스의 체력
     public float GimmickThreshold1 { get; private set; }            // 기믹 임계값 1
     public float GimmickThreshold2 { get; private set; }            // 기믹 임계값 2
@@ -70,6 +76,7 @@ public class Boss : MonoBehaviour
         {
             if (currentState is Stage1 stage1)
             {
+                // 1-1. 코루틴 실행을 위해 공통  코루틴 함수인 Start bossCoroutine으로 넘김
                 StartBossCoroutine(stage1.IDangerStart(this));
             }
         }
@@ -77,7 +84,7 @@ public class Boss : MonoBehaviour
         {
             if (currentState is Stage1 stage1)
             {
-                stage1.DangerEnd(this);
+                StartBossCoroutine(stage1.IDangerEnd(this));
             }
         }
         else if(eventName == "StartLaser")
@@ -94,8 +101,11 @@ public class Boss : MonoBehaviour
         } 
     }
 /*  코루틴 시작, 종료 (공통)  */
+
+    // 1-2 매개변수로 받은 코루틴들 실행
     public void StartBossCoroutine(IEnumerator coroutine)
     {
+        Debug.Log("test2");
         StartCoroutine(coroutine);
     }
 
@@ -227,30 +237,18 @@ public class Stage1 : IBossState
     {
         Debug.Log("Exiting Normal State");
     }
-    public void DangerEnd(Boss boss)
-    {
-       // boss.StopBossCoroutine(IDangerStart(boss));
-    }
+   
+    // 1-3 스타트 코루틴에서 실행이 떨어지면 실행 됨
     public IEnumerator IDangerStart(Boss boss)
     {
         yield return null;
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
         DangerLineStart(boss); 
-    }
-    public IEnumerator ReturnDangerLineToPool(GameObject dangerLine, float time)
-    {
-        yield return new WaitForSeconds(time);
-        PoolManager.Instance.CoolObject(dangerLine, PoolObjectType.DangerLine);
-        dangerLine.SetActive(false);
-        DangerLine dangerLineComponent = dangerLine.GetComponent<DangerLine>();
-        if (dangerLineComponent != null)
-        {
-            dangerLineComponent.cleartr(); // Call the method to clear the TrailRenderer
-        }
-    }
+    } 
+
+    // 1-4 코루틴이 돌아가면 아래 함수가 실행 됨
     void DangerLineStart(Boss boss)
-    {
-        Debug.Log("chk");
+    { 
         foreach (GameObject player in boss.players)
         {
             if (player != null)
@@ -264,22 +262,60 @@ public class Stage1 : IBossState
                     Vector3 direction = (player.transform.position - boss.transform.position).normalized;
                     float extendLength = 5f;
                     Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
+                    boss.setDangerPosition.Add(extendedEndPosition);
                     dangerLineComponent.EndPosition = extendedEndPosition;
                     activeDangerLine.transform.position = boss.transform.position;
                     activeDangerLine.SetActive(true);
                     boss.StartBossCoroutine(ReturnDangerLineToPool(activeDangerLine, dangerLineComponent.GetComponent<TrailRenderer>().time));
 
                 }
-
             }
         }
     }
-    void DangerLineEnd()
+    // DangerLine 풀 반환 함수 정의
+    public IEnumerator ReturnDangerLineToPool(GameObject dangerLine, float time)
     {
-        if (activeDangerLine != null)
+        yield return new WaitForSeconds(time);
+        PoolManager.Instance.CoolObject(dangerLine, PoolObjectType.DangerLine);
+        dangerLine.SetActive(false);
+        DangerLine dangerLineComponent = dangerLine.GetComponent<DangerLine>();
+        if (dangerLineComponent != null)
         {
-            PoolManager.Instance.CoolObject(activeDangerLine, PoolObjectType.DangerLine);
-            activeDangerLine = null;
+            dangerLineComponent.cleartr(); // Call the method to clear the TrailRenderer
+        }
+    }
+
+
+    public IEnumerator IDangerEnd(Boss boss)
+    {
+       DangerLineEnd(boss);
+
+        yield return null;
+
+    }
+    void DangerLineEnd(Boss boss)
+    {
+        foreach (Vector3 setDangerPositions in boss.setDangerPosition)
+        {
+            if (setDangerPositions != null)
+            {
+                GameObject activeDangerAttack = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerAttack);
+                //DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
+
+                //if (dangerLineComponent != null)
+                //{
+                activeDangerAttack.transform.position = boss.transform.position;
+                activeDangerAttack.transform.LookAt(setDangerPositions);
+                Vector3 eulerAngles = activeDangerAttack.transform.rotation.eulerAngles;
+                eulerAngles.x = 0;
+
+                // Apply the modified rotation
+                activeDangerAttack.transform.rotation = Quaternion.Euler(eulerAngles);
+                activeDangerAttack.SetActive(true);
+                    //boss.StartBossCoroutine(ReturnDangerLineToPool(activeDangerLine, dangerLineComponent.GetComponent<TrailRenderer>().time));
+
+                //}
+            }
         }
     }
 }
