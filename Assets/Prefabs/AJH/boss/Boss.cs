@@ -222,7 +222,7 @@ public class NormalState : IBossState
                 if (dangerLineComponent != null)
                 {
                     Vector3 direction = (player.transform.position - boss.transform.position).normalized;
-                    float extendLength = 5f; // Adjust this value as needed
+                    float extendLength = 5f;
                     Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
                     dangerLineComponent.EndPosition = extendedEndPosition;
 

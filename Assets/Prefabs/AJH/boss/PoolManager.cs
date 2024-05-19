@@ -6,7 +6,7 @@ using UnityEngine;
 public enum PoolObjectType
 {
     DangerLine,
-    Test
+    DangerAttack
 }
 [Serializable]
 public class PoolInfo
