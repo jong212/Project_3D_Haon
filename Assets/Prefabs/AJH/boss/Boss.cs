@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.VisualScripting;
 
 //GimikAgain(); 기믹 재실행
 //★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
@@ -69,7 +70,7 @@ public class Boss : MonoBehaviour
         {
             if (currentState is Stage1 stage1)
             {
-                stage1.DangerStart(this);
+                StartBossCoroutine(stage1.IDangerStart(this));
             }
         }
         else if (eventName == "Stage1_end")
@@ -226,39 +227,50 @@ public class Stage1 : IBossState
     {
         Debug.Log("Exiting Normal State");
     }
-    public void DangerStart(Boss boss)
-    {
-        boss.StartBossCoroutine(IDangerStart(boss));
-    }
     public void DangerEnd(Boss boss)
     {
-        boss.StopBossCoroutine(IDangerStart(boss));
+       // boss.StopBossCoroutine(IDangerStart(boss));
     }
-    private IEnumerator IDangerStart(Boss boss)
+    public IEnumerator IDangerStart(Boss boss)
     {
         yield return null;
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
-        DangerLineStart(boss);
-       
+        DangerLineStart(boss); 
+    }
+    public IEnumerator ReturnDangerLineToPool(GameObject dangerLine, float time)
+    {
+        yield return new WaitForSeconds(time);
+        PoolManager.Instance.CoolObject(dangerLine, PoolObjectType.DangerLine);
+        dangerLine.SetActive(false);
+        DangerLine dangerLineComponent = dangerLine.GetComponent<DangerLine>();
+        if (dangerLineComponent != null)
+        {
+            dangerLineComponent.cleartr(); // Call the method to clear the TrailRenderer
+        }
     }
     void DangerLineStart(Boss boss)
     {
+        Debug.Log("chk");
         foreach (GameObject player in boss.players)
         {
             if (player != null)
             {
                 GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
+
                 DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
+              
                 if (dangerLineComponent != null)
                 {
                     Vector3 direction = (player.transform.position - boss.transform.position).normalized;
                     float extendLength = 5f;
                     Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
                     dangerLineComponent.EndPosition = extendedEndPosition;
-
                     activeDangerLine.transform.position = boss.transform.position;
                     activeDangerLine.SetActive(true);
+                    boss.StartBossCoroutine(ReturnDangerLineToPool(activeDangerLine, dangerLineComponent.GetComponent<TrailRenderer>().time));
+
                 }
+
             }
         }
     }
