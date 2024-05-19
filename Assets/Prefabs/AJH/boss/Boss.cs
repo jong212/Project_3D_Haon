@@ -76,6 +76,13 @@ public class Boss : MonoBehaviour
         {
             SetAnimation("Idle"); // 애니메이션 완료 후 Idle 애니메이션 설정
         }
+        else if (eventName == "TriggerSomeCoroutine")
+        {
+            if (currentState is NormalState normalState)
+            {
+                normalState.TriggerCoroutine(this);
+            }
+        }
     }
 
     public void StartBossCoroutine(IEnumerator coroutine)
@@ -176,7 +183,7 @@ public class NormalState : IBossState
             
         }
         boss.SetAnimation("Idle"); // Idle 애니메이션 설정
-        boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
+        //boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
     }
 
     public void Execute(Boss boss)
@@ -188,6 +195,10 @@ public class NormalState : IBossState
     public void Exit(Boss boss)
     {
         Debug.Log("Exiting Normal State");
+    }
+    public void TriggerCoroutine(Boss boss)
+    {
+        boss.StartBossCoroutine(SomeCoroutine(boss));
     }
     private IEnumerator SomeCoroutine(Boss boss)
     {
