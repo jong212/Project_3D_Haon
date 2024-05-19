@@ -104,6 +104,7 @@ public class Boss : MonoBehaviour
     }
 
 /*  코루틴(공통)  */
+    // 1-2 , 2-2
     public void StartBossCoroutine(IEnumerator coroutine, float stopAfterSeconds)
     {   // 여기서 시작시킴
         Coroutine startedCoroutine = StartCoroutine(coroutine);
@@ -251,10 +252,16 @@ public class Stage1 : IBossState
     // 1-4 코루틴이 돌아가면 아래 함수가 실행 됨
     void DangerLineStart(Boss boss)
     {
+        bool charge = true;
         foreach (GameObject player in boss.players)
         {
             if (player != null)
             {
+                if (charge)
+                {
+
+                    charge = false;
+                }
                 GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
                 DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
 
@@ -286,12 +293,13 @@ public class Stage1 : IBossState
         }
     }
 
+    // 2-3 
     public IEnumerator IDangerEnd(Boss boss)
     {
         DangerLineEnd(boss);
         yield return null;
     }
-
+    // 2-4
     void DangerLineEnd(Boss boss)
     {
         foreach (Vector3 setDangerPositions in boss.setDangerPosition)

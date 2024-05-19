@@ -62,6 +62,7 @@ Transform:
   m_Children:
   - {fileID: 2207856401455280709}
   - {fileID: 3290401884554319733}
+  - {fileID: 4582876178505921274}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -85,9 +86,45 @@ MonoBehaviour:
     pool: []
   - type: 1
     amount: 10
-    prefab: {fileID: 4721998495208478217, guid: 21074a93cd6550c4ab7834e2390edfa5, type: 3}
+    prefab: {fileID: 8116976174653434468, guid: 21074a93cd6550c4ab7834e2390edfa5, type: 3}
     container: {fileID: 7373654063389034597}
     pool: []
+  - type: 2
+    amount: 2
+    prefab: {fileID: 550154603207540266, guid: 9cd029723d26e224d838cee723cf0c26, type: 3}
+    container: {fileID: 7019339551249058431}
+    pool: []
+--- !u!1 &7019339551249058431
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4582876178505921274}
+  m_Layer: 0
+  m_Name: DangerChargeContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4582876178505921274
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7019339551249058431}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2207856401706533428}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7373654063389034597
 GameObject:
   m_ObjectHideFlags: 0
