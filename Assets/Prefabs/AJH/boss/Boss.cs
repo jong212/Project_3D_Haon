@@ -8,78 +8,75 @@ using DG.Tweening;
 // public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그들은 플레이어에 꼭 추가 되어있어야 함
 // 보스맵 진입 시   [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
 
-/*  인터페이스 설정  */
+/*  인터페이스  */
 public interface IBossState
 {
-    void Enter(Boss boss);   // 상태에 진입할 때 호출되는 메서드
-    void Execute(Boss boss); // 상태가 활성화된 동안 매 프레임 호출되는 메서드
-    void Exit(Boss boss);    // 상태에서 나갈 때 호출되는 메서드
+    void Enter(Boss boss);                                          // 상태에 진입할 때 호출되는 메서드
+    void Execute(Boss boss);                                        // 상태가 활성화된 동안 매 프레임 호출되는 메서드
+    void Exit(Boss boss);                                           // 상태에서 나갈 때 호출되는 메서드
 }
 public class Boss : MonoBehaviour
 {
-/*  공용  */
+/*  선언  */
     [SerializeField] public bool bosssRoomStartCheck;
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = { "Player2", "Player3", "Player4","Player5" };   
-    private IBossState currentState; // 현재 상태
-    private IBossState previousState; // 이전 상태
-    public float Health { get; private set; } // 보스의 체력
-    public float GimmickThreshold1 { get; private set; } // 기믹 임계값 1
-    public float GimmickThreshold2 { get; private set; } // 기믹 임계값 2
-    public float GimmickThreshold3 { get; private set; } // 기믹 임계값 3
-    private Animator animator; // 애니메이터
-
-/*  기믹n  */
-    public bool IsUsingLaser { get; private set; } // 레이저 사용 여부
+    private IBossState currentState;                                // 현재 상태
+    private IBossState previousState;                               // 이전 상태
+    public float Health { get; private set; }                       // 보스의 체력
+    public float GimmickThreshold1 { get; private set; }            // 기믹 임계값 1
+    public float GimmickThreshold2 { get; private set; }            // 기믹 임계값 2
+    public float GimmickThreshold3 { get; private set; }            // 기믹 임계값 3
+    private Animator animator;                                      // 애니메이터
+    public bool IsUsingLaser { get; private set; }                  // 레이저 사용 여부
 
 /*  초기화  */
     void Start()
     {
-        bosssRoomStartCheck = false; // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
+        bosssRoomStartCheck = false;                                // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
         Health = 100f;        
-        GimmickThreshold1 = 30f; // 체력 임계값 설정
+        GimmickThreshold1 = 30f;                                    // 체력 임계값 설정
         GimmickThreshold2 = 50f;
         GimmickThreshold3 = 70f;
         animator = GetComponent<Animator>();
-        ChangeState(new NoState()); // 초기 상태를 Normal 상태로 설정
+        ChangeState(new NoState());                                 // 초기 상태를 Normal 상태로 설정
     }
 
     void Update()
     {
-        currentState?.Execute(this); // 매 프레임 현재 상태의 Execute 메서드 실행
+        currentState?.Execute(this);                                // 매 프레임 현재 상태의 Execute 메서드 실행
     }
 
 
     public void ChangeState(IBossState newState)
     {
-        previousState = currentState; // 이전 상태 저장
-        currentState?.Exit(this); // 현재 상태 종료
-        currentState = newState; // 새로운 상태 설정
-        currentState.Enter(this); // 새로운 상태 진입
+        previousState = currentState;                               // 이전 상태 저장
+        currentState?.Exit(this);                                   // 현재 상태 종료
+        currentState = newState;                                    // 새로운 상태 설정
+        currentState.Enter(this);                                   // 새로운 상태 진입
     }
 
-
-/*  애니메이션 실행 함수  */
+/*  보스 애니메이션 변경(공통)  */
     public void SetAnimation(string animationName)
     {
-        animator.Play(animationName); // 지정된 애니메이션 재생
+        animator.Play(animationName);                               // 지정된 애니메이션 재생
     }
-
-/*  애니메이션 이벤트 호출 함수  */
+     
+/*  애니메이션 이벤트 호출 함수(공통)  */
     public void OnGimmickAnimationEvent(string eventName)
     {
         if (eventName == "Stage1_start")
         {
             if (currentState is Stage1 stage1)
             {
-                stage1.TriggerCoroutine(this);
+                stage1.DangerStart(this);
             }
         }
         else if (eventName == "Stage1_end")
         {
             if (currentState is Stage1 stage1)
             {
-                stage1.TriggerCoroutine(this);
+                stage1.DangerEnd(this);
             }
         }
         else if(eventName == "StartLaser")
@@ -92,74 +89,24 @@ public class Boss : MonoBehaviour
         }
         else if (eventName == "AnimationComplete")
         {
-            SetAnimation("Idle"); // 애니메이션 완료 후 Idle 애니메이션 설정
-        }
- 
+            SetAnimation("Idle");                                                     // 애니메이션 완료 후 Idle 애니메이션 설정
+        } 
     }
-
-/*  모든 코루틴 받아서 실행하는 함수  */
+/*  코루틴 시작, 종료 (공통)  */
     public void StartBossCoroutine(IEnumerator coroutine)
     {
         StartCoroutine(coroutine);
     }
 
-
-    #region #Stage2
-    public void StartLaser(Vector3 position)
+    public void StopBossCoroutine(IEnumerator coroutine)
     {
-        Debug.Log("Starting Laser at Position: " + position);
-        IsUsingLaser = true; // 레이저 사용 여부 설정
-        // 레이저 시작 로직 구현
+        StopCoroutine(coroutine);
     }
 
-    public void UpdateLaserPosition(Vector3 position)
-    {
-        if (IsUsingLaser)
-        {
-            Debug.Log("Updating Laser Position to: " + position);
-            // 레이저 위치 업데이트 로직 구현
-        }
-    }
-
-    public void FireLaser()
-    {
-        Debug.Log("Firing Laser"); // 레이저 발사 로그
-        // 레이저 발사 로직 구현
-    }
-
-    public void GimikAgain()
-    {
-        Debug.Log("Stopping Laser");
-        IsUsingLaser = false; // 레이저 사용 여부 해제
-        // 레이저 중지 로직 구현
-
-        // 현재 기믹을 다시 실행하기 위해 코루틴 시작
-        StartCoroutine(WaitAndReExecuteGimmick());
-    }
-
-    private IEnumerator WaitAndReExecuteGimmick()
-    {
-        IBossState currentGimmickState = currentState; // 현재 상태 저장
-        float waitTime = 10f; // 대기 시간 설정 (초 단위)
-        Debug.Log("Waiting for " + waitTime + " seconds before re-executing the gimmick.");
-        yield return new WaitForSeconds(waitTime); // 지정된 시간 대기
-
-        // 상태가 변경되지 않았을 경우에만 현재 기믹 상태를 다시 실행
-        if (currentState == currentGimmickState)
-        {
-            ChangeState(currentState); // 현재 상태로 다시 진입
-        }
-    }
-
-    public void ThrowRock(Vector3 targetPosition)
-    {
-        Debug.Log("Throwing Rock at Position: " + targetPosition);
-        // 바위 던지기 로직 구현
-    }
-    #endregion
+/*  보스 상태 체크 (공통)  */
     public void CheckHealthAndChangeState()
     {
-        if(Health < GimmickThreshold1)
+        if (Health < GimmickThreshold1)
         {
             ChangeState(new GimmickState3()); // 가장 높은 임계값부터 체크
         }
@@ -171,11 +118,65 @@ public class Boss : MonoBehaviour
         {
             ChangeState(new GimmickState1());
         }
-        
     }
+/*  기믹2 패턴  */
+    #region #Stage2
+    public void StartLaser(Vector3 position)
+    {
+        Debug.Log("Starting Laser at Position: " + position);
+        IsUsingLaser = true;                                       // 레이저 사용 여부 설정
+        // 레이저 시작 로직 구현
+    }
+
+    public void UpdateLaserPosition(Vector3 position)
+    {
+        if (IsUsingLaser)
+        {
+            Debug.Log("Updating Laser Position to: " + position);
+                                                                    // 레이저 위치 업데이트 로직 구현
+        }
+    }
+
+    public void FireLaser()
+    {
+        Debug.Log("Firing Laser");                                  // 레이저 발사 로그
+        // 레이저 발사 로직 구현
+    }
+
+    public void GimikAgain()
+    {
+        Debug.Log("Stopping Laser");
+        IsUsingLaser = false;                                        // 레이저 사용 여부 해제
+        // 레이저 중지 로직 구현
+
+                                                                     // 현재 기믹을 다시 실행하기 위해 코루틴 시작
+        StartCoroutine(WaitAndReExecuteGimmick());
+    }
+
+    private IEnumerator WaitAndReExecuteGimmick()
+    {
+        IBossState currentGimmickState = currentState;               // 현재 상태 저장
+        float waitTime = 10f;                                        // 대기 시간 설정 (초 단위)
+        Debug.Log("Waiting for " + waitTime + " seconds before re-executing the gimmick.");
+        yield return new WaitForSeconds(waitTime);                   // 지정된 시간 대기
+
+                        
+        if (currentState == currentGimmickState)                     // 상태가 변경되지 않았을 경우에만 현재 기믹 상태를 다시 실행
+        {
+            ChangeState(currentState);                               // 현재 상태로 다시 진입
+        }
+    }
+
+    public void ThrowRock(Vector3 targetPosition)
+    {
+        Debug.Log("Throwing Rock at Position: " + targetPosition);
+        // 바위 던지기 로직 구현
+    }
+    #endregion
+
 }
 
-/*  보스 실행 NO  */
+/*  보스 대기 상태  */
 public class NoState : IBossState
 {
     public void Enter(Boss boss)
@@ -193,7 +194,7 @@ public class NoState : IBossState
     }
 }
 
-/*  보스 실행On Stage1  */
+/*  보스 Stage1 Class  */
 public class Stage1 : IBossState
 {
     private GameObject activeDangerLine;
@@ -225,19 +226,19 @@ public class Stage1 : IBossState
     {
         Debug.Log("Exiting Normal State");
     }
-    public void TriggerCoroutine(Boss boss)
+    public void DangerStart(Boss boss)
     {
-        boss.StartBossCoroutine(SomeCoroutine(boss));
+        boss.StartBossCoroutine(IDangerStart(boss));
     }
-    private IEnumerator SomeCoroutine(Boss boss)
+    public void DangerEnd(Boss boss)
+    {
+        boss.StopBossCoroutine(IDangerStart(boss));
+    }
+    private IEnumerator IDangerStart(Boss boss)
     {
         yield return null;
-
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
-        Debug.Log("test1");
         DangerLineStart(boss);
-        Debug.Log("test2");
-        yield return new WaitForSeconds(2f);
        
     }
     void DangerLineStart(Boss boss)
