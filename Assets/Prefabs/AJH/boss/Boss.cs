@@ -6,6 +6,9 @@ using DG.Tweening;
 //GimikAgain(); 기믹 재실행
 //★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
 // public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그들은 플레이어에 꼭 추가 되어있어야 함
+// 보스맵 진입 시   [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
+
+/*  인터페이스 설정  */
 public interface IBossState
 {
     void Enter(Boss boss);   // 상태에 진입할 때 호출되는 메서드
@@ -14,12 +17,10 @@ public interface IBossState
 }
 public class Boss : MonoBehaviour
 {
-    // # Normal State //
-    private bool bosssRoomStartCheck { get; set; }
+/*  공용  */
+    [SerializeField] public bool bosssRoomStartCheck;
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = { "Player2", "Player3", "Player4","Player5" };
-    // # Normal State End //
-
+    public string[] playerTags5 = { "Player2", "Player3", "Player4","Player5" };   
     private IBossState currentState; // 현재 상태
     private IBossState previousState; // 이전 상태
     public float Health { get; private set; } // 보스의 체력
@@ -27,18 +28,20 @@ public class Boss : MonoBehaviour
     public float GimmickThreshold2 { get; private set; } // 기믹 임계값 2
     public float GimmickThreshold3 { get; private set; } // 기믹 임계값 3
     private Animator animator; // 애니메이터
+
+/*  기믹n  */
     public bool IsUsingLaser { get; private set; } // 레이저 사용 여부
 
+/*  초기화  */
     void Start()
     {
-        Debug.Log(playerTags5);
         bosssRoomStartCheck = false; // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
         Health = 100f;        
         GimmickThreshold1 = 30f; // 체력 임계값 설정
         GimmickThreshold2 = 50f;
         GimmickThreshold3 = 70f;
         animator = GetComponent<Animator>();
-        ChangeState(new NormalState()); // 초기 상태를 Normal 상태로 설정
+        ChangeState(new NoState()); // 초기 상태를 Normal 상태로 설정
     }
 
     void Update()
@@ -55,16 +58,31 @@ public class Boss : MonoBehaviour
         currentState.Enter(this); // 새로운 상태 진입
     }
 
+
+/*  애니메이션 실행 함수  */
     public void SetAnimation(string animationName)
     {
-        Debug.Log("Setting animation to: " + animationName);
         animator.Play(animationName); // 지정된 애니메이션 재생
     }
 
+/*  애니메이션 이벤트 호출 함수  */
     public void OnGimmickAnimationEvent(string eventName)
     {
-        Debug.Log("Animation Event Triggered: " + eventName);
-        if (eventName == "StartLaser")
+        if (eventName == "Stage1_start")
+        {
+            if (currentState is Stage1 stage1)
+            {
+                stage1.TriggerCoroutine(this);
+            }
+        }
+        else if (eventName == "Stage1_end")
+        {
+            if (currentState is Stage1 stage1)
+            {
+                stage1.TriggerCoroutine(this);
+            }
+        }
+        else if(eventName == "StartLaser")
         {
             StartLaser(GameObject.FindGameObjectWithTag("Player").transform.position); // 레이저 시작
         }
@@ -76,20 +94,17 @@ public class Boss : MonoBehaviour
         {
             SetAnimation("Idle"); // 애니메이션 완료 후 Idle 애니메이션 설정
         }
-        else if (eventName == "TriggerSomeCoroutine")
-        {
-            if (currentState is NormalState normalState)
-            {
-                normalState.TriggerCoroutine(this);
-            }
-        }
+ 
     }
 
+/*  모든 코루틴 받아서 실행하는 함수  */
     public void StartBossCoroutine(IEnumerator coroutine)
     {
         StartCoroutine(coroutine);
     }
 
+
+    #region #Stage2
     public void StartLaser(Vector3 position)
     {
         Debug.Log("Starting Laser at Position: " + position);
@@ -141,11 +156,10 @@ public class Boss : MonoBehaviour
         Debug.Log("Throwing Rock at Position: " + targetPosition);
         // 바위 던지기 로직 구현
     }
-
+    #endregion
     public void CheckHealthAndChangeState()
     {
-        // 체력 체크 및 상태 전환 로직
-        if (Health < GimmickThreshold1)
+        if(Health < GimmickThreshold1)
         {
             ChangeState(new GimmickState3()); // 가장 높은 임계값부터 체크
         }
@@ -157,15 +171,30 @@ public class Boss : MonoBehaviour
         {
             ChangeState(new GimmickState1());
         }
-        else
-        {
-            ChangeState(new NormalState());
-        }
+        
     }
 }
 
-/********************Normar*********************************/
-public class NormalState : IBossState
+/*  보스 실행 NO  */
+public class NoState : IBossState
+{
+    public void Enter(Boss boss)
+    {
+        boss.SetAnimation("Idle1");
+    }
+
+    public void Execute(Boss boss)
+    {
+        if (boss.bosssRoomStartCheck) boss.ChangeState(new Stage1());
+    }
+
+    public void Exit(Boss boss)
+    {
+    }
+}
+
+/*  보스 실행On Stage1  */
+public class Stage1 : IBossState
 {
     private GameObject activeDangerLine;
 
@@ -182,7 +211,7 @@ public class NormalState : IBossState
             }
             
         }
-        boss.SetAnimation("Idle"); // Idle 애니메이션 설정
+        boss.SetAnimation("Stage1"); // Idle 애니메이션 설정
         //boss.StartBossCoroutine(SomeCoroutine(boss)); // 코루틴 시작
     }
 
@@ -205,9 +234,9 @@ public class NormalState : IBossState
         yield return null;
 
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
-
+        Debug.Log("test1");
         DangerLineStart(boss);
-
+        Debug.Log("test2");
         yield return new WaitForSeconds(2f);
        
     }
@@ -241,6 +270,8 @@ public class NormalState : IBossState
         }
     }
 }
+
+/*  보스 실행On Stage2  */
 public class GimmickState1 : IBossState
 {
     private Transform playerTransform; // 플레이어의 Transform
@@ -269,6 +300,7 @@ public class GimmickState1 : IBossState
     }
 }
 
+/*  보스 실행On Stage3  */
 public class GimmickState2 : IBossState
 {
     private Transform playerTransform; // 플레이어의 Transform
@@ -291,6 +323,8 @@ public class GimmickState2 : IBossState
         boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
 }
+
+/*  보스 실행On Stage4  */
 public class GimmickState3 : IBossState
 {
     private Transform playerTransform; // 플레이어의 Transform

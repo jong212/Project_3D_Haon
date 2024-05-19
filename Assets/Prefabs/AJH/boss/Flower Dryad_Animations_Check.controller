@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Idle
+  m_Name: Stage1
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -367,7 +367,7 @@ AnimatorStateMachine:
     m_Position: {x: 340, y: -340, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7128497237155610291}
-    m_Position: {x: 660, y: -350, z: 0}
+    m_Position: {x: 660, y: -340, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5396500828004818890}
     m_Position: {x: 330, y: -170, z: 0}
@@ -558,7 +558,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New State 0
+  m_Name: Stage1after
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -571,7 +571,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 0}
+  m_Motion: {fileID: 7400000, guid: 862f28de855f6ba4b8952fdbe9995bc8, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
