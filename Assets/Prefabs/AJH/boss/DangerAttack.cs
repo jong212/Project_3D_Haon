@@ -16,7 +16,7 @@ public class DangerAttack : MonoBehaviour
     {
         
     }
-    private void OnParticleCollision(GameObject other)
+    public void OnParticleCollision(GameObject other)
     {
         Debug.Log("hit...........");
     }

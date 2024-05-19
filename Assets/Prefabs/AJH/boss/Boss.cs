@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 
+/*        씬합치고 해야할것들                  */
 //GimikAgain(); 기믹 재실행
 //★  Danger 기믹 : 벽 오브젝트에 Wall Layer추가해 줘야함, 보스맵에서 그냥 벽이라고 판단되는건 다 Wall 레이어 설정 해야함
 // public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그들은 플레이어에 꼭 추가 되어있어야 함
 // 보스맵 진입 시   [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
 
+/*         메모                               */
+// - Danger 범위 지속시간은 DangerLine 프리팹 인스펙터에서 Time 값으로 설정
+   
 /*  인터페이스  */
 public interface IBossState
 {
