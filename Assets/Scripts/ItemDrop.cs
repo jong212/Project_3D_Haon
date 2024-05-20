@@ -23,12 +23,12 @@ public class ItemDrop : MonoBehaviour
         heals = new GameObject[randomHeals];
         for (int i = 0; i < randomCoins; i++)
         {
-            coins[i] = Instantiate(coinsPrefeb, hideposition, Quaternion.identity);
+            coins[i] = Instantiate(coinsPrefeb, boxtransform.position, Quaternion.identity);
             coins[i].SetActive(false);
         }
         for(int i = 0;i<randomHeals; i++)
         {
-            heals[i] = Instantiate(healingPrdfab, hideposition, Quaternion.identity);
+            heals[i] = Instantiate(healingPrdfab, boxtransform.position, Quaternion.identity);
             heals[i].SetActive(false);
         }
     }
@@ -47,16 +47,17 @@ public class ItemDrop : MonoBehaviour
         for (int i = 0;i < randomCoins;i++)
         {
             coins[i].SetActive(true);
+
             randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + boxtransform.position;
             randomposition.y = 1f;
-            coins[i].transform.DOJump(randomposition, 3f, 1, 1f);
+            coins[i].transform.DOJump(randomposition, 2f, 1, 1f);
         }
         for (int i = 0;i<randomHeals;i++)
         {
             heals[i].SetActive(true);
             randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + boxtransform.position;
             randomposition.y = 1f;
-            heals[i].transform.DOJump(randomposition, 3f, 1, 1f);
+            heals[i].transform.DOJump(randomposition, 2f, 1, 1f);
         }
 
     }
