@@ -2,17 +2,28 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: _DummyMesh00
   m_Shader: {fileID: 4800000, guid: f90e11a40dcf4f745ae6b21b857943fa, type: 3}
-  m_ShaderKeywords: _EMISSIVE_SIMPLE _INVERSE_Z_AXIS_BLD_ON _IS_BLENDADDTOMATCAP_ON
-    _IS_FILTER_HICUTPOINTLIGHTCOLOR_ON _IS_LIGHTCOLOR_2ND_SHADE_ON _IS_LIGHTCOLOR_AP_RIMLIGHT_ON
-    _IS_LIGHTCOLOR_HIGHCOLOR_ON _IS_LIGHTCOLOR_MATCAP_ON _IS_LIGHTCOLOR_RIMLIGHT_ON
-    _OUTLINE_NML _SET_SYSTEMSHADOWSTOBASE_ON _USE_BASEAS1ST_ON
+  m_ValidKeywords:
+  - _EMISSIVE_SIMPLE
+  - _OUTLINE_NML
+  m_InvalidKeywords:
+  - _
+  - _INVERSE_Z_AXIS_BLD_ON
+  - _IS_BLENDADDTOMATCAP_ON
+  - _IS_FILTER_HICUTPOINTLIGHTCOLOR_ON
+  - _IS_LIGHTCOLOR_2ND_SHADE_ON
+  - _IS_LIGHTCOLOR_AP_RIMLIGHT_ON
+  - _IS_LIGHTCOLOR_HIGHCOLOR_ON
+  - _IS_LIGHTCOLOR_MATCAP_ON
+  - _IS_LIGHTCOLOR_RIMLIGHT_ON
+  - _SET_SYSTEMSHADOWSTOBASE_ON
+  - _USE_BASEAS1ST_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -126,6 +137,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _1st2nd_Shades_Feather: 0.0001
     - _1st_ShadeColor_Feather: 0.108
@@ -136,7 +148,7 @@ Material:
     - _Ap_RimLight_FeatherOff: 0
     - _Ap_RimLight_Power: 0.1
     - _BaseColor_Step: 0.5
-    - _BaseShade_Feather: 0.0001
+    - _BaseShade_Feather: 0.108
     - _Base_Speed: 0
     - _BlurLevelMatcap: 0
     - _BlurLevelSGM: 0
@@ -228,13 +240,13 @@ Material:
     - _ZWrite: 1
     - _simpleUI: 0
     - _utsTechnique: 1
-    - _utsVersion: 2.07
+    - _utsVersion: 2.09
     m_Colors:
-    - _1st_ShadeColor: {r: 0.8506065, g: 0.8352941, b: 1, a: 1}
+    - _1st_ShadeColor: {r: 0.48117024, g: 0.4781951, b: 0.509434, a: 1}
     - _2nd_ShadeColor: {r: 1, g: 1, b: 1, a: 1}
     - _Ap_RimLightColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.754717, g: 0.754717, b: 0.754717, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorShift: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Emissive_Color: {r: 0, g: 0, b: 0, a: 1}

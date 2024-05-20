@@ -7,11 +7,7 @@ TagManager:
   - WayPoint
   - Monster
   - skill
-  - Player4
-  - Player2
-  - Player3
-  - Player5
-  - FxTemporaire
+  - Trap
   layers:
   - Default
   - TransparentFX
@@ -19,16 +15,16 @@ TagManager:
   - 
   - Water
   - UI
-  - aa
-  - dd
-  - test
-  - ff
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
   - 
   - Book
-  - Wall
+  - 
   - 
   - 
   - 
@@ -48,7 +44,4 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
-    locked: 0
-  - name: effect1
-    uniqueID: 3425891859
     locked: 0

@@ -5,11 +5,24 @@ using Unity.Services.Relay.Models;
 
 public class RelayManager : Singleton<RelayManager>
 {
+    private bool isHost = false;
+
+
     private string joinCode;
     private string ip;
     private int port;
+    private byte[] key;
     private byte[] connectionData;
+    private byte[] hostConnectionData;
     private System.Guid allocationId;
+    private byte[] allocationIdBytes;
+
+
+
+    public bool IsHost
+    {
+        get { return isHost; }
+    }
 
     public async Task<string> CreateRelay(int maxConnection)
     {
@@ -21,7 +34,11 @@ public class RelayManager : Singleton<RelayManager>
         port = dtlsEnpoint.Port;
 
         allocationId = allocation.AllocationId;
+        allocationIdBytes = allocation.AllocationIdBytes;
         connectionData = allocation.ConnectionData;
+        key = allocation.Key;
+
+        isHost = true;
 
         return joinCode;
 
@@ -37,7 +54,10 @@ public class RelayManager : Singleton<RelayManager>
         port = dtlsEnpoint.Port;
 
         allocationId = allocation.AllocationId;
+        allocationIdBytes = allocation.AllocationIdBytes;
         connectionData = allocation.ConnectionData;
+        hostConnectionData = allocation.HostConnectionData;
+        key = allocation.Key;
 
         return true;
     }
@@ -52,4 +72,14 @@ public class RelayManager : Singleton<RelayManager>
         return connectionData.ToString();
     }
 
+
+    public (byte[] AllocationId, byte[] Key, byte[] ConnectionData, string dtlsAddress, int dtlsPort) GetHostConnectionInfo()
+    {
+        return (allocationIdBytes, key, connectionData, ip, port);
+    }
+
+    public (byte[] AllocationId, byte[] Key, byte[] ConnectionData, byte[] HostConnectionData, string dtlsAddress, int dtlsPort) GetClientConnectionInfo()
+    {
+        return (allocationIdBytes, key, connectionData, hostConnectionData, ip, port);
+    }
 }
