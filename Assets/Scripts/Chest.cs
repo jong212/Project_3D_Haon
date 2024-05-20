@@ -36,7 +36,7 @@ public class Chest : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Player")
+        if(other.gameObject.CompareTag("Player"))
         {
             button.SetActive(true);
             Debug.Log("상자열래");
@@ -47,7 +47,7 @@ public class Chest : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             button.SetActive(false);
             Debug.Log("상자안열래");

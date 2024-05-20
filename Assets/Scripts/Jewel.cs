@@ -9,7 +9,7 @@ public class Jewel : MonoBehaviour
     public float rotateSpeed = 100.0f;
     public BoxCollider jewelcollider;
     Vector3 upposition;
-
+    public ParticleSystem jewelEffect;
     private void Awake()
     {
         this.jewelcollider = GetComponent<BoxCollider>();
@@ -33,19 +33,20 @@ public class Jewel : MonoBehaviour
     public void Appear()
     {
         transform.DOJump(jewelsposition, 2f, 1, 2f);
+        
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             PlayInfo.JewelPlus();
             GetJewel();
+            jewelEffect.Play();
             jewelcollider.enabled = false;
         }
     }
     void GetJewel()
     {
-        Debug.Log("?");
         transform.DOMoveY(upposition.y + 2, 2.0f);
         rotateSpeed = 500.0f;
         Invoke("EraseJewel", 2.0f);
