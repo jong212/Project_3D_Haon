@@ -23,7 +23,7 @@ public class DangerAttack : MonoBehaviour
     private IEnumerator ReturnToPoolWithDelay()
     {
         isReturning = true; // 코루틴이 시작됨을 표시
-        yield return new WaitForSeconds(1.5f); // 0.5초 대기
+        yield return new WaitForSeconds(3f); // 0.5초 대기
 
         if (transform.parent != null)
         {

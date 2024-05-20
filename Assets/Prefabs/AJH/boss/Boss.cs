@@ -360,7 +360,7 @@ public class Stage1 : IBossState
     public IEnumerator IDangerEnd(Boss boss)
     {
         DangerLineEnd(boss);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3f);
         boss.ChangeState(new NoState());
     }
     // 2-4
