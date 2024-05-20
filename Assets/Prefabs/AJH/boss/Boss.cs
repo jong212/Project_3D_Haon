@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -67,6 +68,7 @@ public class Boss : MonoBehaviour
         currentState = newState;                                       // 새로운 상태 설정
         currentState.Enter(this);                                      // 새로운 상태 진입
     }
+/* */
 /*  보스 애니메이션 변경(공통)  */
     public void SetAnimation(string animationName)
     {
@@ -122,11 +124,17 @@ public class Boss : MonoBehaviour
         StopCoroutine(coroutine);
         runningCoroutines.Remove(coroutine);
         Debug.Log("Coroutine stopped after " + delay + " seconds");
+        CheckHealthAndChangeState();
     }
 
 /*  보스 상태 체크 (공통)  */
     public void CheckHealthAndChangeState()
     {
+        switch (currentState)
+        {
+           
+        }
+
         if (Health < GimmickThreshold1)
         {
             ChangeState(new GimmickState3()); // 가장 높은 임계값부터 체크
@@ -259,8 +267,12 @@ public class Stage1 : IBossState
             {
                 if (charge)
                 {
-
-                    charge = false;
+                    
+                    GameObject chargeEffect = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerChage);   // charge 풀 가져옴                    
+                    chargeEffect.GetComponent<DangerCharge>().poolinfo = chargeEffect;                          // 가져온 풀 사용후 반환하기 위해 가져온 풀정보 DangerCharge에 세팅
+                    chargeEffect.transform.position = boss.transform.position;                                  // 가져온 풀 위치를 보스 위치로 세팅
+                    chargeEffect.SetActive(true);                                                               // Pool On
+                    charge = false;                                                                             // 1번만 사용하면 됨
                 }
                 GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
                 DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();

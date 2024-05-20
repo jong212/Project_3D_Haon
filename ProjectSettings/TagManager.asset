@@ -11,6 +11,7 @@ TagManager:
   - Player2
   - Player3
   - Player5
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -47,4 +48,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: effect1
+    uniqueID: 3425891859
     locked: 0

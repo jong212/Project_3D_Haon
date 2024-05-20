@@ -91,7 +91,7 @@ MonoBehaviour:
     pool: []
   - type: 2
     amount: 2
-    prefab: {fileID: 550154603207540266, guid: 9cd029723d26e224d838cee723cf0c26, type: 3}
+    prefab: {fileID: 1169398297775579342, guid: 2631e0f1662b33846aaa5c180c0bb9ca, type: 3}
     container: {fileID: 7019339551249058431}
     pool: []
 --- !u!1 &7019339551249058431
