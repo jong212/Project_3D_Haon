@@ -18,6 +18,7 @@ public class NPC : MonoBehaviour
     public GameObject talkBullon;
     public GameObject monsterBullon;
     public GameObject talktext1_1;
+    public TextMeshProUGUI text2;
     public GameObject talktext1_2;
     public GameObject talktext1_3;
     public GameObject talktext1_4;
@@ -42,17 +43,19 @@ public class NPC : MonoBehaviour
     public CinemachineVirtualCamera portalcamera;
     public CinemachineVirtualCamera moncamera;
     public CinemachineVirtualCamera chestcamera;
-    public CinemachineVirtualCamera chartercamera;
+    
 
     public GameObject Monster;
     public GameObject player;
     public GameObject chest;
     public ParticleSystem chesteffect;
 
-   
+    public Transform TR;
     
     void Update()
     {
+       
+        
         //대화1
         if(IsNear==true&& talkCount == 0&&talkIndex==0&&Input.GetKeyDown(KeyCode.F))
         {
@@ -67,6 +70,7 @@ public class NPC : MonoBehaviour
         else if (IsNear == true && talkCount == 1 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
         {
             talktext1_1.SetActive(false);
+           
             talktext1_2.SetActive(true);
             talkCount += 1;
         }
@@ -83,7 +87,7 @@ public class NPC : MonoBehaviour
             moncamera.Priority = 3;
             talkBullon.SetActive(false);
             AttackInfo.SetActive(true);
-            Invoke("MonsterAppear", 1.5f);
+            Invoke("MonsterAppear", 2.5f);
             talkCount += 1;
         }
         else if (IsNear == true && talkCount == 4 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
@@ -105,7 +109,6 @@ public class NPC : MonoBehaviour
             talkIndex = 1;
             talkCount = 0;
         }
-
         //대화2
         else if (IsNear == true && talkCount == 0 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
         {
@@ -165,7 +168,6 @@ public class NPC : MonoBehaviour
             talkIndex = 2;
             talkCount = 0;
         }
-        
         //대화3
         else if (IsNear == true && talkCount == 0 && talkIndex == 2 && Input.GetKeyDown(KeyCode.F))
         {
@@ -183,13 +185,15 @@ public class NPC : MonoBehaviour
             talkCount = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            portalcamera.Priority = 3;
-            Invoke("TreeOpen", 2f);
-            StartCoroutine(ShakeCamera());
-        }
+        //if(Input.GetKeyDown(KeyCode.M)) 
+        //{
+        //    ShakePoint();
+        //}
+    }
 
+    void ShakePoint()
+    {
+        TR.DOShakePosition(2, 1, 10, 5, false, true);
     }
     IEnumerator ShakeBullon()
     {
@@ -208,18 +212,18 @@ public class NPC : MonoBehaviour
     }
     IEnumerator ShakeCamera()
     {
-        float time = 45f;
+        float time = 30f;
         float shakePower = 0.1f;
-        Vector3 origin = chartercamera.transform.position;
+        Vector3 origin = portalcamera.transform.position;
 
         while (time > 0f)
         {
-            time -= 0.05f;
-            chartercamera.transform.position = origin + (Vector3)Random.insideUnitCircle * shakePower;// * time;
+            time -= 0.1f;
+            portalcamera.transform.position = origin + (Vector3)Random.insideUnitCircle * shakePower;// * time;
             yield return null;
         }
 
-        chartercamera.transform.position = origin;
+        portalcamera.transform.position = origin;
     }
     void TreeOpen()
     {

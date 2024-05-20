@@ -14,10 +14,6 @@ public class TutorialKeyController : MonoBehaviour
     public Image Key1;
     public Image Key2;
 
-    void Start()
-    {
-        
-    }
 
     
     void Update()
