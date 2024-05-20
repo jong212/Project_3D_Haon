@@ -86,14 +86,14 @@ public class Boss : MonoBehaviour
         {
             if (currentState is Stage1 stage1)
             {   // 1-1. 코루틴 실행을 위해 공통 코루틴 함수인 StartBossCoroutine으로 넘김
-                StartBossCoroutine(stage1.IDangerStart(this), 10f);     // 코루틴 시작 및 2초 후 중지
+                StartBossCoroutine(stage1.IDangerStart(this), 3f);     // 코루틴 시작 및 2초 후 중지
             }
         }
         else if (eventName == "Stage1_end")
         {
             if (currentState is Stage1 stage1)
             {   // 2-1. 코루틴 실행을 위해 공통 코루틴 함수인 StartBossCoroutine으로 넘김
-                StartBossCoroutine(stage1.IDangerEnd(this), 10f);       // 코루틴 시작 및 2초 후 중지
+                StartBossCoroutine(stage1.IDangerEnd(this), 5f);       // 코루틴 시작 및 2초 후 중지
             }
         }
         else if (eventName == "StartLaser")
@@ -240,6 +240,7 @@ public class NoState : IBossState
     public bool isChange = false;
     public void Enter(Boss boss)
     {
+        Debug.Log("1");
         boss.SetAnimation("Idle1");
         if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,5f), 10f);
     }
@@ -290,12 +291,11 @@ public class Stage1 : IBossState
 
     public void Execute(Boss boss)
     {
-        Debug.Log("test");
     }
 
     public void Exit(Boss boss)
     {
-        Debug.Log("Exiting Normal State");
+        boss.players.Clear();
     }
     public override string ToString()
     {
@@ -377,8 +377,10 @@ public class Stage1 : IBossState
                 eulerAngles.x = 0;
                 activeDangerAttack.transform.rotation = Quaternion.Euler(eulerAngles);
                 activeDangerAttack.SetActive(true);
+                
             }
         }
+        boss.setDangerPosition.Clear();
     }
 }
 

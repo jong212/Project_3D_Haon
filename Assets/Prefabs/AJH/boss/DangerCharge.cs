@@ -18,7 +18,6 @@ public class DangerCharge : MonoBehaviour
         if (particleSystem.isStopped)
         {
             PoolManager.Instance.CoolObject(poolinfo, PoolObjectType.DangerChage);
-            Debug.Log("끝낫어요....파티클");
         }
     }
 }
