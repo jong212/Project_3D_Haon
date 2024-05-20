@@ -8,7 +8,8 @@ public class UpDownMoveGate : MonoBehaviour
     public bool down = false;
     public float upDownStopSecond = 0;
 
-    private bool isMoving = false;
+
+    [SerializeField] private bool isMoving = false;
     private int point = 0;
 
 

@@ -49,7 +49,6 @@ public class BoxInfo : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         gameObject.SetActive(false);
         Destroy(particle.gameObject, 1.0f);
-        
     }
 
     void DrapItem()
