@@ -12,9 +12,10 @@ using UnityEngine.Rendering.Universal;
  - Danger 범위 지속시간은 DangerLine 프리팹 인스펙터에서 Time 값으로 설정
 
  [ ★ 씬 합치고 세팅해야 할 항목들 정리 ★ ]
- - 보스맵에서 벽으로 판탄되는 오브젝트에 Wall Layer를 추가해야 함 (이유는...뭐였지...? 아닐수도 있음)
+ - 보스맵에서 벽으로 판탄되는 오브젝트에 "Wall" 레이어 설정 (이유 기억이 안 남)
  - public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그에 맞게 하이어라키 플레이어 태그를 설정해야 함  
  - 보스맵 진입 시  [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
+ - 보스 오브젝트에 Boss 태그 달기
   
 ****************************************************************************** */
 
@@ -32,14 +33,15 @@ public interface IBossState
 public class Boss : MonoBehaviour
 {
     [SerializeField] public bool bosssRoomStartCheck;
+    [SerializeField] public float currentHealth { get; private set; }                   // 현재 체력 
 
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" };
+    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" ,"Player"};
 
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
-    public float Health { get; private set; }                          // 보스의 체력
+    public float fixHealth { get; private set; }                       // 보스 체력 세팅
     public int Stage2Hp { get; private set; }               // 기믹 임계값 1
     public int Stage3Hp { get; private set; }               // 기믹 임계값 2
     public int Stage4Hp { get; private set; }               // 기믹 임계값 3
@@ -52,7 +54,8 @@ public class Boss : MonoBehaviour
     void Start()
     {
         bosssRoomStartCheck = false;                                   // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
-        Health = 100f;
+        fixHealth = 10000f;
+        currentHealth = fixHealth;
         Stage2Hp = 90;                                       // 체력 임계값 설정
         Stage3Hp = 70;
         Stage4Hp = 30;
@@ -73,8 +76,20 @@ public class Boss : MonoBehaviour
         currentState = newState;                                       // 새로운 상태 설정
         currentState.Enter(this);                                      // 새로운 상태 진입
     }
-/* */
-/*  보스 애니메이션 변경(공통)  */
+    /*  보스 체력 관리 시스템  */
+    public void TakeDamage(int damageAmout)
+    {
+        currentHealth -= damageAmout;
+        Debug.Log(currentHealth);
+        if (currentHealth <= 0)
+        {
+        }
+        else
+        {
+            Debug.Log("보스 공격 당하는중");
+        }
+    }
+    /*  보스 애니메이션 변경(공통)  */
     public void SetAnimation(string animationName)
     {
         animator.Play(animationName);                                  // 지정된 애니메이션 재생
@@ -138,7 +153,7 @@ public class Boss : MonoBehaviour
         {
             case ("NoState"):
                 {
-                    if (Health <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
@@ -155,7 +170,7 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage1"):
                 {
-                    if (Health <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
@@ -173,7 +188,7 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage2"):
                 { 
-                    if (Health <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
+                    if (fixHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
                     {
                         ChangeState(new Stage3()); // 가장 높은 임계값부터 체크
                     }
@@ -304,9 +319,9 @@ public class Stage1 : IBossState
     // 1-3 IDangerStart 코루틴 실행
     public IEnumerator IDangerStart(Boss boss)
     {
-        yield return null;
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
         DangerLineStart(boss);
+        yield return null;
     }
     // 1-4 코루틴이 돌아가면 아래 함수가 실행 됨
     void DangerLineStart(Boss boss)
@@ -331,6 +346,8 @@ public class Stage1 : IBossState
                 if (dangerLineComponent != null)
                 {
                     Vector3 direction = (player.transform.position - boss.transform.position).normalized;
+                    direction.y = 0f; // y  레이저가 바닥을 뚫고 내려가는 현상이 있어서 0 고정
+
                     float extendLength = 5f;
                     Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
                     boss.setDangerPosition.Add(extendedEndPosition);

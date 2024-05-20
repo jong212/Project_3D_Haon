@@ -13,8 +13,8 @@ public class DangerLine : MonoBehaviour
     void Start()
     {
         tr = GetComponent<TrailRenderer>();
-        tr.startColor = new Color(1, 0, 0, 0.7f);
-        tr.endColor = new Color(1, 0, 0, 0.7f);
+        tr.startColor = new Color(1, 0, 0, 0.9f);
+        tr.endColor = new Color(1, 0, 0, 0.9f);
         Init();
     }
 
@@ -32,8 +32,8 @@ public class DangerLine : MonoBehaviour
     public void cleartr()
     {
         tr.Clear();
-        tr.startColor = new Color(1, 1, 1, 1f);
-        tr.endColor   = new Color(1, 1, 1, 1f);
+        tr.startColor = new Color(1, 0, 0, 0.7f);
+        tr.endColor = new Color(1, 0, 0, 0.7f);
     }
 
 }

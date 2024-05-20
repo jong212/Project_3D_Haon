@@ -8,6 +8,12 @@ TagManager:
   - Monster
   - skill
   - Trap
+  - Player3
+  - Player5
+  - Player4
+  - Player2
+  - Boss
+  - Undefined
   layers:
   - Default
   - TransparentFX
@@ -28,7 +34,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Wall
   - 
   - 
   - 

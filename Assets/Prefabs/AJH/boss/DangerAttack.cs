@@ -34,4 +34,8 @@ public class DangerAttack : MonoBehaviour
 
         isReturning = false; // 코루틴이 종료됨을 표시
     }
+    public void OnParticleCollision(GameObject other)
+    {
+
+    }
 }

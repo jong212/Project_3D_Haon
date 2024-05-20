@@ -39,10 +39,13 @@ public class SkillA : StateMachineBehaviour
         // 스킬 공격인 경우
         if (isSkillAttack)
         {
-            Debug.Log("Skill Attack detected!");
             if(otherCollider.tag == "Monster")
             {
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
+            }
+            if (otherCollider.tag == "Boss")
+            {
+                otherCollider.GetComponent<Boss>().TakeDamage(10);
             }
             // 스킬 공격 처리 코드 추가
         }
