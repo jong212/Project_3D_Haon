@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.Security.Cryptography.X509Certificates;
 using System.Linq;
+using UnityEngine.Rendering.Universal;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -20,10 +21,11 @@ using System.Linq;
 /*  인터페이스  */
 public interface IBossState
 {
-    string StateName { get; }
+   
     void Enter(Boss boss);                                             // 상태에 진입할 때 호출되는 메서드
     void Execute(Boss boss);                                           // 상태가 활성화된 동안 매 프레임 호출되는 메서드
     void Exit(Boss boss);                                              // 상태에서 나갈 때 호출되는 메서드
+    string ToString();
 }
 
 /*  선언  */
@@ -35,8 +37,7 @@ public class Boss : MonoBehaviour
     public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" };
 
     private IBossState currentState;                                   // 현재 상태
-    private IBossState previousState;                                  // 이전 상태
-
+    public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
     public float Health { get; private set; }                          // 보스의 체력
     public int Stage2Hp { get; private set; }               // 기믹 임계값 1
@@ -66,8 +67,8 @@ public class Boss : MonoBehaviour
 
     public void ChangeState(IBossState newState)
     {
+        previousState = currentState?.ToString();                      // 이전 상태를 문자열로 저장
 
-        previousState = currentState;                                  // 이전 상태 저장
         currentState?.Exit(this);                                      // 현재 상태 종료
         currentState = newState;                                       // 새로운 상태 설정
         currentState.Enter(this);                                      // 새로운 상태 진입
@@ -131,9 +132,9 @@ public class Boss : MonoBehaviour
     }
 
     /*  보스 상태 체크 (공통)  */
-    public void CheckHealthAndChangeState()
+    public void CheckHealthAndChangeState(bool chk)
     {          
-        switch (previousState?.StateName) //현재 인스턴스가 아닌 이전 인스턴스로 체크
+        switch (previousState) //현재 인스턴스가 아닌 이전 인스턴스로 체크
         {
             case ("NoState"):
                 {
@@ -144,9 +145,29 @@ public class Boss : MonoBehaviour
                     else
                     {
 
-                        /*if ("타임...채워지면 Stage1으로..") {
-                            Debug.Log()
-                        } */
+                        if (chk) {
+                            Debug.Log("상태를 재실행해요..");
+                            ChangeState(new Stage1());
+                            
+                                }
+                    }
+                    break;
+                }
+            case ("Stage1"):
+                {
+                    if (Health <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    {
+                        ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
+                    }
+                    else
+                    {
+
+                        if (chk)
+                        {
+                            Debug.Log("상태를 재실행해요..");
+                            ChangeState(new Stage1());
+
+                        }
                     }
                     break;
                 }
@@ -215,32 +236,42 @@ public class Boss : MonoBehaviour
 /* 보스 대기 상태 */
 public class NoState : IBossState
 {
-    public string StateName => "NoState";
     public bool timer = false;
+    public bool isChange = false;
     public void Enter(Boss boss)
     {
         boss.SetAnimation("Idle1");
-        boss.StartBossCoroutine(changeClass(this,5f), 10f);
+        if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,5f), 10f);
     }
 
     public void Execute(Boss boss)
     {
+        Debug.Log("기본1탓어요");
         if (boss.bosssRoomStartCheck) boss.ChangeState(new Stage1());
+        if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange);
     }
 
     public void Exit(Boss boss)
     {
+        
+    }
+    public override string ToString()
+    {
+        return "NoState";
     }
     public IEnumerator changeClass(NoState noteState, float endTime)
     {
+        Debug.Log("타이머 on...");
         yield return new WaitForSeconds(endTime);
+        Debug.Log("5초 지났어요....");
+        isChange = true;
     }
 }
 
 /* 보스 Stage1 Class */
 public class Stage1 : IBossState
 {
-    public string StateName => "Stage1";
+    
     private GameObject activeDangerLine;
 
     public void Enter(Boss boss)
@@ -266,7 +297,10 @@ public class Stage1 : IBossState
     {
         Debug.Log("Exiting Normal State");
     }
-
+    public override string ToString()
+    {
+        return "Stage1";
+    }
     // 1-3 IDangerStart 코루틴 실행
     public IEnumerator IDangerStart(Boss boss)
     {
@@ -326,7 +360,8 @@ public class Stage1 : IBossState
     public IEnumerator IDangerEnd(Boss boss)
     {
         DangerLineEnd(boss);
-        yield return null;
+        yield return new WaitForSeconds(2.5f);
+        boss.ChangeState(new NoState());
     }
     // 2-4
     void DangerLineEnd(Boss boss)
@@ -350,7 +385,7 @@ public class Stage1 : IBossState
 /* 보스 실행On Stage2 */
 public class Stage2 : IBossState
 {
-    public string StateName => "Stage2";
+    
 
     private Transform playerTransform; // 플레이어의 Transform
 
@@ -374,12 +409,16 @@ public class Stage2 : IBossState
     {
         boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
+    public override string ToString()
+    {
+        return "Stage2";
+    }
 }
 
 /* 보스 실행On Stage3 */
 public class Stage3 : IBossState
 {
-    public string StateName => "Stage3";
+    
 
     private Transform playerTransform; // 플레이어의 Transform
 
@@ -398,12 +437,16 @@ public class Stage3 : IBossState
     {
         boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
+    public override string ToString()
+    {
+        return "Stage3";
+    }
 }
 
 /* 보스 실행On Stage4 */
 public class Stage4 : IBossState
 {
-    public string StateName => "Stage4";
+    
 
     private Transform playerTransform; // 플레이어의 Transform
 
@@ -420,5 +463,9 @@ public class Stage4 : IBossState
     public void Exit(Boss boss)
     {
         boss.GimikAgain(); // 상태 종료 시 레이저 중지
+    }
+    public override string ToString()
+    {
+        return "Stage4";
     }
 }
