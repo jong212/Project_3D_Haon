@@ -2,7 +2,6 @@ using Cinemachine;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using static DataManager;
 
 [RequireComponent(typeof(CharacterController))]
@@ -42,26 +41,32 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private PlayerControls playerControls;
     [SerializeField] private GameObject spawnPoint;
+
+    private CinemachineVirtualCamera virtualCamera;
+
     public override void OnNetworkSpawn()
     {
-        transform.position = new Vector3(-17, 1, -154);
-        CinemachineVirtualCamera cvm = camTransform.gameObject.GetComponent<CinemachineVirtualCamera>();
-        if (IsOwner)
+        if (IsLocalPlayer)
         {
-            cvm.Priority = 1;
+            playerControls = new PlayerControls();
+            playerControls.Enable();
 
-        }
-        else
-        {
-            cvm.Priority = 0;
+            transform.position = new Vector3(-17, 1, -154);
+
+            virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
+
+            if (virtualCamera != null)
+            {
+                // Virtual Camera의 Follow 및 Look At 필드를 로컬 플레이어로 설정합니다
+                virtualCamera.Follow = this.transform;
+            }
         }
 
     }
 
     private void Awake()
     {
-        playerControls = new PlayerControls();
-        playerControls.Enable();
+
         _characterController = GetComponent<CharacterController>();
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
                                                  // DataManager를 사용하여 플레이어 데이터 가져오기
@@ -82,9 +87,9 @@ public class NetworkPlayerController : NetworkBehaviour
         }
 
         StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
-        PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}");
 
-        SetPlayerData(playerData);
+
+
 
     }
     // 스킬 쿨다운을 관리하는 코루틴
@@ -129,11 +134,20 @@ public class NetworkPlayerController : NetworkBehaviour
             Move(movementInput);
 
             if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
-
+            Dash();
+            SkillA();
+            SkillB();
+            Click();
+            SkillClick();
         }
         else if (IsLocalPlayer)
         {
             MoveServerRPC(movementInput);
+            DashServerRPC();
+            SkillAServerRPC();
+            SkillBServerRPC();
+            ClickServerRPC();
+            SkillClickServerRPC();
         }
     }
 
@@ -177,7 +191,7 @@ public class NetworkPlayerController : NetworkBehaviour
         if (playerControls.Player.Move.inProgress)
         {
             // 입력 받은 값을 가져오기
-            Vector3 movement = new Vector3(movementInput.x, 0f, movementInput.y);
+            Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
             movement.y = 0f;
             _isRunning = movement.magnitude > 0;
 
@@ -198,24 +212,30 @@ public class NetworkPlayerController : NetworkBehaviour
 
     }
 
-    public void OnDash(InputValue value = null)
+    public void Dash()
     {
 
-        if (value != null && !skill.isHideSkills[0])
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            skill.HideSkillSetting(0);
-            return;
+            if (!skill.isHideSkills[0])
+            {
+                skill.HideSkillSetting(0);
+                return;
+            }
+
+            if (skill.getSkillTimes[0] > 0)
+                return;
+            Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+            float dashDistance = 5f;  // 대시 거리
+            float dashDuration = 0.2f; // 대시 지속 시
+
+            // 대시 목적지 위치 계산
+            Vector3 dashDestination = transform.position + dashDirection * dashDistance;
+
+            // 플레이어의 위치를 빠르게 이동하여 대시 실행
+            StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
+
         }
-        if (skill.getSkillTimes[0] > 0) return;
-        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-        float dashDistance = 5f;  // 대시 거리
-        float dashDuration = 0.2f; // 대시 지속 시
-
-        // 대시 목적지 위치 계산
-        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
-
-        // 플레이어의 위치를 빠르게 이동하여 대시 실행
-        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
 
         // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
     }
@@ -237,38 +257,46 @@ public class NetworkPlayerController : NetworkBehaviour
 
     //대시스킬 Shift 추후 변경예정
 
-    public void OnSkillA()
+    public void SkillA()
     {
-        if (!skill.isHideSkills[1])
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            skill.HideSkillSetting(1);
-            return;
+            if (!skill.isHideSkills[1])
+            {
+                skill.HideSkillSetting(1);
+                return;
+            }
+            _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
+            _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
         }
-        _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
-        _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
     }
 
-    public void OnSkillB()
+    public void SkillB()
     {
-        if (!skill.isHideSkills[2])
+        if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            skill.HideSkillSetting(2);
-            return;
+            if (!skill.isHideSkills[2])
+            {
+                skill.HideSkillSetting(2);
+                return;
+            }
+            if (skill.getSkillTimes[2] > 0) return;
+            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
         }
-        if (skill.getSkillTimes[2] > 0) return;
-        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-
     }
 
-    public void OnClick()
+    public void Click()
     {
-        _animator.SetTrigger("onWeaponAttack");
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+            _animator.SetTrigger("onWeaponAttack");
     }
+
     public void SkillClick()
     {
-
-        _animator.SetTrigger("onWeaponAttack");
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+            _animator.SetTrigger("onWeaponAttack");
     }
+
     IEnumerator ActionTimer(string actionName, float time)
     {
         isAction = true;
@@ -294,8 +322,31 @@ public class NetworkPlayerController : NetworkBehaviour
         Move(movementInput);
     }
 
+    [ServerRpc]
+    private void DashServerRPC()
+    {
+        Dash();
+    }
 
+    [ServerRpc]
+    private void SkillAServerRPC()
+    {
+        SkillA();
+    }
+    [ServerRpc]
+    private void SkillBServerRPC()
+    {
+        SkillB();
+    }
+    [ServerRpc]
+    private void ClickServerRPC()
+    {
+        Click();
+    }
 
-
-
+    [ServerRpc]
+    private void SkillClickServerRPC()
+    {
+        SkillClick();
+    }
 }

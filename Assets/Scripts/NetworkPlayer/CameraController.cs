@@ -22,7 +22,6 @@ public class CameraController : MonoBehaviour
         {
 
             m_MainCamera.Follow = transform;
-            m_MainCamera.LookAt = transform;
         }
     }
 

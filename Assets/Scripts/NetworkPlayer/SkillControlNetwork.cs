@@ -1,9 +1,10 @@
 using System.Collections;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillControlNetwork : MonoBehaviour
+public class SkillControlNetwork : NetworkBehaviour
 {
     //비활성화 연출에 사용될 이미지를 타나내거나 숨겨주기 위해 게임오브젝트 만듬
     public GameObject[] hideSkillButtons;
@@ -20,14 +21,24 @@ public class SkillControlNetwork : MonoBehaviour
     private float[] skillTimes = { 2, 4, 4, 0 };
     public float[] getSkillTimes = { 0, 0, 0, 0, };
 
+    public override void OnNetworkSpawn()
+    {
+        if (IsLocalPlayer)
+        {
+            playerSkill = transform.root.GetComponent<NetworkPlayerController>();
+            //playerSkill = GameObject.FindWithTag("Player").GetComponent<NetworkPlayerController>();
+            for (int i = 0; i < textPros.Length; i++)
+            {
+                hideSkillTimeTexts[i] = textPros[i].GetComponent<TextMeshProUGUI>();
+                hideSkillButtons[i].SetActive(false);
+            }
+        }
+
+    }
+
     void Start()
     {
-        playerSkill = GameObject.FindWithTag("Player").GetComponent<NetworkPlayerController>();
-        for (int i = 0; i < textPros.Length; i++)
-        {
-            hideSkillTimeTexts[i] = textPros[i].GetComponent<TextMeshProUGUI>();
-            hideSkillButtons[i].SetActive(false);
-        }
+
     }
 
     // Update is called once per frame
@@ -42,13 +53,13 @@ public class SkillControlNetwork : MonoBehaviour
             switch (skillNum)
             {
                 case 0:
-                    playerSkill.OnDash();
+                    playerSkill.Dash();
                     break;
                 case 1:
-                    playerSkill.OnSkillA();
+                    playerSkill.SkillA();
                     break;
                 case 2:
-                    playerSkill.OnSkillB();
+                    playerSkill.SkillB();
                     break;
                 case 3:
                     playerSkill.SkillClick();
