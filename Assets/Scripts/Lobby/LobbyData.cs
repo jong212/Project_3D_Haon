@@ -5,8 +5,8 @@ using Unity.Services.Lobbies.Models;
 public class LobbyData
 {
     public int mapIndex;
-    private string relayJoinCode;
-    private string sceneName;
+    private string relayJoinCode = string.Empty;
+    private string sceneName = string.Empty;
 
 
     public int MapIndex
@@ -27,7 +27,7 @@ public class LobbyData
         set => sceneName = value;
     }
 
-    public void Initalize(int mapIndex)
+    public void Initialize(int mapIndex)
     {
         this.mapIndex = mapIndex;
     }
@@ -39,19 +39,22 @@ public class LobbyData
 
     public void UpdateState(Dictionary<string, DataObject> lobbyData)
     {
-        if (lobbyData.ContainsKey("MapIndex"))
+        if (lobbyData.TryGetValue("MapIndex", out DataObject mapIndexData))
         {
-            mapIndex = int.Parse(lobbyData["MapIndex"].Value);
+            if (int.TryParse(mapIndexData.Value, out int parsedMapIndex))
+            {
+                mapIndex = parsedMapIndex;
+            }
         }
 
-        if (lobbyData.ContainsKey("RelayJoinCode"))
+        if (lobbyData.TryGetValue("RelayJoinCode", out DataObject relayJoinCodeData))
         {
-            relayJoinCode = lobbyData["RelayJoinCode"].Value;
+            relayJoinCode = relayJoinCodeData.Value ?? string.Empty;
         }
 
-        if (lobbyData.ContainsKey("SceneName"))
+        if (lobbyData.TryGetValue("SceneName", out DataObject sceneNameData))
         {
-            sceneName = lobbyData["SceneName"].Value;
+            sceneName = sceneNameData.Value ?? string.Empty;
         }
     }
 

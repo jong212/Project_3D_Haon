@@ -36,30 +36,64 @@ public class NetworkPlayerController : NetworkBehaviour
 
     private CinemachineVirtualCamera virtualCamera;
 
+    [SerializeField]
+    private Vector2 defaultInitialPlanePosition = new Vector2(-14, -19);
+    [SerializeField]
+    private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
+
+    [SerializeField]
+    private NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>();
+
+    private Vector3 oldInputPosition;
+    private Vector3 oldInputRotation;
+
+    private void Awake()
+    {
+        
+    }
+    private void Start()
+    {
+        if (IsClient && IsOwner)
+        {
+            _characterController = GetComponent<CharacterController>();
+            _animator = GetComponent<Animator>();
+            transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
+            if (skillControlObject != null)
+            {
+                skill = skillControlObject.GetComponent<SkillControlNetwork>();
+            }
+            // 스킬 쿨다운을 관리하는 코루틴 시작
+            StartCoroutine(SkillCooldown());
+        }
+    }
+    void Update()
+    {
+        if (!IsLocalPlayer)
+            return;
+        HandleInput();
+        ApplyGravity();
+
+        if (IsServer)
+        {
+            networkPosition.Value = transform.position;
+            networkRotation.Value = transform.rotation;
+        }
+        else
+        {
+            transform.position = networkPosition.Value;
+            transform.rotation = networkRotation.Value;
+        }
+    }
+
+
+
     public override void OnNetworkSpawn()
     {
         if (IsLocalPlayer)
         {
-            _characterController = GetComponent<CharacterController>();
+
             MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
                                                      // DataManager를 사용하여 플레이어 데이터 가져오기
-            _animator = GetComponent<Animator>();
-
-            if (_characterController == null)
-            {
-                // CharacterController 컴포넌트가 없으면 추가합니다.
-                _characterController = gameObject.AddComponent<CharacterController>();
-                Debug.LogWarning("CharacterController component was missing. It has been added.");
-            }
-
-            if (_animator == null)
-            {
-                // Animator 컴포넌트가 없으면 추가합니다.
-                _animator = gameObject.AddComponent<Animator>();
-                Debug.LogWarning("Animator component was missing. It has been added.");
-            }
-
-            transform.position = new Vector3(-17, 1, -154);
 
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
@@ -68,27 +102,13 @@ public class NetworkPlayerController : NetworkBehaviour
                 // Virtual Camera의 Follow 및 Look At 필드를 로컬 플레이어로 설정합니다
                 virtualCamera.Follow = transform;
             }
-
-
-            //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
-            //hpObject.transform.SetParent(_hpCanvas.transform);
-            //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
-            //healthBar.SetTarget(transform);
-
-            if (skillControlObject != null)
-            {
-                skill = skillControlObject.GetComponent<SkillControlNetwork>();
-            }
-
-            StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
-
-
-
         }
 
     }
 
-    
+
+
+
     // 스킬 쿨다운을 관리하는 코루틴
     IEnumerator SkillCooldown()
     {
@@ -121,38 +141,38 @@ public class NetworkPlayerController : NetworkBehaviour
         _str = playerData.str;
     }
 
-    void Update()
-    {
-        if (!IsLocalPlayer) return;
 
-        HandleInput();
-    }
 
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            DashServerRPC();
+            if (IsOwner)
+                DashServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SkillAServerRPC();
+            if (IsOwner)
+                SkillAServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SkillBServerRPC();
+            if (IsOwner)
+                SkillBServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            ClickServerRPC();
+            if (IsOwner)
+                ClickServerRPC();
         }
         if (Input.GetKeyDown(KeyCode.Mouse1))
         {
-            SkillClickServerRPC();
+            if (IsOwner)
+                SkillClickServerRPC();
         }
 
-        MoveServerRPC();
-        ApplyGravityServerRPC();
+        if (IsOwner)
+            MoveServerRPC(new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")));
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수
@@ -190,12 +210,12 @@ public class NetworkPlayerController : NetworkBehaviour
 
     #region SEND_MESSAGE
 
-    void Move()
+    void Move(Vector3 movementInput)
     {
 
         // 입력 받은 값을 가져오기
-        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-        movement.y = 0f;
+        Vector3 movement = new Vector3(movementInput.x, 0f, movementInput.z);
+        //movement.y = 0f;
         _isRunning = movement.magnitude > 0;
 
         bool hasControl = (movement != Vector3.zero);
@@ -315,9 +335,12 @@ public class NetworkPlayerController : NetworkBehaviour
     #endregion
 
     [ServerRpc]
-    private void MoveServerRPC(ServerRpcParams rpcParams = default)
+    private void MoveServerRPC(Vector3 movementInput, ServerRpcParams rpcParams = default)
     {
-        Move();
+        if (IsServer)
+        {
+            Move(movementInput);
+        }
     }
 
     [ServerRpc]

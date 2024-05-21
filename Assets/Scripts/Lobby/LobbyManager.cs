@@ -35,14 +35,15 @@ public class LobbyManager : Singleton<LobbyManager>
         {
             lobby = await LobbyService.Instance.CreateLobbyAsync("Lobby", maxPlayer, options);
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
+            Debug.LogError($"로비 생성 실패 : {ex.Message}");
             return false;
         }
 
         Debug.Log($"Lobby create with lobby ID : {lobby.Id}");
 
-        heartbeatCoroutine = StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 1f));
+        heartbeatCoroutine = StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 6f));
         refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 1f));
 
         return true;
@@ -50,41 +51,65 @@ public class LobbyManager : Singleton<LobbyManager>
 
 
 
-    private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSecond)
+    private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSeconds)
     {
         while (true)
         {
-            Debug.Log("Heartbeat");
-            LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
-            yield return new WaitForSecondsRealtime(waitTimeSecond);
+            try
+            {
+                LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"heartbeat 전송 실패 : {ex.Message}");
+            }
+            yield return new WaitForSecondsRealtime(waitTimeSeconds);
         }
     }
 
-    private IEnumerator RefreshLobbyCoroutine(string lobbyId, float waitTimeSecond)
+    private IEnumerator RefreshLobbyCoroutine(string lobbyId, float waitTimeSeconds)
     {
         while (true)
         {
-            Task<Lobby> task = LobbyService.Instance.GetLobbyAsync(lobbyId);
-            yield return new WaitUntil(() => task.IsCompleted);
-            Lobby newLobby = task.Result;
+            var refreshTask = RefreshLobbyAsync(lobbyId);
+
+            yield return new WaitUntil(() => refreshTask.IsCompleted);
+
+            if (refreshTask.IsFaulted)
+            {
+                Debug.Log($"로비 새로고침 실패 : {refreshTask.Exception}");
+            }
+
+            yield return new WaitForSecondsRealtime(waitTimeSeconds);
+        }
+    }
+
+    private async Task RefreshLobbyAsync(string lobbyId)
+    {
+        try
+        {
+            Lobby newLobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
+
             if (newLobby.LastUpdated > lobby.LastUpdated)
             {
                 lobby = newLobby;
                 LobbyEvents.OnLobbyUpdated?.Invoke(lobby);
             }
-            yield return new WaitForSecondsRealtime(waitTimeSecond);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"로비 새로고침 실패 : {ex.Message}");
         }
     }
+
+
 
     private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data)
     {
         Dictionary<string, PlayerDataObject> playerData = new Dictionary<string, PlayerDataObject>();
         foreach (var (key, value) in data)
         {
-            playerData.Add(key, new PlayerDataObject(
-                visibility: PlayerDataObject.VisibilityOptions.Member,
-                value: value
-                ));
+            playerData.Add(key, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, value));
         }
 
         return playerData;
@@ -95,10 +120,7 @@ public class LobbyManager : Singleton<LobbyManager>
         Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>();
         foreach (var (key, value) in data)
         {
-            lobbyData.Add(key, new DataObject(
-                visibility: DataObject.VisibilityOptions.Member,
-                value: value
-                ));
+            lobbyData.Add(key, new DataObject(DataObject.VisibilityOptions.Member, value));
         }
 
         return lobbyData;
@@ -116,21 +138,22 @@ public class LobbyManager : Singleton<LobbyManager>
 
     public async Task<bool> JoinLobby(string code, Dictionary<string, string> playerData)
     {
-        JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions();
-        Player player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData));
-        options.Player = player;
+        JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions
+        {
+            Player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData))
+        };
 
         try
         {
             lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code, options);
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
-
+            Debug.LogError($"로비 참가 실패 : {ex.Message}");
             return false;
         }
-        refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 1f));
 
+        refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 5f)); // Interval increased to 5 seconds
         return true;
     }
 
@@ -164,8 +187,9 @@ public class LobbyManager : Singleton<LobbyManager>
             await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, playerId, options);
 
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
+            Debug.LogError($"플레이어 데이터 업데이트 실패 : {ex.Message}");
             return false;
         }
 
@@ -187,8 +211,9 @@ public class LobbyManager : Singleton<LobbyManager>
         {
             lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, options);
         }
-        catch (System.Exception)
+        catch (System.Exception ex)
         {
+            Debug.LogError($"로비 데이터 업데이트 실패 : {ex.Message}");
             return false;
 
         }

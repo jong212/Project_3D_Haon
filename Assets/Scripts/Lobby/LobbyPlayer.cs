@@ -4,28 +4,32 @@ using UnityEngine;
 
 public class LobbyPlayer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _playerName;
-    [SerializeField] private GameObject isReadyParticle;
+    [SerializeField] private TextMeshProUGUI playerNameText;
+    [SerializeField] private GameObject readyParticle;
     [SerializeField] private LobbyCharacterPointer characterPointer;
 
-    private LobbyPlayerData _data;
+    private LobbyPlayerData playerData;
     public string PlayerId { get; private set; }
     public void SetData(LobbyPlayerData data)
     {
-        _data = data;
-        PlayerId = _data.Id;
-        _playerName.text = _data.GamerTag;
+        playerData = data;
+        PlayerId = playerData.Id;
+
+        if (playerNameText != null)
+        {
+            playerNameText.text = playerData.GamerTag;
+        }
 
         if (characterPointer != null)
         {
             characterPointer.PlayerId = PlayerId;
         }
 
-        if (data.IsReady)
+        if (data.IsReady && readyParticle != null)
         {
-            if (isReadyParticle != null)
+            if (readyParticle != null)
             {
-                isReadyParticle.SetActive(true);
+                readyParticle.SetActive(true);
             }
 
         }

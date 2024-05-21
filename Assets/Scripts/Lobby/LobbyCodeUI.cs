@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -40,13 +41,17 @@ public class LobbyCodeUI : MonoBehaviour
 
     private void OnDisable()
     {
-        readyButton.onClick.RemoveAllListeners();
-        leftButton.onClick.RemoveAllListeners();
-        rightButton.onClick.RemoveAllListeners();
-        startButton.onClick.RemoveAllListeners();
+        readyButton.onClick.RemoveListener(OnReadyPressed);
+
+        if (GameLobbyManager.Instance.IsHost)
+        {
+            leftButton.onClick.RemoveListener(OnLeftButtonClicked);
+            rightButton.onClick.RemoveListener(OnRightButtonClicked);
+            startButton.onClick.RemoveListener(OnStartButtonClicked);
+            LobbyEvent.OnLobbyReady -= OnLobbyReady;
+        }
 
         LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
-        LobbyEvent.OnLobbyReady -= OnLobbyReady;
     }
 
     async void Start()
@@ -60,7 +65,14 @@ public class LobbyCodeUI : MonoBehaviour
         }
         else
         {
-            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+            try
+            {
+                await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+            }
+            catch (Exception ex)
+            {
+                Debug.Log($"선택 맵 초기화에 실패 : {ex.Message}");
+            }
         }
 
     }
@@ -78,7 +90,14 @@ public class LobbyCodeUI : MonoBehaviour
         }
 
         UpdateMap();
-        await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+        try
+        {
+            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log($"맵 바꾸기 실패 : {ex.Message}");
+        }
     }
 
 
@@ -96,11 +115,18 @@ public class LobbyCodeUI : MonoBehaviour
 
         UpdateMap();
 
-        await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+        try
+        {
+            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log($"맵 바꾸기 실패 : {ex.Message}");
+        }
     }
     private void UpdateMap()
     {
-        mapImage.GetComponent<Image>().sprite = mapSelectionData.Maps[currentMapIndex].MapImage;
+        mapImage.sprite = mapSelectionData.Maps[currentMapIndex].MapImage;
         mapName.text = mapSelectionData.Maps[currentMapIndex].MapName;
     }
 
@@ -112,11 +138,18 @@ public class LobbyCodeUI : MonoBehaviour
 
     private async void OnReadyPressed()
     {
-        bool succeed = await GameLobbyManager.Instance.SetPlayerReady();
-
-        if (succeed)
+        try
         {
-            readyButton.gameObject.SetActive(false);
+            bool succeed = await GameLobbyManager.Instance.SetPlayerReady();
+
+            if (succeed)
+            {
+                readyButton.gameObject.SetActive(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"준비 실패 : {ex.Message}");
         }
 
     }
@@ -128,6 +161,13 @@ public class LobbyCodeUI : MonoBehaviour
 
     private async void OnStartButtonClicked()
     {
-        await GameLobbyManager.Instance.StartGame();
+        try
+        {
+            await GameLobbyManager.Instance.StartGame();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"시작 실패 : {ex.Message}");
+        }
     }
 }
