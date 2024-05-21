@@ -45,8 +45,8 @@ public class BoxInfo : MonoBehaviour
     IEnumerator BoxEffectDestory()
     {
         particle = Instantiate(effect, transform.position, Quaternion.identity);
-        yield return new WaitForSeconds(0.5f);
         gameObject.SetActive(false);
+        yield return new WaitForSeconds(0.5f);
         Destroy(particle.gameObject, 1.0f);
     }
 

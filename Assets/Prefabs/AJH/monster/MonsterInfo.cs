@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static DataManager;
 
@@ -11,8 +8,9 @@ public class MonsterInfo : MonoBehaviour
     public int _hp; // hp 변수를 _hp로 변경
     public int _level; // level 변수를 _level로 변경
     public int _str; // str 변수를 _str로 변경
-    public Animator animator;
 
+    public Animator animator;
+    public Transform wayPoint;
 
     void Awake()
     {

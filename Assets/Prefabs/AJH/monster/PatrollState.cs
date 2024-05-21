@@ -10,6 +10,7 @@ public class PatrollState : StateMachineBehaviour
     //[추격] - 추격 상태로 전환될 때 플레이어의 위치가 필요해서 플레이어의 Transform을 받을 변수 선언
     //근데 나중에 서버 붙이고 하면 플레이어 복제하면 태그 안겹치게 해야 할수도 있음.
     Transform player;
+    Transform WayPoint;
     float chaseRange = 8;
 
     List<Transform> wayPoints = new List<Transform>();
@@ -19,11 +20,13 @@ public class PatrollState : StateMachineBehaviour
     {
         //[추격] - 플레이어 transform 값 받아옴
         player = GameObject.FindGameObjectWithTag("Player").transform;
-
+        MonsterInfo info = animator.gameObject.GetComponent<MonsterInfo>();
+        WayPoint = info.wayPoint;
         agent = animator.GetComponent<NavMeshAgent>();
         timer = 0;
-        GameObject go = GameObject.FindGameObjectWithTag("WayPoint");
-        foreach(Transform t in go.transform)
+            
+
+        foreach (Transform t in WayPoint)
             wayPoints.Add(t);
 
         agent.SetDestination(wayPoints[Random.Range(0, wayPoints.Count)].position);
