@@ -6,22 +6,28 @@ using UnityEngine;
 public class Magnet : MonoBehaviour
 {
     
-    public Transform transform;
+    public Transform transform; 
     public SphereCollider collider;
-    void Start()
+
+
+    void Awake()
     {
         this.collider = GetComponent<SphereCollider>();
-    }
+        
+    }  
 
+        
     
     
     private void OnTriggerStay(Collider other)
     {
         if(other.CompareTag("Player"))
         {
-            transform.DOMove(other.transform.position,1f);
+            transform.DOMove(other.transform.position, 1f);
+            
         }
     }
 
+   
 
 }

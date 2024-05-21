@@ -8,25 +8,18 @@ public class HealingItem : MonoBehaviour
     public BoxCollider healingcollider;
     public ParticleSystem healingEffect;
     Vector3 upposition;
-    public SphereCollider sphereCollider;
-
+    public GameObject healmagnet;
 
     private void Awake()
     {
         upposition.y = transform.position.y;
         this.healingcollider = GetComponent<BoxCollider>();
     }
-    void Start()
+    private void OnEnable()
     {
-        
+        healmagnet.SetActive(false);
+        Invoke("HealMagnetOn", 2f);
     }
-
-    
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("Player"))
@@ -34,7 +27,7 @@ public class HealingItem : MonoBehaviour
             healingEffect.Play();
             healingcollider.enabled = false;
             GetHeal();
-            sphereCollider.enabled = false;
+            healmagnet.SetActive(false);
 
         }
     }
@@ -48,6 +41,12 @@ public class HealingItem : MonoBehaviour
   
     void GetHealing()
     {
+        
+        healingcollider.enabled = true;      
         gameObject.SetActive(false);
+    }
+    void HealMagnetOn()
+    {
+        healmagnet.SetActive(true);
     }
 }

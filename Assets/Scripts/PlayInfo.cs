@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 public class PlayInfo : MonoBehaviour
 {
+
     public static int coins;
     public static int jewels;
     public TextMeshProUGUI Cointext;

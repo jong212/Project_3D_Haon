@@ -14,19 +14,21 @@ public class ItemDrop : MonoBehaviour
     private Vector3 hideposition = new Vector3(0,-100,0);
     private int randomCoins;
     private int randomHeals;
+    
     void Start()
     {
-        randomCoins = Random.Range(0, 6);
-        randomHeals = Random.Range(0, 6);
+        boxtransform = GetComponent<Transform>();
+        randomCoins = Random.Range(5, 10);
+        randomHeals = Random.Range(0, 3);
 
-        coins = new GameObject[randomCoins];
-        heals = new GameObject[randomHeals];
-        for (int i = 0; i < randomCoins; i++)
+        coins = new GameObject[20];
+        heals = new GameObject[10];
+        for (int i = 0; i < 20; i++)
         {
             coins[i] = Instantiate(coinsPrefeb, boxtransform.position, Quaternion.identity);
             coins[i].SetActive(false);
         }
-        for(int i = 0;i<randomHeals; i++)
+        for(int i = 0;i<10; i++)
         {
             heals[i] = Instantiate(healingPrdfab, boxtransform.position, Quaternion.identity);
             heals[i].SetActive(false);
@@ -34,28 +36,48 @@ public class ItemDrop : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.L))
-        {
-            ItemSpawn();
-        }
+        
     }
+     
 
-
-    void ItemSpawn()
+    public void ItemSpawn(Transform transform)
     {
-       
+        randomCoins = Random.Range(5, 10);
+        randomHeals = Random.Range(0, 3);
+
         for (int i = 0;i < randomCoins;i++)
         {
-            coins[i].SetActive(true);
+            if (coins[i].activeSelf == false)
+            {
+                coins[i].transform.position = transform.position;
+                coins[i].SetActive(true);
+            }
+            else
+            {
+                i++;
+                continue;
+            }
 
-            randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + boxtransform.position;
+            randomposition = (Vector3)Random.insideUnitSphere.normalized * 3 + transform.position;
             randomposition.y = 1f;
             coins[i].transform.DOJump(randomposition, 2f, 1, 1f);
+            
         }
+
         for (int i = 0;i<randomHeals;i++)
         {
+            if (heals[i].activeSelf == false)
+            {
+                heals[i].transform.position = transform.position;
+                heals[i].SetActive(true);
+            }
+            else
+            {
+                i++;
+                continue;
+            }
             heals[i].SetActive(true);
-            randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + boxtransform.position;
+            randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + transform.position;
             randomposition.y = 1f;
             heals[i].transform.DOJump(randomposition, 2f, 1, 1f);
         }

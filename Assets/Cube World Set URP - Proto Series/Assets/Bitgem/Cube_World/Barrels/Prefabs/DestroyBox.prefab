@@ -195,7 +195,7 @@ Transform:
   m_GameObject: {fileID: 1855122608725610}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4522292095783808}
@@ -245,9 +245,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effect: {fileID: 834107697825424782, guid: e11bc7d1eaf0889408fca267f58e9ec7, type: 3}
   boxHp: 5
-  itemProbability: 2
+  itemProbability: 1
   drapItems:
-  - {fileID: 1994167017423174, guid: 187a65e427b09c648af34d93f2a9eb18, type: 3}
+  - {fileID: 3978031422228638684, guid: 65cfeab5c992113408703e538fae9e72, type: 3}
+  - {fileID: 2644209103216203548, guid: c0e7a2c9358c2e343add6587edeb2b17, type: 3}
 --- !u!65 &986670738
 BoxCollider:
   m_ObjectHideFlags: 0

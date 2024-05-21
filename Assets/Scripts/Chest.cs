@@ -9,16 +9,14 @@ public class Chest : MonoBehaviour
     public GameObject button;
     public BoxCollider ChestCollider;
     public GameObject Chesttop;
-    Vector3 Openposition;
-    public Vector3 Openrotation;
+    
+    Vector3 Openrotation;
     private bool isChest;
     public GameObject jewel;
     private void Awake()
     {
-        //Openposition.x = Chesttop.transform.position.x;
-        //Openposition.y = Chesttop.transform.position.y + 0.5f;
-        //Openposition.z = Chesttop.transform.position.z+0.5f;
-        Openrotation = new Vector3(-90,-180,0);
+       
+        Openrotation = new Vector3(-90,0,0);
         isChest=false;
         
     }
@@ -56,8 +54,8 @@ public class Chest : MonoBehaviour
     }
     void BoxOpen()
     {
-        //Chesttop.transform.DOMove(Openposition, 2.0f);
-        Chesttop.transform.DORotate(Openrotation, 2.0f);
+        
+        Chesttop.transform.DOLocalRotate(Openrotation, 2.0f);
         Invoke("JewelAppear", 0.5f);
     }
     void JewelAppear()

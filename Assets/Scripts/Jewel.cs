@@ -5,18 +5,21 @@ using DG.Tweening;
 using UnityEngine.UIElements;
 public class Jewel : MonoBehaviour
 {
+
     Vector3 jewelsposition;
     public float rotateSpeed = 100.0f;
     public BoxCollider jewelcollider;
     Vector3 upposition;
     public ParticleSystem jewelEffect;
+    public GameObject magnet;
+
     private void Awake()
     {
         this.jewelcollider = GetComponent<BoxCollider>();
-        jewelsposition.x = transform.position.x;
-        jewelsposition.y = transform.position.y;
-        jewelsposition.z = transform.position.z - 2;
         upposition.y = transform.position.y;
+        jewelsposition = this.transform.localPosition;
+        
+        jewelsposition.z += 2;
     }
     private void OnEnable()
     {
@@ -32,7 +35,8 @@ public class Jewel : MonoBehaviour
    
     public void Appear()
     {
-        transform.DOJump(jewelsposition, 2f, 1, 2f);
+         
+        transform.DOLocalJump(jewelsposition, 2f, 1, 2f);
         
     }
     private void OnTriggerEnter(Collider other)
@@ -43,6 +47,7 @@ public class Jewel : MonoBehaviour
             GetJewel();
             jewelEffect.Play();
             jewelcollider.enabled = false;
+            
         }
     }
     void GetJewel()

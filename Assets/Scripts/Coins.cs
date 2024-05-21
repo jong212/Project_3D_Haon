@@ -7,31 +7,27 @@ using DG.Tweening;
 public class Coins : MonoBehaviour
 {
     public float rotateSpeed = 100.0f;
-    Vector3 upposition;
+   
     public BoxCollider coincollider;
-    public ParticleSystem coinEffect;
-    Vector3 randomposition;
+    public GameObject coinEffect;
     public GameObject magnet;
-    public SphereCollider sphereCollider;
+    
     private void Awake()
     {
         this.coincollider = GetComponent<BoxCollider>();
-        upposition.y=transform.position.y;
-
-
+        
     }
-   
+    private void OnEnable()
+    {
+        coinEffect.SetActive(false);
+        magnet.SetActive(false);
+        Invoke("MagnetOn", 2f);
+    }
+
     void Update()
     {
         transform.Rotate(Vector3.up*rotateSpeed*Time.deltaTime);
 
-        if(Input.GetKeyDown(KeyCode.N)) 
-        {
-            randomposition = (Vector3)Random.insideUnitSphere.normalized*2+transform.position;
-            randomposition.y = 0.3f;
-            transform.DOJump(randomposition, 1f, 1, 2f);
-        }
-        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -40,25 +36,29 @@ public class Coins : MonoBehaviour
         {
             PlayInfo.CoinPlus();
             GetCoin();
-            coinEffect.Play();
             coincollider.enabled = false;
-            sphereCollider.enabled = false;
+            magnet.SetActive(false);
+            coinEffect.SetActive(true);
+           
         }
     }
     void GetCoin()
     {
-        transform.DOMoveY(upposition.y+2,2.0f);
+        transform.DOMoveY(transform.position.y + 2,2.0f);
         rotateSpeed = 500.0f;
         Invoke("EraseCoin", 2.0f);
     }
     void EraseCoin()
     {
+       
+        coincollider.enabled =true; 
         gameObject.SetActive(false);
-        magnet.SetActive(false);
+       
     }
-    void SpawnCoins()
+    
+    void MagnetOn()
     {
-        transform.DOJump((Vector2)Random.insideUnitCircle, 2f, 1, 2f);
+        magnet.SetActive(true);
+     
     }
-
 }

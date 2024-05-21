@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class BoxInfo : MonoBehaviour
 {
-    
+    public GameObject itemDrop;
+    public Transform box;
     [SerializeField] private ParticleSystem effect;
     
     [SerializeField] private float boxHp = 5;
@@ -14,7 +15,7 @@ public class BoxInfo : MonoBehaviour
     private ParticleSystem particle;
     private int itemDrap;
     private int itemNum;
-
+   
     public void BoxDamaged(int damage)
     {
         boxHp -= damage;
@@ -53,12 +54,15 @@ public class BoxInfo : MonoBehaviour
 
     void DrapItem()
     {
-        itemDrap = Random.Range(0, itemProbability);
-        if(itemDrap == 0)
-        {
-          itemNum = drapItems.Length;
-          itemDrap = Random.Range(0, itemNum);
-          Instantiate(drapItems[itemDrap], transform.position, Quaternion.identity);
-        }
+        //itemDrap = Random.Range(0, itemProbability);
+        //if(itemDrap == 0)
+        //{
+        //  itemNum = drapItems.Length;
+        //  itemDrap = Random.Range(0, itemNum);
+        //  Instantiate(drapItems[itemDrap], transform.position, Quaternion.identity);
+        //}
+        itemDrop.GetComponent<ItemDrop>().ItemSpawn(box);
+
+
     }
 }

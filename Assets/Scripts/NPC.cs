@@ -50,7 +50,7 @@ public class NPC : MonoBehaviour
     public GameObject chest;
     public ParticleSystem chesteffect;
 
-    public Transform TR;
+  
     
     void Update()
     {
@@ -172,7 +172,7 @@ public class NPC : MonoBehaviour
         else if (IsNear == true && talkCount == 0 && talkIndex == 2 && Input.GetKeyDown(KeyCode.F))
         {
             talkcamera.Priority = 2;
-            TalkButton.SetActive(true);
+            TalkButton.SetActive(false);
             Invoke("talkballonAppear", 2f);
             player.GetComponent<PlayerInput>().enabled = false;
             talkCount += 1;
@@ -185,16 +185,10 @@ public class NPC : MonoBehaviour
             talkCount = 0;
         }
 
-        //if(Input.GetKeyDown(KeyCode.M)) 
-        //{
-        //    ShakePoint();
-        //}
+       
     }
 
-    void ShakePoint()
-    {
-        TR.DOShakePosition(2, 1, 10, 5, false, true);
-    }
+  
     IEnumerator ShakeBullon()
     {
         float time = 3f;
