@@ -114,28 +114,67 @@ public class NetworkPlayerController : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-        //Vector2 movementInput = playerControls.Player.Move.ReadValue<Vector2>();
+
         if (IsServer && IsLocalPlayer)
         {
-
             Move();
             ApplyGravity();
             if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
-            Dash();
-            SkillA();
-            SkillB();
-            Click();
-            SkillClick();
+            //Dash();
+            //SkillA();
+            //SkillB();
+            //Click();
+            //SkillClick();
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                Dash();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                SkillA();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                SkillB();
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                Click();
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                SkillClick();
+            }
         }
         else if (IsLocalPlayer)
         {
             MoveServerRPC();
-            DashServerRPC();
-            SkillAServerRPC();
-            SkillBServerRPC();
-            ClickServerRPC();
-            SkillClickServerRPC();
             ApplyGravityServerRPC();
+            //DashServerRPC();
+            //SkillAServerRPC();
+            //SkillBServerRPC();
+            //ClickServerRPC();
+            //SkillClickServerRPC();
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                DashServerRPC();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                SkillAServerRPC();
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                SkillBServerRPC();
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                ClickServerRPC();
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                SkillClickServerRPC();
+            }
         }
     }
 
@@ -202,29 +241,27 @@ public class NetworkPlayerController : NetworkBehaviour
     public void Dash()
     {
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            if (!skill.isHideSkills[0])
-            {
-                skill.HideSkillSetting(0);
-                return;
-            }
+        //if (!skill.isHideSkills[0])
+        //{
+        //    skill.HideSkillSetting(0);
+        //    return;
+        //}
 
-            if (skill.getSkillTimes[0] > 0)
-                return;
-            Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-            float dashDistance = 5f;  // 대시 거리
-            float dashDuration = 0.2f; // 대시 지속 시
+        if (skill.getSkillTimes[0] > 0)
+            return;
 
-            // 대시 목적지 위치 계산
-            Vector3 dashDestination = transform.position + dashDirection * dashDistance;
+        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+        float dashDistance = 5f;  // 대시 거리
+        float dashDuration = 0.2f; // 대시 지속 시간
 
-            // 플레이어의 위치를 빠르게 이동하여 대시 실행
-            StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
+        // 대시 목적지 위치 계산
+        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
 
-        }
+        // 플레이어의 위치를 빠르게 이동하여 대시 실행
+        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
 
-        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
+        skill.isHideSkills[0] = true;
+        skill.getSkillTimes[0] = skill.skillTimes[0];
     }
 
     // 플레이어를 대시 목적지 위치로 부드럽게 이동시키는 코루틴
@@ -246,42 +283,39 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public void SkillA()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (!skill.isHideSkills[1])
-            {
-                skill.HideSkillSetting(1);
-                return;
-            }
-            _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
-            _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
-        }
+        //if (!skill.isHideSkills[1])
+        //{
+        //    skill.HideSkillSetting(1);
+        //    return;
+        //}
+        _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
+        _animator.Play("ChargeSkillA_Skill");
     }
 
     public void SkillB()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (!skill.isHideSkills[2])
-            {
-                skill.HideSkillSetting(2);
-                return;
-            }
-            if (skill.getSkillTimes[2] > 0) return;
-            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-        }
+        //if (!skill.isHideSkills[2])
+        //{
+        //    skill.HideSkillSetting(2);
+        //    return;
+        //}
+        if (skill.getSkillTimes[2] > 0) return;
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
     }
 
     public void Click()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            _animator.SetTrigger("onWeaponAttack");
+
+        _animator.SetTrigger("onWeaponAttack");
+
+
+
     }
 
     public void SkillClick()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-            _animator.SetTrigger("onWeaponAttack");
+        _animator.SetTrigger("onWeaponAttack");
+
     }
 
     IEnumerator ActionTimer(string actionName, float time)
@@ -304,40 +338,40 @@ public class NetworkPlayerController : NetworkBehaviour
     #endregion
 
     [ServerRpc]
-    private void MoveServerRPC()
+    private void MoveServerRPC(ServerRpcParams rpcParams = default)
     {
         Move();
     }
 
     [ServerRpc]
-    private void DashServerRPC()
+    private void DashServerRPC(ServerRpcParams rpcParams = default)
     {
         Dash();
     }
 
     [ServerRpc]
-    private void SkillAServerRPC()
+    private void SkillAServerRPC(ServerRpcParams rpcParams = default)
     {
         SkillA();
     }
     [ServerRpc]
-    private void SkillBServerRPC()
+    private void SkillBServerRPC(ServerRpcParams rpcParams = default)
     {
         SkillB();
     }
     [ServerRpc]
-    private void ClickServerRPC()
+    private void ClickServerRPC(ServerRpcParams rpcParams = default)
     {
         Click();
     }
 
     [ServerRpc]
-    private void SkillClickServerRPC()
+    private void SkillClickServerRPC(ServerRpcParams rpcParams = default)
     {
         SkillClick();
     }
     [ServerRpc]
-    private void ApplyGravityServerRPC()
+    private void ApplyGravityServerRPC(ServerRpcParams rpcParams = default)
     {
         ApplyGravity();
     }
