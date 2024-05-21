@@ -1,21 +1,13 @@
+
 using TMPro;
 using UnityEngine;
 
 public class LobbyPlayer : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _playerName;
-    [SerializeField] private Renderer isReadyRenderer;
+    [SerializeField] private GameObject isReadyParticle;
 
-
-    private MaterialPropertyBlock propertyBlock;
     private LobbyPlayerData _data;
-
-    private void Start()
-    {
-
-        propertyBlock = new MaterialPropertyBlock();
-    }
-
 
     public void SetData(LobbyPlayerData data)
     {
@@ -24,12 +16,11 @@ public class LobbyPlayer : MonoBehaviour
 
         if (data.IsReady)
         {
-            if (isReadyRenderer != null)
+            if (isReadyParticle != null)
             {
-                isReadyRenderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor("_BaseColor", Color.green);
-                isReadyRenderer.SetPropertyBlock(propertyBlock);
+                isReadyParticle.SetActive(true);
             }
+
         }
         gameObject.SetActive(true);
     }

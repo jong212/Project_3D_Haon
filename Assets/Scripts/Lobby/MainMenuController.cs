@@ -52,15 +52,22 @@ public class MainMenuController : MonoBehaviour
 
     private async void SubmitCodeClicked()
     {
+        Debug.Log("Submit code button clicked");
         string code = codeText.text;
         code = code.Substring(0, code.Length - 1);
-
+        Debug.Log($"{code}");
         bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
 
         if (succeeded)
         {
+            Debug.Log("Joined lobby successfully");
             Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
             SceneManager.LoadSceneAsync("LobbyRoomScene");
+        }
+        else
+        {
+            Debug.Log("Joined lobby failed");
+
         }
     }
 

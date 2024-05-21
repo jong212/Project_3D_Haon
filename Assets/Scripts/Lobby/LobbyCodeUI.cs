@@ -100,7 +100,7 @@ public class LobbyCodeUI : MonoBehaviour
     }
     private void UpdateMap()
     {
-        mapImage.color = mapSelectionData.Maps[currentMapIndex].MapThumbnail;
+        mapImage.GetComponent<Image>().sprite = mapSelectionData.Maps[currentMapIndex].MapImage;
         mapName.text = mapSelectionData.Maps[currentMapIndex].MapName;
     }
 

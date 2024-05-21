@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
@@ -51,8 +52,30 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
         localLobbyPlayerData = new LobbyPlayerData();
         localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "JoinPlayer");
 
-        bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
-        return succeeded;
+        //bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
+        //return succeeded;
+
+        try
+        {
+            Debug.Log($"Attempting to join lobby with code: {code} and player data: {localLobbyPlayerData.Serialize()}");
+            bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
+
+            if (succeeded)
+            {
+                Debug.Log("Successfully joined the lobby.");
+            }
+            else
+            {
+                Debug.LogError("Failed to join the lobby.");
+            }
+
+            return succeeded;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Exception occurred while joining the lobby: {ex.Message}");
+            return false;
+        }
 
     }
 
@@ -77,6 +100,22 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             if (lobbyPlayerData.Id == AuthenticationService.Instance.PlayerId)
             {
                 localLobbyPlayerData = lobbyPlayerData;
+
+                
+                var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
+                foreach (var pointer in characterPointers)
+                {
+                    pointer.ActivateCharacterPointer();
+                }
+
+            }
+            else
+            {
+                var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
+                foreach (var pointer in characterPointers)
+                {
+                    pointer.DeActivateCharacterPointer();
+                }
             }
 
             lobbyPlayerDatas.Add(lobbyPlayerData);
@@ -97,11 +136,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             await JoinRelayServer(lobbyData.RelayJoinCode);
             SceneManager.LoadSceneAsync(lobbyData.SceneName);
         }
-
-
     }
-
-
 
     public List<LobbyPlayerData> GetPlayers()
     {
