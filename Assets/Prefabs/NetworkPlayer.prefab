@@ -1579,6 +1579,11 @@ MonoBehaviour:
   - {fileID: 2171889976914637151}
   - {fileID: 8673411744484205414}
   isHideSkills: 00000000
+  skillTimes:
+  - 2
+  - 4
+  - 4
+  - 0
   getSkillTimes:
   - 0
   - 0
@@ -4659,7 +4664,7 @@ GameObject:
   - component: {fileID: 7067538300836379359}
   - component: {fileID: 2070520979420187636}
   - component: {fileID: 22530617702089164}
-  - component: {fileID: 6125677878334073831}
+  - component: {fileID: 5413049802113040066}
   m_Layer: 0
   m_Name: NetworkPlayer
   m_TagString: Player
@@ -4828,7 +4833,7 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &6125677878334073831
+--- !u!114 &5413049802113040066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4837,7 +4842,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5886850508444448070}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   TransitionStateInfoList:

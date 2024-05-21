@@ -27,6 +27,8 @@ public class LobbySpawner : MonoBehaviour
             LobbyPlayerData data = playerDatas[i];
             _player[i].SetData(data);
         }
+
+
     }
 
 }

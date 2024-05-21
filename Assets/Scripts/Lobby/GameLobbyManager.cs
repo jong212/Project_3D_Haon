@@ -52,12 +52,9 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
         localLobbyPlayerData = new LobbyPlayerData();
         localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "JoinPlayer");
 
-        //bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
-        //return succeeded;
-
         try
         {
-            Debug.Log($"Attempting to join lobby with code: {code} and player data: {localLobbyPlayerData.Serialize()}");
+            
             bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
 
             if (succeeded)
@@ -96,27 +93,27 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             {
                 numberOfPlayerReady++;
             }
-            Debug.Log(AuthenticationService.Instance.PlayerId+"입니다");
+            
             if (lobbyPlayerData.Id == AuthenticationService.Instance.PlayerId)
             {
                 localLobbyPlayerData = lobbyPlayerData;
 
-                
+
                 var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
                 foreach (var pointer in characterPointers)
                 {
-                    pointer.ActivateCharacterPointer();
+                    if (pointer.PlayerId == lobbyPlayerData.Id)
+                    {
+                        pointer.ActivateCharacterPointer(); // 자신의 캐릭터 포인터 활성화
+                    }
+                    else
+                    {
+                        pointer.DeActivateCharacterPointer(); // 다른 캐릭터 포인터 비활성화
+                    }
                 }
 
             }
-            else
-            {
-                var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
-                foreach (var pointer in characterPointers)
-                {
-                    pointer.DeActivateCharacterPointer();
-                }
-            }
+            
 
             lobbyPlayerDatas.Add(lobbyPlayerData);
         }
@@ -140,6 +137,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
     public List<LobbyPlayerData> GetPlayers()
     {
+        
         return lobbyPlayerDatas;
     }
 

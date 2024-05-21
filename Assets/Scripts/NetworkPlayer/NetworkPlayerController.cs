@@ -40,6 +40,24 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (IsLocalPlayer)
         {
+            _characterController = GetComponent<CharacterController>();
+            MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
+                                                     // DataManager를 사용하여 플레이어 데이터 가져오기
+            _animator = GetComponent<Animator>();
+
+            if (_characterController == null)
+            {
+                // CharacterController 컴포넌트가 없으면 추가합니다.
+                _characterController = gameObject.AddComponent<CharacterController>();
+                Debug.LogWarning("CharacterController component was missing. It has been added.");
+            }
+
+            if (_animator == null)
+            {
+                // Animator 컴포넌트가 없으면 추가합니다.
+                _animator = gameObject.AddComponent<Animator>();
+                Debug.LogWarning("Animator component was missing. It has been added.");
+            }
 
             transform.position = new Vector3(-17, 1, -154);
 
@@ -50,35 +68,27 @@ public class NetworkPlayerController : NetworkBehaviour
                 // Virtual Camera의 Follow 및 Look At 필드를 로컬 플레이어로 설정합니다
                 virtualCamera.Follow = transform;
             }
+
+
+            //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
+            //hpObject.transform.SetParent(_hpCanvas.transform);
+            //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
+            //healthBar.SetTarget(transform);
+
+            if (skillControlObject != null)
+            {
+                skill = skillControlObject.GetComponent<SkillControlNetwork>();
+            }
+
+            StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
+
+
+
         }
 
     }
 
-    private void Awake()
-    {
-
-        _characterController = GetComponent<CharacterController>();
-        MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
-                                                 // DataManager를 사용하여 플레이어 데이터 가져오기
-        _animator = GetComponent<Animator>();
-    }
-
-    void Start()
-    {
-
-        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
-        hpObject.transform.SetParent(_hpCanvas.transform);
-        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
-        healthBar.SetTarget(transform);
-
-        if (skillControlObject != null)
-        {
-            skill = skillControlObject.GetComponent<SkillControlNetwork>();
-        }
-
-        StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
-
-    }
+    
     // 스킬 쿨다운을 관리하는 코루틴
     IEnumerator SkillCooldown()
     {
@@ -113,69 +123,36 @@ public class NetworkPlayerController : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!IsLocalPlayer) return;
 
-        if (IsServer && IsLocalPlayer)
+        HandleInput();
+    }
+
+    private void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            Move();
-            ApplyGravity();
-            if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
-            //Dash();
-            //SkillA();
-            //SkillB();
-            //Click();
-            //SkillClick();
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                Dash();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                SkillA();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                SkillB();
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                Click();
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                SkillClick();
-            }
+            DashServerRPC();
         }
-        else if (IsLocalPlayer)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            MoveServerRPC();
-            ApplyGravityServerRPC();
-            //DashServerRPC();
-            //SkillAServerRPC();
-            //SkillBServerRPC();
-            //ClickServerRPC();
-            //SkillClickServerRPC();
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                DashServerRPC();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                SkillAServerRPC();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                SkillBServerRPC();
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                ClickServerRPC();
-            }
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                SkillClickServerRPC();
-            }
+            SkillAServerRPC();
         }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SkillBServerRPC();
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            ClickServerRPC();
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            SkillClickServerRPC();
+        }
+
+        MoveServerRPC();
+        ApplyGravityServerRPC();
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수

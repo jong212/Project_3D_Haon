@@ -36,10 +36,10 @@ public class playerAnimator : MonoBehaviour
 
     void Start()
     {
-        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
-        hpObject.transform.SetParent(_hpCanvas.transform);
-        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
-        healthBar.SetTarget(transform);
+        //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
+        //hpObject.transform.SetParent(_hpCanvas.transform);
+        //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
+        //healthBar.SetTarget(transform);
 
         if (skillControlObject != null)
         {

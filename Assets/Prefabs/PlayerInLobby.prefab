@@ -3552,6 +3552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerName: {fileID: 5280234238611137663}
   isReadyParticle: {fileID: 5359227714700984687}
+  characterPointer: {fileID: 4898370549906786250}
 --- !u!1 &3784078228467539417
 GameObject:
   m_ObjectHideFlags: 0
@@ -4435,7 +4436,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44879924f3902d34b8170b4dc8fea1ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterPointer: {fileID: 4898370549906786244}
 --- !u!1 &5071388957189107701
 GameObject:
   m_ObjectHideFlags: 0

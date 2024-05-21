@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class LobbyCharacterPointer : MonoBehaviour
 {
-    public GameObject characterPointer;
+    public string PlayerId { get; set; }
 
     public void ActivateCharacterPointer()
     {
-        characterPointer.SetActive(true);
+        gameObject.SetActive(true);
     }
 
     public void DeActivateCharacterPointer()
     {
-        characterPointer.SetActive(false);
+        gameObject.SetActive(false);
     }
 
 }
