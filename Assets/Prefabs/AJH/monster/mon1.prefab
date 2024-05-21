@@ -128,6 +128,7 @@ MonoBehaviour:
   _hp: 0
   _level: 0
   _str: 0
+  animator: {fileID: 0}
 --- !u!136 &7069268878232619306
 CapsuleCollider:
   m_ObjectHideFlags: 0

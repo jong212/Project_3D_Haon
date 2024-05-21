@@ -27,14 +27,13 @@ public class SkillA : StateMachineBehaviour
     // 스킬 공격이 끝나면 isSkillAttack 변수를 false로 설정합니다.
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        playerAnimator = animator.GetComponent<playerAnimator>();
         isSkillAttack = false;
         weaponColliderScript.SkillTriggerA -= OnTriggerEnterEventHandler;
     }
 
     private void OnTriggerEnterEventHandler(Collider otherCollider)
     {
-//Debug.Log("스킬 발동 시 세 번째로 실행됨");
+        Debug.Log("스킬 발동 시 세 번째로 실행됨");
 
         // 스킬 공격인 경우
         if (isSkillAttack)
@@ -45,7 +44,8 @@ public class SkillA : StateMachineBehaviour
             }
             if (otherCollider.tag == "Boss")
             {
-                otherCollider.GetComponent<Boss>().TakeDamage(10);
+                
+                otherCollider.GetComponent<Boss>().TakeDamage(playerAnimator.getstr);
             }
             // 스킬 공격 처리 코드 추가
         }

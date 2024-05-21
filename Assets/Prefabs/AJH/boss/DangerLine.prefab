@@ -144,5 +144,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b123e22705ec741b5444a0eaf65310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bos: {fileID: 9056814221311171752, guid: 1eb79df23ccec9744afa9628404691e0, type: 3}
+  bos: {fileID: 6207897426567264583, guid: b21b3343b9ca0e14092c0b47cd56f97e, type: 3}
   EndPosition: {x: 67, y: -5, z: 75}

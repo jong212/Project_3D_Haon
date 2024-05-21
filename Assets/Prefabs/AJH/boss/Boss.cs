@@ -33,7 +33,9 @@ public interface IBossState
 public class Boss : MonoBehaviour
 {
     [SerializeField] public bool bosssRoomStartCheck;
-    [SerializeField] public float currentHealth { get; private set; }                   // 현재 체력 
+    [SerializeField] public float currentHealth;                       // 현재 체력 
+    public BossBar bossbar;
+    public float fixHealth;                       // 보스 체력 세팅
 
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" ,"Player"};
@@ -41,24 +43,23 @@ public class Boss : MonoBehaviour
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
-    public float fixHealth { get; private set; }                       // 보스 체력 세팅
-    public int Stage2Hp { get; private set; }               // 기믹 임계값 1
-    public int Stage3Hp { get; private set; }               // 기믹 임계값 2
-    public int Stage4Hp { get; private set; }               // 기믹 임계값 3
+    public int Stage2Hp { get; private set; }                          // 기믹 임계값 1
+    public int Stage3Hp { get; private set; }                          // 기믹 임계값 2
+    public int Stage4Hp { get; private set; }                          // 기믹 임계값 3
     private Animator animator;                                         // 애니메이터
     public bool IsUsingLaser { get; private set; }                     // 레이저 사용 여부
 
     private List<Coroutine> runningCoroutines = new List<Coroutine>(); // Running coroutine references!!!!
 
-/*  초기화  */
+    /*  초기화  */
     void Start()
     {
         bosssRoomStartCheck = false;                                   // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
-        fixHealth = 10000f;
+        fixHealth = 5000f;
         currentHealth = fixHealth;
-        Stage2Hp = 90;                                       // 체력 임계값 설정
-        Stage3Hp = 70;
-        Stage4Hp = 30;
+        Stage2Hp = 4000;                                                // 체력 임계값 설정
+        Stage3Hp = 3000;
+        Stage4Hp = 2000;
         animator = GetComponent<Animator>();
         ChangeState(new NoState());                                    // 초기 상태를 Normal 상태로 설정
     }
@@ -80,6 +81,8 @@ public class Boss : MonoBehaviour
     public void TakeDamage(int damageAmout)
     {
         currentHealth -= damageAmout;
+        bossbar.RefreshBossHp(this, currentHealth);
+
         Debug.Log(currentHealth);
         if (currentHealth <= 0)
         {
