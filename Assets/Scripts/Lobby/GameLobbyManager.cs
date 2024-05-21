@@ -96,7 +96,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             {
                 numberOfPlayerReady++;
             }
-
+            Debug.Log(AuthenticationService.Instance.PlayerId+"¿‘¥œ¥Ÿ");
             if (lobbyPlayerData.Id == AuthenticationService.Instance.PlayerId)
             {
                 localLobbyPlayerData = lobbyPlayerData;

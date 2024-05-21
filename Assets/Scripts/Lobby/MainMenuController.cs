@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -56,6 +57,7 @@ public class MainMenuController : MonoBehaviour
         string code = codeText.text;
         code = code.Substring(0, code.Length - 1);
         Debug.Log($"{code}");
+        Debug.Log(AuthenticationService.Instance.PlayerId + "¿‘¥œ¥Ÿ!");
         bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
 
         if (succeeded)
