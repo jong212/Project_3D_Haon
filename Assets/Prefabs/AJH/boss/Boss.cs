@@ -329,40 +329,46 @@ public class Stage1 : IBossState
     // 1-4 코루틴이 돌아가면 아래 함수가 실행 됨
     void DangerLineStart(Boss boss)
     {
-        bool charge = true;
-        foreach (GameObject player in boss.players)
+        bool charge = true; // charge 효과가 활성화되었는지 여부를 추적하는 부울 변수 초기화
+        foreach (GameObject player in boss.players) // 보스의 플레이어 목록에서 각 플레이어를 반복
         {
-            if (player != null)
+            if (player != null) // 플레이어 객체가 null이 아닌지 확인
             {
-                if (charge)
+                if (charge) // charge 효과가 아직 활성화되지 않은 경우 확인
                 {
-                    
-                    GameObject chargeEffect = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerChage);   // charge 풀 가져옴                    
-                    chargeEffect.GetComponent<DangerCharge>().poolinfo = chargeEffect;                          // 가져온 풀 사용후 반환하기 위해 가져온 풀정보 DangerCharge에 세팅
-                    chargeEffect.transform.position = boss.transform.position;                                  // 가져온 풀 위치를 보스 위치로 세팅
-                    chargeEffect.SetActive(true);                                                               // Pool On
-                    charge = false;                                                                             // 1번만 사용하면 됨
+                    GameObject chargeEffect = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerChage); // charge 효과 객체를 풀에서 가져옴
+                    chargeEffect.GetComponent<DangerCharge>().poolinfo = chargeEffect; // 풀 정보를 DangerCharge 컴포넌트에 설정하여 반환할 수 있도록 함
+                    chargeEffect.transform.position = boss.transform.position; // charge 효과 위치를 보스의 위치로 설정
+                    chargeEffect.SetActive(true); // charge 효과 활성화
+                    charge = false; // charge 효과가 한 번만 활성화되도록 부울 변수 설정
                 }
-                GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
-                DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
 
-                if (dangerLineComponent != null)
+                GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine); // DangerLine 객체를 풀에서 가져옴
+                DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>(); // DangerLine 객체에서 DangerLine 컴포넌트를 가져옴
+
+                if (dangerLineComponent != null) // DangerLine 컴포넌트가 null이 아닌지 확인
                 {
-                    Vector3 direction = (player.transform.position - boss.transform.position).normalized;
-                    direction.y = 0f; // y  레이저가 바닥을 뚫고 내려가는 현상이 있어서 0 고정
+                    Vector3 direction = (player.transform.position - boss.transform.position).normalized; // 보스에서 플레이어로의 방향 벡터 계산
+                    direction.y = 0f; // 방향 벡터의 y 성분을 0으로 설정하여 수평을 유지
 
-                    float extendLength = 5f;
-                    Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
-                    boss.setDangerPosition.Add(extendedEndPosition);
-                    dangerLineComponent.EndPosition = extendedEndPosition;
-                    activeDangerLine.transform.position = boss.transform.position;
-                    activeDangerLine.SetActive(true);
-                    //여기서도 코루틴 종료시간 까지 넣어서 실행
+                    float extendLength = 5f; // 선을 확장할 길이 설정
+                    Vector3 extendedEndPosition = player.transform.position + direction * extendLength; // 확장된 끝 지점 계산
+
+                    // y축을 고정된 값에서 오프셋만큼 올림 (예: boss.transform.position.y + 1.0f)
+                    float yOffset = 1.0f; // 원하는 y축 오프셋 값
+                    extendedEndPosition.y = boss.transform.position.y + yOffset; // 끝 지점의 y축을 보스 위치의 y축 + 오프셋 값으로 설정
+
+                    boss.setDangerPosition.Add(extendedEndPosition); // 보스의 위험 위치 목록에 끝 지점 추가
+                    dangerLineComponent.EndPosition = extendedEndPosition; // DangerLine 컴포넌트의 끝 지점 설정
+                    activeDangerLine.transform.position = boss.transform.position; // DangerLine 객체의 위치를 보스의 위치로 설정
+                    activeDangerLine.SetActive(true); // DangerLine 객체 활성화
+                                                      // 코루틴 종료 시간 동안 DangerLine 객체를 풀로 반환하는 코루틴 시작
                     boss.StartBossCoroutine(ReturnDangerLineToPool(activeDangerLine, dangerLineComponent.GetComponent<TrailRenderer>().time), dangerLineComponent.GetComponent<TrailRenderer>().time);
                 }
             }
         }
     }
+
 
     public IEnumerator ReturnDangerLineToPool(GameObject dangerLine, float time)
     {
