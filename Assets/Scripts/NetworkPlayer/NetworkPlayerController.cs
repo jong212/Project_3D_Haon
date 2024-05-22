@@ -1,7 +1,6 @@
 using Cinemachine;
 using System.Collections;
 using Unity.Netcode;
-using Unity.Netcode.Components;
 using UnityEngine;
 using static DataManager;
 
@@ -12,7 +11,7 @@ public class NetworkPlayerController : NetworkBehaviour
     public Animator _animator;
 
     private CharacterController _characterController;
-    //private Vector3 _moveDirection;              // 플레이어의 이동 방향
+    private Vector3 _moveDirection;              // 플레이어의 이동 방향
     private bool _isRunning = false;             // 플레이어가 달리고 있는지 여부를 추적하는 플래그
     private int _skillA = -1;                    // 스킬 A 가렌처럼 빙빙 도는 스킬
     private int _skillB = -1;                    // 스킬 B 뛰어서 다리우스처럼 찍는스킬 
@@ -45,6 +44,15 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField]
     private NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>();
 
+    [SerializeField]
+    private float speed = 3.5f;
+
+    [SerializeField]
+    private float rotationSpeed = 1.5f;
+
+    private Vector3 oldInputPosition;
+    private Quaternion oldInputRotation;
+
 
     private void Awake()
     {
@@ -57,7 +65,7 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            
+
             if (skillControlObject != null)
             {
                 skill = skillControlObject.GetComponent<SkillControlNetwork>();
@@ -68,24 +76,23 @@ public class NetworkPlayerController : NetworkBehaviour
     }
     void Update()
     {
-        if (!IsLocalPlayer)
-            return;
-        HandleInput();
+        if (IsClient && IsOwner)
+        {
+            MoveClient();
+            HandleInput();
+        }
         ApplyGravity();
 
         if (IsServer)
         {
-            networkPosition.Value = transform.position;
-            networkRotation.Value = transform.rotation;
+            _characterController.SimpleMove(networkPosition.Value);
+            if (networkRotation.Value != Quaternion.identity)
+            {
+                transform.rotation = networkRotation.Value;
+            }
         }
-        else
-        {
-            transform.position = networkPosition.Value;
-            transform.rotation = networkRotation.Value;
-        }
+        
     }
-
-
 
     public override void OnNetworkSpawn()
     {
@@ -96,7 +103,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
             MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
                                                      // DataManager를 사용하여 플레이어 데이터 가져오기
-            
+
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
             if (virtualCamera != null)
@@ -108,6 +115,33 @@ public class NetworkPlayerController : NetworkBehaviour
 
     }
 
+    void MoveClient() // 클라이언트에서 이동 처리
+    {
+
+        Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+
+        if (movementInput.sqrMagnitude > 0.01f) // movementInput이 0인지 확인
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movementInput);
+
+            if (oldInputPosition != movementInput || oldInputRotation != targetRotation)
+            {
+                oldInputRotation = targetRotation;
+                oldInputPosition = movementInput;
+                MoveServerRPC(movementInput * speed, targetRotation);
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+                _animator.SetBool("isRunning", true);
+            }
+        }
+        else if (oldInputPosition != Vector3.zero)
+        {
+            oldInputPosition = Vector3.zero;
+            MoveServerRPC(Vector3.zero, Quaternion.identity);
+            _animator.SetBool("isRunning", false);
+        }
+
+    }
 
 
 
@@ -173,11 +207,6 @@ public class NetworkPlayerController : NetworkBehaviour
                 SkillClickServerRPC();
         }
 
-        if (IsOwner)
-        {
-            Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-            MoveServerRPC(movementInput);
-        }
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수
@@ -226,10 +255,9 @@ public class NetworkPlayerController : NetworkBehaviour
         bool hasControl = (movement != Vector3.zero);
         if (hasControl)
         {
-
             Quaternion targetRotation = Quaternion.LookRotation(movement);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            _characterController.Move(movement * 6f * Time.deltaTime);// 캐릭터를 이동시킵니다.
+            _characterController.Move(movement * Time.deltaTime);// 캐릭터를 이동시킵니다.
             _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
         }
         else
@@ -307,10 +335,7 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public void Click()
     {
-
         _animator.SetTrigger("onWeaponAttack");
-
-
 
     }
 
@@ -340,45 +365,43 @@ public class NetworkPlayerController : NetworkBehaviour
     #endregion
 
     [ServerRpc]
-    private void MoveServerRPC(Vector3 movementInput, ServerRpcParams rpcParams = default)
+    private void MoveServerRPC(Vector3 movementInput, Quaternion rotationInput)
     {
-        if (IsServer)
-        {
-            Move(movementInput);
-            networkPosition.Value = transform.position;
-            networkRotation.Value = transform.rotation;
-        }
+
+        networkPosition.Value = movementInput;
+        networkRotation.Value = rotationInput;
+
     }
 
     [ServerRpc]
-    private void DashServerRPC(ServerRpcParams rpcParams = default)
+    private void DashServerRPC()
     {
         Dash();
     }
 
     [ServerRpc]
-    private void SkillAServerRPC(ServerRpcParams rpcParams = default)
+    private void SkillAServerRPC()
     {
         SkillA();
     }
     [ServerRpc]
-    private void SkillBServerRPC(ServerRpcParams rpcParams = default)
+    private void SkillBServerRPC()
     {
         SkillB();
     }
     [ServerRpc]
-    private void ClickServerRPC(ServerRpcParams rpcParams = default)
+    private void ClickServerRPC()
     {
         Click();
     }
 
     [ServerRpc]
-    private void SkillClickServerRPC(ServerRpcParams rpcParams = default)
+    private void SkillClickServerRPC()
     {
         SkillClick();
     }
     [ServerRpc]
-    private void ApplyGravityServerRPC(ServerRpcParams rpcParams = default)
+    private void ApplyGravityServerRPC()
     {
         ApplyGravity();
     }
