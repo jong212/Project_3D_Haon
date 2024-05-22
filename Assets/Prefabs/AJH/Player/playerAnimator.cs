@@ -28,6 +28,8 @@ public class playerAnimator : MonoBehaviour
     private static bool isSkillBCooldown = false;// 스킬 B 쿨다운 여부를 추적하는 플래그
     public float dashCooldownDuration = 5f;      // 대시 쿨다운 지속 시간(초)
     private bool isDashCooldown = false;         // 대시 쿨다운 상태를 추적하는 플래
+    private bool canInput = true;
+    private bool isKnockedBack = false;
     FloatingHealthBar healthBar;
     [SerializeField]
     private Collider WeaponCollider;             // 무기 콜라이더
@@ -72,7 +74,7 @@ public class playerAnimator : MonoBehaviour
         if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
 
         bool hasControl = (_moveDirection != Vector3.zero);
-        if (hasControl)
+        if (hasControl && !isKnockedBack)
         {
             if (_characterController.isGrounded)// 이동 방향으로 캐릭터를 회전시킵니다.
             {
@@ -100,10 +102,28 @@ public class playerAnimator : MonoBehaviour
         }
         else
         {
-            _animator.SetTrigger("hitCharacter");
+            _animator.Play("backDown");
+            ApplyKnockback();
+
+        }
+    }
+    public void ApplyKnockback()
+    {
+        if (!isKnockedBack)
+        {
+            StartCoroutine(KnockbackCoroutine());
         }
     }
 
+    private IEnumerator KnockbackCoroutine()
+    {
+        isKnockedBack = true;
+        canInput = false;
+        // Apply knockback effect here, e.g., add force to the Rigidbody
+        yield return new WaitForSeconds(3f);
+        canInput = true;
+        isKnockedBack = false;
+    }
     // 중력을 적용하는 함수
     void ApplyGravity()
     {
