@@ -172,7 +172,7 @@ public class Boss : MonoBehaviour
                 {
                     if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
-                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(boss));                        
+                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(this));                        
                             ChangeState(new Stage1());
 
                         //ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
@@ -219,21 +219,28 @@ public class Boss : MonoBehaviour
 
         float riseTime = 4f; // Time it takes for the laser to reach the boss's position
         float elapsedTime = 0f;
-
+        bool test = false;
         while (elapsedTime < riseTime)
         {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0); // Assumes the animation is on layer 0
+
+            if (!stateInfo.IsName("Skill"))
+            {
+                boss.SetAnimation("Skill");
+            }
+
             getLazer.transform.position = Vector3.Lerp(startPosition, boss.transform.position, elapsedTime / riseTime);
             elapsedTime += Time.deltaTime;
             yield return null; // Wait until the next frame
         }
 
-
+        boss.SetAnimation("Stage1");
         // Ensure the laser reaches the exact position of the boss
         getLazer.transform.position = boss.transform.position;
          
         Transform childOneTransform = getLazer.transform.Find("1").Find("LazerSpawner");
         childOneTransform.gameObject.SetActive(true);
-
+        
         yield return new WaitForSeconds(1f);
         Debug.Log("hi..11.");
 
