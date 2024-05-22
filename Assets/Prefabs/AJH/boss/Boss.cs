@@ -12,9 +12,10 @@ using UnityEngine.Rendering.Universal;
  - Danger 범위 지속시간은 DangerLine 프리팹 인스펙터에서 Time 값으로 설정
 
  [ ★ 씬 합치고 세팅해야 할 항목들 정리 ★ ]
- - 보스맵에서 벽으로 판탄되는 오브젝트에 Wall Layer를 추가해야 함 (이유는...뭐였지...? 아닐수도 있음)
+ - 보스맵에서 벽으로 판탄되는 오브젝트에 "Wall" 레이어 설정 (이유 기억이 안 남)
  - public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그에 맞게 하이어라키 플레이어 태그를 설정해야 함  
  - 보스맵 진입 시  [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
+ - 보스 오브젝트에 Boss 태그 달기
   
 ****************************************************************************** */
 
@@ -32,30 +33,33 @@ public interface IBossState
 public class Boss : MonoBehaviour
 {
     [SerializeField] public bool bosssRoomStartCheck;
+    [SerializeField] public float currentHealth;                       // 현재 체력 
+    public BossBar bossbar;
+    public float fixHealth;                       // 보스 체력 세팅
 
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" };
+    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" ,"Player"};
 
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
-    public float Health { get; private set; }                          // 보스의 체력
-    public int Stage2Hp { get; private set; }               // 기믹 임계값 1
-    public int Stage3Hp { get; private set; }               // 기믹 임계값 2
-    public int Stage4Hp { get; private set; }               // 기믹 임계값 3
+    public int Stage2Hp { get; private set; }                          // 기믹 임계값 1
+    public int Stage3Hp { get; private set; }                          // 기믹 임계값 2
+    public int Stage4Hp { get; private set; }                          // 기믹 임계값 3
     private Animator animator;                                         // 애니메이터
     public bool IsUsingLaser { get; private set; }                     // 레이저 사용 여부
 
     private List<Coroutine> runningCoroutines = new List<Coroutine>(); // Running coroutine references!!!!
 
-/*  초기화  */
+    /*  초기화  */
     void Start()
     {
         bosssRoomStartCheck = false;                                   // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
-        Health = 100f;
-        Stage2Hp = 90;                                       // 체력 임계값 설정
-        Stage3Hp = 70;
-        Stage4Hp = 30;
+        fixHealth = 5000f;
+        currentHealth = fixHealth;
+        Stage2Hp = 4000;                                                // 체력 임계값 설정
+        Stage3Hp = 3000;
+        Stage4Hp = 2000;
         animator = GetComponent<Animator>();
         ChangeState(new NoState());                                    // 초기 상태를 Normal 상태로 설정
     }
@@ -73,8 +77,22 @@ public class Boss : MonoBehaviour
         currentState = newState;                                       // 새로운 상태 설정
         currentState.Enter(this);                                      // 새로운 상태 진입
     }
-/* */
-/*  보스 애니메이션 변경(공통)  */
+    /*  보스 체력 관리 시스템  */
+    public void TakeDamage(int damageAmout)
+    {
+        currentHealth -= damageAmout;
+        bossbar.RefreshBossHp(this, currentHealth);
+
+        Debug.Log(currentHealth);
+        if (currentHealth <= 0)
+        {
+        }
+        else
+        {
+            Debug.Log("보스 공격 당하는중");
+        }
+    }
+    /*  보스 애니메이션 변경(공통)  */
     public void SetAnimation(string animationName)
     {
         animator.Play(animationName);                                  // 지정된 애니메이션 재생
@@ -86,14 +104,14 @@ public class Boss : MonoBehaviour
         {
             if (currentState is Stage1 stage1)
             {   // 1-1. 코루틴 실행을 위해 공통 코루틴 함수인 StartBossCoroutine으로 넘김
-                StartBossCoroutine(stage1.IDangerStart(this), 10f);     // 코루틴 시작 및 2초 후 중지
+                StartBossCoroutine(stage1.IDangerStart(this), 3f);     // 코루틴 시작 및 2초 후 중지
             }
         }
         else if (eventName == "Stage1_end")
         {
             if (currentState is Stage1 stage1)
             {   // 2-1. 코루틴 실행을 위해 공통 코루틴 함수인 StartBossCoroutine으로 넘김
-                StartBossCoroutine(stage1.IDangerEnd(this), 10f);       // 코루틴 시작 및 2초 후 중지
+                StartBossCoroutine(stage1.IDangerEnd(this), 5f);       // 코루틴 시작 및 2초 후 중지
             }
         }
         else if (eventName == "StartLaser")
@@ -138,7 +156,7 @@ public class Boss : MonoBehaviour
         {
             case ("NoState"):
                 {
-                    if (Health <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
@@ -155,7 +173,7 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage1"):
                 {
-                    if (Health <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
@@ -173,7 +191,7 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage2"):
                 { 
-                    if (Health <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
+                    if (fixHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
                     {
                         ChangeState(new Stage3()); // 가장 높은 임계값부터 체크
                     }
@@ -240,6 +258,7 @@ public class NoState : IBossState
     public bool isChange = false;
     public void Enter(Boss boss)
     {
+        Debug.Log("1");
         boss.SetAnimation("Idle1");
         if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,5f), 10f);
     }
@@ -290,12 +309,11 @@ public class Stage1 : IBossState
 
     public void Execute(Boss boss)
     {
-        Debug.Log("test");
     }
 
     public void Exit(Boss boss)
     {
-        Debug.Log("Exiting Normal State");
+        boss.players.Clear();
     }
     public override string ToString()
     {
@@ -304,45 +322,53 @@ public class Stage1 : IBossState
     // 1-3 IDangerStart 코루틴 실행
     public IEnumerator IDangerStart(Boss boss)
     {
-        yield return null;
         boss.transform.LookAt(boss.players[Random.Range(0, boss.players.Count)].transform);
         DangerLineStart(boss);
+        yield return null;
     }
     // 1-4 코루틴이 돌아가면 아래 함수가 실행 됨
     void DangerLineStart(Boss boss)
     {
-        bool charge = true;
-        foreach (GameObject player in boss.players)
+        bool charge = true; // charge 효과가 활성화되었는지 여부를 추적하는 부울 변수 초기화
+        foreach (GameObject player in boss.players) // 보스의 플레이어 목록에서 각 플레이어를 반복
         {
-            if (player != null)
+            if (player != null) // 플레이어 객체가 null이 아닌지 확인
             {
-                if (charge)
+                if (charge) // charge 효과가 아직 활성화되지 않은 경우 확인
                 {
-                    
-                    GameObject chargeEffect = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerChage);   // charge 풀 가져옴                    
-                    chargeEffect.GetComponent<DangerCharge>().poolinfo = chargeEffect;                          // 가져온 풀 사용후 반환하기 위해 가져온 풀정보 DangerCharge에 세팅
-                    chargeEffect.transform.position = boss.transform.position;                                  // 가져온 풀 위치를 보스 위치로 세팅
-                    chargeEffect.SetActive(true);                                                               // Pool On
-                    charge = false;                                                                             // 1번만 사용하면 됨
+                    GameObject chargeEffect = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerChage); // charge 효과 객체를 풀에서 가져옴
+                    chargeEffect.GetComponent<DangerCharge>().poolinfo = chargeEffect; // 풀 정보를 DangerCharge 컴포넌트에 설정하여 반환할 수 있도록 함
+                    chargeEffect.transform.position = boss.transform.position; // charge 효과 위치를 보스의 위치로 설정
+                    chargeEffect.SetActive(true); // charge 효과 활성화
+                    charge = false; // charge 효과가 한 번만 활성화되도록 부울 변수 설정
                 }
-                GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine);
-                DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>();
 
-                if (dangerLineComponent != null)
+                GameObject activeDangerLine = PoolManager.Instance.GetPoolObject(PoolObjectType.DangerLine); // DangerLine 객체를 풀에서 가져옴
+                DangerLine dangerLineComponent = activeDangerLine.GetComponent<DangerLine>(); // DangerLine 객체에서 DangerLine 컴포넌트를 가져옴
+
+                if (dangerLineComponent != null) // DangerLine 컴포넌트가 null이 아닌지 확인
                 {
-                    Vector3 direction = (player.transform.position - boss.transform.position).normalized;
-                    float extendLength = 5f;
-                    Vector3 extendedEndPosition = player.transform.position + direction * extendLength;
-                    boss.setDangerPosition.Add(extendedEndPosition);
-                    dangerLineComponent.EndPosition = extendedEndPosition;
-                    activeDangerLine.transform.position = boss.transform.position;
-                    activeDangerLine.SetActive(true);
-                    //여기서도 코루틴 종료시간 까지 넣어서 실행
+                    Vector3 direction = (player.transform.position - boss.transform.position).normalized; // 보스에서 플레이어로의 방향 벡터 계산
+                    direction.y = 0f; // 방향 벡터의 y 성분을 0으로 설정하여 수평을 유지
+
+                    float extendLength = 5f; // 선을 확장할 길이 설정
+                    Vector3 extendedEndPosition = player.transform.position + direction * extendLength; // 확장된 끝 지점 계산
+
+                    // y축을 고정된 값에서 오프셋만큼 올림 (예: boss.transform.position.y + 1.0f)
+                    float yOffset = 1.0f; // 원하는 y축 오프셋 값
+                    extendedEndPosition.y = boss.transform.position.y + yOffset; // 끝 지점의 y축을 보스 위치의 y축 + 오프셋 값으로 설정
+
+                    boss.setDangerPosition.Add(extendedEndPosition); // 보스의 위험 위치 목록에 끝 지점 추가
+                    dangerLineComponent.EndPosition = extendedEndPosition; // DangerLine 컴포넌트의 끝 지점 설정
+                    activeDangerLine.transform.position = boss.transform.position; // DangerLine 객체의 위치를 보스의 위치로 설정
+                    activeDangerLine.SetActive(true); // DangerLine 객체 활성화
+                                                      // 코루틴 종료 시간 동안 DangerLine 객체를 풀로 반환하는 코루틴 시작
                     boss.StartBossCoroutine(ReturnDangerLineToPool(activeDangerLine, dangerLineComponent.GetComponent<TrailRenderer>().time), dangerLineComponent.GetComponent<TrailRenderer>().time);
                 }
             }
         }
     }
+
 
     public IEnumerator ReturnDangerLineToPool(GameObject dangerLine, float time)
     {
@@ -360,7 +386,7 @@ public class Stage1 : IBossState
     public IEnumerator IDangerEnd(Boss boss)
     {
         DangerLineEnd(boss);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3f);
         boss.ChangeState(new NoState());
     }
     // 2-4
@@ -377,8 +403,10 @@ public class Stage1 : IBossState
                 eulerAngles.x = 0;
                 activeDangerAttack.transform.rotation = Quaternion.Euler(eulerAngles);
                 activeDangerAttack.SetActive(true);
+                
             }
         }
+        boss.setDangerPosition.Clear();
     }
 }
 

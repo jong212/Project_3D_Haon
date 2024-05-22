@@ -57,6 +57,9 @@ public class isAttackStop : StateMachineBehaviour
             else if (otherCollider.gameObject.name == "DestroyBox")
             {
                 otherCollider.GetComponent<BoxInfo>().BoxDamaged(1);
+            } else if (otherCollider.gameObject.tag == "Boss")
+            {
+                otherCollider.GetComponent<Boss>().TakeDamage(playerAnimator.getstr);
             }
             //=======================================================================(준후작업 라인 끝)
             hasCollided = true;

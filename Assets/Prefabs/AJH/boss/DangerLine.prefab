@@ -25,14 +25,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8118735982693773461}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!96 &8118735982693773459
 TrailRenderer:
   serializedVersion: 2
@@ -125,7 +125,7 @@ TrailRenderer:
       m_NumAlphaKeys: 2
     numCornerVertices: 0
     numCapVertices: 0
-    alignment: 0
+    alignment: 1
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
@@ -144,5 +144,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b123e22705ec741b5444a0eaf65310, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bos: {fileID: 9056814221311171752, guid: 1eb79df23ccec9744afa9628404691e0, type: 3}
+  bos: {fileID: 8196401758570524946, guid: 86a3fb20a3b6a2741b9dc9ec8e1ee1f9, type: 3}
   EndPosition: {x: 67, y: -5, z: 75}
