@@ -246,7 +246,6 @@ public class NetworkPlayerController : NetworkBehaviour
 
     void Move(Vector3 movementInput)
     {
-
         // 입력 받은 값을 가져오기
         Vector3 movement = new Vector3(movementInput.x, 0f, movementInput.z);
         //movement.y = 0f;
@@ -264,8 +263,6 @@ public class NetworkPlayerController : NetworkBehaviour
         {
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
-
-
     }
 
     public void Dash()
