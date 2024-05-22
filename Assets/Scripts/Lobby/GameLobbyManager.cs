@@ -157,7 +157,6 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     {
         try
         {
-            Debug.Log($"{lobbyData.MapIndex} ,{currentMapIndex}");
             lobbyData.MapIndex = currentMapIndex;
             lobbyData.SceneName = sceneName;
             return await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());

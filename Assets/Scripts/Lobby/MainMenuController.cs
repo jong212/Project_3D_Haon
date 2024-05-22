@@ -67,8 +67,9 @@ public class MainMenuController : MonoBehaviour
     private async void SubmitCodeClicked()
     {
 
-        string code = codeText.text.Trim();
-        Debug.Log(code);
+        string code = codeText.text;
+        code = code.Substring(0, code.Length - 1);
+
         try
         {
             bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);

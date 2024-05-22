@@ -8,24 +8,20 @@ public class LobbyPlayer : MonoBehaviour
     [SerializeField] private GameObject readyParticle;
     [SerializeField] private LobbyCharacterPointer characterPointer;
 
-    private LobbyPlayerData playerData;
+    private LobbyPlayerData _data;
     public string PlayerId { get; private set; }
     public void SetData(LobbyPlayerData data)
     {
-        playerData = data;
-        PlayerId = playerData.Id;
+        _data = data;
+        PlayerId = _data.Id;
 
-        if (playerNameText != null)
-        {
-            playerNameText.text = playerData.GamerTag;
-        }
-
+        
         if (characterPointer != null)
         {
             characterPointer.PlayerId = PlayerId;
         }
 
-        if (data.IsReady && readyParticle != null)
+        if (data.IsReady)
         {
             if (readyParticle != null)
             {
