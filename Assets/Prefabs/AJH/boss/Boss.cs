@@ -16,6 +16,7 @@ using UnityEngine.Rendering.Universal;
  - public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그에 맞게 하이어라키 플레이어 태그를 설정해야 함  
  - 보스맵 진입 시  [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
  - 보스 오브젝트에 Boss 태그 달기
+ - Flower Dryad_temp Bossbar 에 캔버스_boss 오브젝트 하위의 text(TMP)집어넣기
   
 ****************************************************************************** */
 
@@ -38,7 +39,7 @@ public class Boss : MonoBehaviour
     public float fixHealth;                       // 보스 체력 세팅
 
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" ,"Player"};
+    public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
 
     private IBossState currentState;                                   // 현재 상태
     public string previousState;

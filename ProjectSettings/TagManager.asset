@@ -9,6 +9,8 @@ TagManager:
   - skill
   - Trap
   - FxTemporaire
+  - Boss
+  - Lazer_point
   layers:
   - Default
   - TransparentFX
@@ -27,8 +29,8 @@ TagManager:
   - Book
   - 
   - 
-  - 
-  - 
+  - laserCube
+  - Boss
   - 
   - 
   - 
