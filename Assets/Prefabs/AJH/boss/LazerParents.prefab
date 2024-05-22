@@ -306,12 +306,12 @@ GameObject:
   - component: {fileID: 5231587173799866955}
   - component: {fileID: 5231587173799866954}
   m_Layer: 17
-  m_Name: GameObject
-  m_TagString: Untagged
+  m_Name: LazerSpawner
+  m_TagString: LazerSpawner
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5231587173799866965
 Transform:
   m_ObjectHideFlags: 0

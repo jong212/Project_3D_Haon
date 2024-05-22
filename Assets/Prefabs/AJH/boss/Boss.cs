@@ -13,7 +13,7 @@ using System.Collections.Generic;
  - 보스맵 진입 시  [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
  - 보스 오브젝트에 Boss 태그 달기
  - Flower Dryad_temp Bossbar 에 캔버스_boss 오브젝트 하위의 text(TMP)집어넣기
-  
+ - LazerSpawner 오브젝트에 LazerSpawner태그
 ****************************************************************************** */
 
 /*  인터페이스  */
@@ -33,7 +33,7 @@ public class Boss : MonoBehaviour
     [SerializeField] public float currentHealth;                       // 현재 체력 
     public BossBar bossbar;
     public float fixHealth;                       // 보스 체력 세팅
-
+    public bool LazerGimick;
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
 
@@ -147,7 +147,7 @@ public class Boss : MonoBehaviour
     }
 
     /*  보스 상태 체크 (공통)  */
-    public void CheckHealthAndChangeState(bool chk)
+    public void CheckHealthAndChangeState(bool chk, Boss boss)
     {          
         switch (previousState) //현재 인스턴스가 아닌 이전 인스턴스로 체크
         {
@@ -172,12 +172,13 @@ public class Boss : MonoBehaviour
                 {
                     if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
-                        StartCoroutine(Gimick1Lazer());
-                        ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
+                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(boss));                        
+                            ChangeState(new Stage1());
+
+                        //ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
                     else
                     {
-
                         if (chk)
                         {
                             Debug.Log("상태를 재실행해요..");
@@ -206,14 +207,39 @@ public class Boss : MonoBehaviour
      
     }
 
-   
 
-    public IEnumerator Gimick1Lazer()
+    public IEnumerator Gimick1Lazer(Boss boss)
     {
-        Debug.Log("hi...");
+        boss.LazerGimick = true;
+        GameObject getLazer = PoolManager.Instance.GetPoolObject(PoolObjectType.Lazer);
+        Vector3 startPosition = boss.transform.position;
+        startPosition.y -= 5f; // Adjust this value as needed to set the starting position below the boss
+        getLazer.transform.position = startPosition;
+        getLazer.SetActive(true);
+
+        float riseTime = 4f; // Time it takes for the laser to reach the boss's position
+        float elapsedTime = 0f;
+
+        while (elapsedTime < riseTime)
+        {
+            getLazer.transform.position = Vector3.Lerp(startPosition, boss.transform.position, elapsedTime / riseTime);
+            elapsedTime += Time.deltaTime;
+            yield return null; // Wait until the next frame
+        }
+
+
+        // Ensure the laser reaches the exact position of the boss
+        getLazer.transform.position = boss.transform.position;
+         
+        Transform childOneTransform = getLazer.transform.Find("1").Find("LazerSpawner");
+        childOneTransform.gameObject.SetActive(true);
+
         yield return new WaitForSeconds(1f);
         Debug.Log("hi..11.");
+
+        // Additional logic for after the laser has reached the boss's position
     }
+
     /*  기믹2 패턴  */
     #region Stage2
     public void StartLaser(Vector3 position)
@@ -273,7 +299,7 @@ public class NoState : IBossState
     {
         Debug.Log("기본1탓어요");
         if (boss.bosssRoomStartCheck) boss.ChangeState(new Stage1());
-        if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange);
+        if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange, boss);
     }
 
     public void Exit(Boss boss)

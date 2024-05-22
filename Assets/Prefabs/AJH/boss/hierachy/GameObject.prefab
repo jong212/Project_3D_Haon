@@ -3457,6 +3457,37 @@ Transform:
   m_Father: {fileID: 5902652625179832588}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3130875371211322491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6650464775090374449}
+  m_Layer: 0
+  m_Name: LazerGimickContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6650464775090374449
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3130875371211322491}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5902652625179832588}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3323721238758062407
 GameObject:
   m_ObjectHideFlags: 0
@@ -3649,6 +3680,7 @@ Transform:
   - {fileID: 5902652624926458237}
   - {fileID: 7124789092528055373}
   - {fileID: 8129045021067657666}
+  - {fileID: 6650464775090374449}
   m_Father: {fileID: 1429806573957770987}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3679,6 +3711,11 @@ MonoBehaviour:
     amount: 2
     prefab: {fileID: 1169398297775579342, guid: 2631e0f1662b33846aaa5c180c0bb9ca, type: 3}
     container: {fileID: 3323721238758062407}
+    pool: []
+  - type: 3
+    amount: 2
+    prefab: {fileID: 5231587175518760729, guid: 19938525f6d45b046b0463e3383675eb, type: 3}
+    container: {fileID: 3130875371211322491}
     pool: []
 --- !u!1 &7852784838492762271
 GameObject:

@@ -7,7 +7,8 @@ public enum PoolObjectType
 {
     DangerLine,
     DangerAttack,
-    DangerChage
+    DangerChage,
+    Lazer
 }
 [Serializable]
 public class PoolInfo
