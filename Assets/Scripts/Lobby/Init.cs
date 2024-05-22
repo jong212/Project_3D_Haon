@@ -9,28 +9,44 @@ public class Init : MonoBehaviour
 
     async void Start()
     {
-        await UnityServices.InitializeAsync();
-
-        if (UnityServices.State == ServicesInitializationState.Initialized)
+        try
         {
-            AuthenticationService.Instance.SignedIn += OnSignedIn;
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            await UnityServices.InitializeAsync();
 
-            if (AuthenticationService.Instance.IsSignedIn)
+            if (UnityServices.State == ServicesInitializationState.Initialized)
             {
-                // DB에서 받을 Name
-                string userName = PlayerPrefs.GetString("Username");
-                if (userName == "")
+                AuthenticationService.Instance.SignedIn += OnSignedIn;
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+
+                if (AuthenticationService.Instance.IsSignedIn)
                 {
-                    userName = "Player";
-                    PlayerPrefs.SetString("Username", userName);
+                    // 사용자 이름 초기화
+                    InitializeUserName();
                 }
-
-               // SceneManager.LoadSceneAsync("TestScene_WJH");
             }
-
+        }
+        catch (Exception ex)
+        {
+            Debug.Log($"플레이어 정보 초기화 실패 : {ex.Message}");
         }
 
+    }
+    private void OnDisable()
+    {
+        if (AuthenticationService.Instance != null)
+        {
+            AuthenticationService.Instance.SignedIn -= OnSignedIn;
+        }
+    }
+
+    private void InitializeUserName()
+    {
+        string userName = PlayerPrefs.GetString("Username");
+        if (string.IsNullOrEmpty(userName))
+        {
+            userName = "Player";
+            PlayerPrefs.SetString("Username", userName);
+        }
     }
 
     private void OnSignedIn()

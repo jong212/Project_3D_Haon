@@ -1,5 +1,4 @@
 using System.Collections;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static DataManager;
@@ -10,8 +9,8 @@ public class playerAnimator : MonoBehaviour
     //변수들 선언
     public GameObject skillControlObject;
     public SkillControl skill;
-    public Animator _animator; 
-    private CharacterController _characterController;    
+    public Animator _animator;
+    private CharacterController _characterController;
     private Vector3 _moveDirection;              // 플레이어의 이동 방향
     private bool _isRunning = false;             // 플레이어가 달리고 있는지 여부를 추적하는 플래그
     private int _skillA = -1;                    // 스킬 A 가렌처럼 빙빙 도는 스킬
@@ -37,10 +36,10 @@ public class playerAnimator : MonoBehaviour
 
     void Start()
     {
-        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
-        hpObject.transform.SetParent(_hpCanvas.transform);
-        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
-        healthBar.SetTarget(transform);
+        //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
+        //hpObject.transform.SetParent(_hpCanvas.transform);
+        //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
+        //healthBar.SetTarget(transform);
 
         if (skillControlObject != null)
         {
@@ -53,7 +52,7 @@ public class playerAnimator : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         SetPlayerData(playerData);
     }
-// 플레이어 데이터 설정 함수
+    // 플레이어 데이터 설정 함수
     private static void SetPlayerData(PlayerData playerData)
     {
         _PlayerName = playerData.name;
@@ -74,7 +73,7 @@ public class playerAnimator : MonoBehaviour
             {
                 Quaternion targetRotation = Quaternion.LookRotation(_moveDirection);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            }            
+            }
             _characterController.Move(_moveDirection * 6f * Time.deltaTime);// 캐릭터를 이동시킵니다.
             _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
         }
@@ -103,7 +102,7 @@ public class playerAnimator : MonoBehaviour
     // 중력을 적용하는 함수
     void ApplyGravity()
     {
-       
+
         if (!_characterController.isGrounded) // 중력을 적용합니다.
         {
             _velocity += _gravity * Time.deltaTime;
@@ -145,7 +144,7 @@ public class playerAnimator : MonoBehaviour
 
         // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
     }
-     
+
     // 플레이어를 대시 목적지 위치로 부드럽게 이동시키는 코루틴
     IEnumerator MovePlayerToPosition(Vector3 startPosition, Vector3 endPosition, float duration)
     {
@@ -163,13 +162,13 @@ public class playerAnimator : MonoBehaviour
 
     public void OnSkillA(InputValue value = null)
     {
-        if(value != null && !skill.isHideSkills[1])
+        if (value != null && !skill.isHideSkills[1])
         {
             skill.HideSkillSetting(1);
             return;
         }
-            _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
-            _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
+        _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
+        _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
     }
 
     public void OnSkillB(InputValue value = null)
@@ -201,7 +200,7 @@ public class playerAnimator : MonoBehaviour
         yield return new WaitForSeconds(time);
         isAction = false;
     }
-    public void EnableWeapon() 
+    public void EnableWeapon()
     {
         WeaponCollider.enabled = true;
     }

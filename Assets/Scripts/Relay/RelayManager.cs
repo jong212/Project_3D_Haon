@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
+using UnityEngine;
 
 public class RelayManager : Singleton<RelayManager>
 {
@@ -24,42 +25,91 @@ public class RelayManager : Singleton<RelayManager>
         get { return isHost; }
     }
 
-    public async Task<string> CreateRelay(int maxConnection)
+    public async Task<string> CreateRelay(int maxConnections)
     {
-        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxConnection);
-        joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        try
+        {
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxConnections);
+            joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-        RelayServerEndpoint dtlsEnpoint = allocation.ServerEndpoints.First(conn => conn.ConnectionType == "dtls");
-        ip = dtlsEnpoint.Host;
-        port = dtlsEnpoint.Port;
+            Debug.Log("CreateRelay: joinCode = " + joinCode);
 
-        allocationId = allocation.AllocationId;
-        allocationIdBytes = allocation.AllocationIdBytes;
-        connectionData = allocation.ConnectionData;
-        key = allocation.Key;
+            RelayServerEndpoint dtlsEndpoint = allocation.ServerEndpoints.First(conn => conn.ConnectionType == "dtls");
+            ip = dtlsEndpoint.Host;
+            port = dtlsEndpoint.Port;
 
-        isHost = true;
+            allocationId = allocation.AllocationId;
+            allocationIdBytes = allocation.AllocationIdBytes;
+            connectionData = allocation.ConnectionData;
+            key = allocation.Key;
 
-        return joinCode;
+            isHost = true;
+            return joinCode;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"Failed to create relay: {ex.Message}");
+            return null;
+        }
 
     }
 
     public async Task<bool> JoinRelay(string joinCode)
     {
-        this.joinCode = joinCode;
-        JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+        if (string.IsNullOrEmpty(joinCode))
+        {
+            Debug.LogError("JoinRelay: joinCode is null or empty.");
+            return false;
+        }
 
-        RelayServerEndpoint dtlsEnpoint = allocation.ServerEndpoints.First(conn => conn.ConnectionType == "dtls");
-        ip = dtlsEnpoint.Host;
-        port = dtlsEnpoint.Port;
+        try
+        {
+            Debug.Log("JoinRelay: Attempting to join relay with joinCode: " + joinCode);
+            this.joinCode = joinCode;
+            JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-        allocationId = allocation.AllocationId;
-        allocationIdBytes = allocation.AllocationIdBytes;
-        connectionData = allocation.ConnectionData;
-        hostConnectionData = allocation.HostConnectionData;
-        key = allocation.Key;
+            if (allocation == null)
+            {
+                Debug.LogError("JoinRelay: Allocation is null.");
+                return false;
+            }
 
-        return true;
+            if (allocation.ServerEndpoints == null)
+            {
+                Debug.LogError("JoinRelay: ServerEndpoints is null.");
+                return false;
+            }
+
+            RelayServerEndpoint dtlsEndpoint = allocation.ServerEndpoints.FirstOrDefault(conn => conn.ConnectionType == "dtls");
+            if (dtlsEndpoint == null)
+            {
+                Debug.LogError("JoinRelay: No DTLS endpoint found.");
+                return false;
+            }
+
+            ip = dtlsEndpoint.Host;
+            port = dtlsEndpoint.Port;
+
+            allocationId = allocation.AllocationId;
+            allocationIdBytes = allocation.AllocationIdBytes;
+            connectionData = allocation.ConnectionData;
+            hostConnectionData = allocation.HostConnectionData;
+            key = allocation.Key;
+
+            if (ip == null || port == 0 || allocationIdBytes == null || connectionData == null || hostConnectionData == null || key == null)
+            {
+                Debug.LogError("JoinRelay: One or more required values are null or invalid.");
+                return false;
+            }
+
+            Debug.Log("JoinRelay: Successfully joined the relay server.");
+            return true;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"JoinRelay failed: {ex.Message}");
+            return false;
+        }
     }
 
     public string GetAllocationId()

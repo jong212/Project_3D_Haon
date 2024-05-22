@@ -4,16 +4,14 @@ using Unity.Netcode;
 using UnityEngine;
 using static DataManager;
 
-[RequireComponent(typeof(CharacterController))]
 public class NetworkPlayerController : NetworkBehaviour
 {
-    //변수들 선언
     public GameObject skillControlObject;
     public SkillControlNetwork skill;
     public Animator _animator;
 
     private CharacterController _characterController;
-    //private Vector3 _moveDirection;              // 플레이어의 이동 방향
+    private Vector3 _moveDirection;              // 플레이어의 이동 방향
     private bool _isRunning = false;             // 플레이어가 달리고 있는지 여부를 추적하는 플래그
     private int _skillA = -1;                    // 스킬 A 가렌처럼 빙빙 도는 스킬
     private int _skillB = -1;                    // 스킬 B 뛰어서 다리우스처럼 찍는스킬 
@@ -36,62 +34,117 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField]
     private Canvas _hpCanvas;
 
-    [SerializeField]
-    private Transform camTransform;
-
-    private PlayerControls playerControls;
-    [SerializeField] private GameObject spawnPoint;
-
     private CinemachineVirtualCamera virtualCamera;
+
+    [SerializeField]
+    private Vector2 defaultInitialPlanePosition = new Vector2(-14, -19);
+    [SerializeField]
+    private NetworkVariable<Vector3> networkPosition = new NetworkVariable<Vector3>();
+
+    [SerializeField]
+    private NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>();
+
+    [SerializeField]
+    private float speed = 3.5f;
+
+    [SerializeField]
+    private float rotationSpeed = 1.5f;
+
+    private Vector3 oldInputPosition;
+    private Quaternion oldInputRotation;
+
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+        _characterController = GetComponent<CharacterController>();
+    }
+
+
+    private void Start()
+    {
+        if (IsClient && IsOwner)
+        {
+
+            if (skillControlObject != null)
+            {
+                skill = skillControlObject.GetComponent<SkillControlNetwork>();
+            }
+            // 스킬 쿨다운을 관리하는 코루틴 시작
+            StartCoroutine(SkillCooldown());
+        }
+    }
+    void Update()
+    {
+        if (IsClient && IsOwner)
+        {
+            MoveClient();
+            HandleInput();
+        }
+        ApplyGravity();
+
+        if (IsServer)
+        {
+            _characterController.SimpleMove(networkPosition.Value);
+            if (networkRotation.Value != Quaternion.identity)
+            {
+                transform.rotation = networkRotation.Value;
+            }
+        }
+        
+    }
 
     public override void OnNetworkSpawn()
     {
+        transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
+
         if (IsLocalPlayer)
         {
-            playerControls = new PlayerControls();
-            playerControls.Enable();
 
-            transform.position = new Vector3(-17, 1, -154);
+            MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
+                                                     // DataManager를 사용하여 플레이어 데이터 가져오기
 
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
             if (virtualCamera != null)
             {
                 // Virtual Camera의 Follow 및 Look At 필드를 로컬 플레이어로 설정합니다
-                virtualCamera.Follow = this.transform;
+                virtualCamera.Follow = transform;
             }
         }
 
     }
 
-    private void Awake()
+    void MoveClient() // 클라이언트에서 이동 처리
     {
 
-        _characterController = GetComponent<CharacterController>();
-        MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
-                                                 // DataManager를 사용하여 플레이어 데이터 가져오기
-        _animator = GetComponent<Animator>();
-    }
+        Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-    void Start()
-    {
-
-        GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
-        hpObject.transform.SetParent(_hpCanvas.transform);
-        healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
-        healthBar.SetTarget(transform);
-
-        if (skillControlObject != null)
+        if (movementInput.sqrMagnitude > 0.01f) // movementInput이 0인지 확인
         {
-            skill = skillControlObject.GetComponent<SkillControlNetwork>();
+            Quaternion targetRotation = Quaternion.LookRotation(movementInput);
+
+            if (oldInputPosition != movementInput || oldInputRotation != targetRotation)
+            {
+                oldInputRotation = targetRotation;
+                oldInputPosition = movementInput;
+                MoveServerRPC(movementInput * speed, targetRotation);
+
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+                _animator.SetBool("isRunning", true);
+            }
+        }
+        else if (oldInputPosition != Vector3.zero)
+        {
+            oldInputPosition = Vector3.zero;
+            MoveServerRPC(Vector3.zero, Quaternion.identity);
+            _animator.SetBool("isRunning", false);
         }
 
-        StartCoroutine(SkillCooldown());         // 스킬 쿨다운을 관리하는 코루틴 시작
-
-
-
-
     }
+
+
+
     // 스킬 쿨다운을 관리하는 코루틴
     IEnumerator SkillCooldown()
     {
@@ -124,31 +177,36 @@ public class NetworkPlayerController : NetworkBehaviour
         _str = playerData.str;
     }
 
-    void Update()
+
+
+    private void HandleInput()
     {
-        if (!IsOwner) return;
-        Vector2 movementInput = playerControls.Player.Move.ReadValue<Vector2>();
-        if (IsServer && IsLocalPlayer)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-
-            Move(movementInput);
-
-            if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
-            Dash();
-            SkillA();
-            SkillB();
-            Click();
-            SkillClick();
+            if (IsOwner)
+                DashServerRPC();
         }
-        else if (IsLocalPlayer)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            MoveServerRPC(movementInput);
-            DashServerRPC();
-            SkillAServerRPC();
-            SkillBServerRPC();
-            ClickServerRPC();
-            SkillClickServerRPC();
+            if (IsOwner)
+                SkillAServerRPC();
         }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (IsOwner)
+                SkillBServerRPC();
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            if (IsOwner)
+                ClickServerRPC();
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            if (IsOwner)
+                SkillClickServerRPC();
+        }
+
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수
@@ -186,58 +244,54 @@ public class NetworkPlayerController : NetworkBehaviour
 
     #region SEND_MESSAGE
 
-    void Move(Vector2 movementInput)
+    void Move(Vector3 movementInput)
     {
-        if (playerControls.Player.Move.inProgress)
+
+        // 입력 받은 값을 가져오기
+        Vector3 movement = new Vector3(movementInput.x, 0f, movementInput.z);
+        //movement.y = 0f;
+        _isRunning = movement.magnitude > 0;
+
+        bool hasControl = (movement != Vector3.zero);
+        if (hasControl)
         {
-            // 입력 받은 값을 가져오기
-            Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-            movement.y = 0f;
-            _isRunning = movement.magnitude > 0;
-
-            bool hasControl = (movement != Vector3.zero);
-            if (hasControl)
-            {
-
-                Quaternion targetRotation = Quaternion.LookRotation(movement);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-                _characterController.Move(movement * 6f * Time.deltaTime);// 캐릭터를 이동시킵니다.
-                _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
-            }
-            else
-            {
-                _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
-            }
+            Quaternion targetRotation = Quaternion.LookRotation(movement);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            _characterController.Move(movement * Time.deltaTime);// 캐릭터를 이동시킵니다.
+            _animator.SetBool("isRunning", _isRunning);// 뛰기 상태를 설정합니다.
         }
+        else
+        {
+            _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
+        }
+
 
     }
 
     public void Dash()
     {
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            if (!skill.isHideSkills[0])
-            {
-                skill.HideSkillSetting(0);
-                return;
-            }
+        //if (!skill.isHideSkills[0])
+        //{
+        //    skill.HideSkillSetting(0);
+        //    return;
+        //}
 
-            if (skill.getSkillTimes[0] > 0)
-                return;
-            Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-            float dashDistance = 5f;  // 대시 거리
-            float dashDuration = 0.2f; // 대시 지속 시
+        if (skill.getSkillTimes[0] > 0)
+            return;
 
-            // 대시 목적지 위치 계산
-            Vector3 dashDestination = transform.position + dashDirection * dashDistance;
+        Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+        float dashDistance = 5f;  // 대시 거리
+        float dashDuration = 0.2f; // 대시 지속 시간
 
-            // 플레이어의 위치를 빠르게 이동하여 대시 실행
-            StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
+        // 대시 목적지 위치 계산
+        Vector3 dashDestination = transform.position + dashDirection * dashDistance;
 
-        }
+        // 플레이어의 위치를 빠르게 이동하여 대시 실행
+        StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
 
-        // 여기에 대시 애니메이션 재생과 같은 추가 작업을 추가 예정
+        skill.isHideSkills[0] = true;
+        skill.getSkillTimes[0] = skill.skillTimes[0];
     }
 
     // 플레이어를 대시 목적지 위치로 부드럽게 이동시키는 코루틴
@@ -259,42 +313,36 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public void SkillA()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (!skill.isHideSkills[1])
-            {
-                skill.HideSkillSetting(1);
-                return;
-            }
-            _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
-            _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
-        }
+        //if (!skill.isHideSkills[1])
+        //{
+        //    skill.HideSkillSetting(1);
+        //    return;
+        //}
+        _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
+        _animator.Play("ChargeSkillA_Skill");
     }
 
     public void SkillB()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (!skill.isHideSkills[2])
-            {
-                skill.HideSkillSetting(2);
-                return;
-            }
-            if (skill.getSkillTimes[2] > 0) return;
-            StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
-        }
+        //if (!skill.isHideSkills[2])
+        //{
+        //    skill.HideSkillSetting(2);
+        //    return;
+        //}
+        if (skill.getSkillTimes[2] > 0) return;
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
     }
 
     public void Click()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-            _animator.SetTrigger("onWeaponAttack");
+        _animator.SetTrigger("onWeaponAttack");
+
     }
 
     public void SkillClick()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-            _animator.SetTrigger("onWeaponAttack");
+        _animator.SetTrigger("onWeaponAttack");
+
     }
 
     IEnumerator ActionTimer(string actionName, float time)
@@ -317,9 +365,12 @@ public class NetworkPlayerController : NetworkBehaviour
     #endregion
 
     [ServerRpc]
-    private void MoveServerRPC(Vector2 movementInput)
+    private void MoveServerRPC(Vector3 movementInput, Quaternion rotationInput)
     {
-        Move(movementInput);
+
+        networkPosition.Value = movementInput;
+        networkRotation.Value = rotationInput;
+
     }
 
     [ServerRpc]
@@ -348,5 +399,10 @@ public class NetworkPlayerController : NetworkBehaviour
     private void SkillClickServerRPC()
     {
         SkillClick();
+    }
+    [ServerRpc]
+    private void ApplyGravityServerRPC()
+    {
+        ApplyGravity();
     }
 }

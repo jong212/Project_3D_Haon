@@ -14,6 +14,7 @@ public class MapSelectionData : ScriptableObject
 public struct MapInfo
 {
     // 이미지로 변경
+    public Sprite MapImage;
     public Color MapThumbnail;
     public string MapName;
     public string SceneName;

@@ -1,38 +1,37 @@
+
 using TMPro;
 using UnityEngine;
 
 public class LobbyPlayer : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _playerName;
-    [SerializeField] private Renderer isReadyRenderer;
+    [SerializeField] private TextMeshProUGUI playerNameText;
+    [SerializeField] private GameObject readyParticle;
+    [SerializeField] private LobbyCharacterPointer characterPointer;
 
-
-    private MaterialPropertyBlock propertyBlock;
     private LobbyPlayerData _data;
-
-    private void Start()
-    {
-
-        propertyBlock = new MaterialPropertyBlock();
-    }
-
-
+    public string PlayerId { get; private set; }
     public void SetData(LobbyPlayerData data)
     {
         _data = data;
-        _playerName.text = _data.GamerTag;
+        PlayerId = _data.Id;
+
+        
+        if (characterPointer != null)
+        {
+            characterPointer.PlayerId = PlayerId;
+        }
 
         if (data.IsReady)
         {
-            if (isReadyRenderer != null)
+            if (readyParticle != null)
             {
-                isReadyRenderer.GetPropertyBlock(propertyBlock);
-                propertyBlock.SetColor("_BaseColor", Color.green);
-                isReadyRenderer.SetPropertyBlock(propertyBlock);
+                readyParticle.SetActive(true);
             }
+
         }
+
         gameObject.SetActive(true);
+
+
     }
-
-
 }

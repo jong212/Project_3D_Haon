@@ -27,7 +27,7 @@ public class LobbyData
         set => sceneName = value;
     }
 
-    public void Initalize(int mapIndex)
+    public void Initialize(int mapIndex)
     {
         this.mapIndex = mapIndex;
     }

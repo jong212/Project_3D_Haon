@@ -33,11 +33,25 @@ public class MainMenuController : MonoBehaviour
 
     private async void OnHostClicked()
     {
-        bool succeeded = await GameLobbyManager.Instance.CreateLobby();
-        if (succeeded)
+        try
         {
-            Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
-            SceneManager.LoadSceneAsync("LobbyRoomScene");
+            bool succeeded = await GameLobbyManager.Instance.CreateLobby();
+            if (succeeded)
+            {
+                if (FadeInFadeOutSceneManager.Instance != null)
+                {
+                    Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
+                }
+                SceneManager.LoadSceneAsync("LobbyRoomScene");
+            }
+            else
+            {
+                Debug.LogError("로비 생성 실패");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"로비 생성 실패 : {ex.Message}");
         }
 
     }
@@ -52,15 +66,29 @@ public class MainMenuController : MonoBehaviour
 
     private async void SubmitCodeClicked()
     {
+
         string code = codeText.text;
         code = code.Substring(0, code.Length - 1);
 
-        bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
-
-        if (succeeded)
+        try
         {
-            Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
-            SceneManager.LoadSceneAsync("LobbyRoomScene");
+            bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
+            if (succeeded)
+            {
+                if (FadeInFadeOutSceneManager.Instance != null)
+                {
+                    Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
+                }
+                SceneManager.LoadSceneAsync("LobbyRoomScene");
+            }
+            else
+            {
+                Debug.LogError("로비 입장 실패");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"로비 입장 실패 : {ex.Message}");
         }
     }
 
