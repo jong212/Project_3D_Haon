@@ -45,6 +45,7 @@ public class UpDownMoveGate : MonoBehaviour
         isMoving = false;
         point++;
         gate.gameObject.SetActive(false);
+        gameObject.SetActive(false );
     }
 
     void UpActive()

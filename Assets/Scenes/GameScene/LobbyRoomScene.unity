@@ -210,10 +210,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerInLobby
       objectReference: {fileID: 0}
-    - target: {fileID: 1866709555296955298, guid: ed3c39778b0e8f843b256c2482cf4ad5, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1866709555296955299, guid: ed3c39778b0e8f843b256c2482cf4ad5, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -256,10 +252,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1866709555296955299, guid: ed3c39778b0e8f843b256c2482cf4ad5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8755420158478172500, guid: ed3c39778b0e8f843b256c2482cf4ad5, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -42,7 +42,7 @@ public class LobbyManager : Singleton<LobbyManager>
 
         Debug.Log($"Lobby create with lobby ID : {lobby.Id}");
 
-        heartbeatCoroutine = StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 6f));
+        heartbeatCoroutine = StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 1f));
         refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 1f));
 
         return true;

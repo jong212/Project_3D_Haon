@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1866709555296955299
 Transform:
   m_ObjectHideFlags: 0
@@ -449,6 +449,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1866709555296955299}
     m_Modifications:
+    - target: {fileID: 686477215250607027, guid: fa9497d8289f68e4dafb64e78852319d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1036342450766245315, guid: fa9497d8289f68e4dafb64e78852319d, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -500,6 +504,10 @@ PrefabInstance:
     - target: {fileID: 4098801288638448006, guid: fa9497d8289f68e4dafb64e78852319d, type: 3}
       propertyPath: m_Name
       value: LobbyWaitPlayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 4098801288638448006, guid: fa9497d8289f68e4dafb64e78852319d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9104572910714461856, guid: fa9497d8289f68e4dafb64e78852319d, type: 3}
       propertyPath: m_Enabled

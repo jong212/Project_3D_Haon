@@ -583,6 +583,7 @@ GameObject:
   - component: {fileID: 2125438298979747102}
   - component: {fileID: -4860506105751568735}
   - component: {fileID: -188091796565240182}
+  - component: {fileID: 2019832394}
   m_Layer: 0
   m_Name: mon10
   m_TagString: Monster
@@ -599,7 +600,7 @@ Transform:
   m_GameObject: {fileID: 1355366978745300}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4130884215796854}
@@ -638,7 +639,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
+  m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -668,6 +669,7 @@ MonoBehaviour:
   _level: 0
   _str: 0
   animator: {fileID: 0}
+  wayPoint: {fileID: 0}
 --- !u!136 &-188091796565240182
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -682,6 +684,20 @@ CapsuleCollider:
   m_Height: 1.5105103
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &2019832394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355366978745300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6216f7747151d954e8bc11310600c0d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mieddleMonser: {fileID: -4860506105751568735}
+  dieCheck: 0
 --- !u!1 &1372462145831158
 GameObject:
   m_ObjectHideFlags: 0
