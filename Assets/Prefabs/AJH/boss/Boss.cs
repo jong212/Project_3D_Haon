@@ -1,10 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.Security.Cryptography.X509Certificates;
-using System.Linq;
-using UnityEngine.Rendering.Universal;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -157,7 +153,7 @@ public class Boss : MonoBehaviour
         {
             case ("NoState"):
                 {
-                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
@@ -174,8 +170,9 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage1"):
                 {
-                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
                     {
+                        StartCoroutine(Gimick1Lazer());
                         ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
                     else
@@ -192,7 +189,7 @@ public class Boss : MonoBehaviour
                 }
             case ("Stage2"):
                 { 
-                    if (fixHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
+                    if (currentHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
                     {
                         ChangeState(new Stage3()); // 가장 높은 임계값부터 체크
                     }
@@ -206,10 +203,18 @@ public class Boss : MonoBehaviour
                     break;
                 }
         }
-
+     
     }
 
-/*  기믹2 패턴  */
+   
+
+    public IEnumerator Gimick1Lazer()
+    {
+        Debug.Log("hi...");
+        yield return new WaitForSeconds(1f);
+        Debug.Log("hi..11.");
+    }
+    /*  기믹2 패턴  */
     #region Stage2
     public void StartLaser(Vector3 position)
     {
@@ -261,7 +266,7 @@ public class NoState : IBossState
     {
         Debug.Log("1");
         boss.SetAnimation("Idle1");
-        if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,5f), 10f);
+        if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,1f), 10f);
     }
 
     public void Execute(Boss boss)
@@ -283,9 +288,10 @@ public class NoState : IBossState
     {
         Debug.Log("타이머 on...");
         yield return new WaitForSeconds(endTime);
-        Debug.Log("5초 지났어요....");
+        Debug.Log("3초 지났어요....");
         isChange = true;
     }
+
 }
 
 /* 보스 Stage1 Class */
