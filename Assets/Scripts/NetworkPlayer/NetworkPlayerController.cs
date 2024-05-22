@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 using UnityEngine;
 using static DataManager;
 
@@ -44,20 +45,19 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField]
     private NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>();
 
-    private Vector3 oldInputPosition;
-    private Vector3 oldInputRotation;
 
     private void Awake()
     {
-        
+        _animator = GetComponent<Animator>();
+        _characterController = GetComponent<CharacterController>();
     }
+
+
     private void Start()
     {
         if (IsClient && IsOwner)
         {
-            _characterController = GetComponent<CharacterController>();
-            _animator = GetComponent<Animator>();
-            transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
+            
             if (skillControlObject != null)
             {
                 skill = skillControlObject.GetComponent<SkillControlNetwork>();
@@ -89,12 +89,14 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
+
         if (IsLocalPlayer)
         {
 
             MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
                                                      // DataManager를 사용하여 플레이어 데이터 가져오기
-
+            
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
             if (virtualCamera != null)
@@ -172,7 +174,10 @@ public class NetworkPlayerController : NetworkBehaviour
         }
 
         if (IsOwner)
-            MoveServerRPC(new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")));
+        {
+            Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            MoveServerRPC(movementInput);
+        }
     }
 
     // 플레이어가 피해를 받을 때 호출되는 함수
@@ -340,6 +345,8 @@ public class NetworkPlayerController : NetworkBehaviour
         if (IsServer)
         {
             Move(movementInput);
+            networkPosition.Value = transform.position;
+            networkRotation.Value = transform.rotation;
         }
     }
 
