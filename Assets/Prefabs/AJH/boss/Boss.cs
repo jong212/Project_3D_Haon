@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.AI;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -14,6 +15,8 @@ using System.Collections.Generic;
  - 보스 오브젝트에 Boss 태그 달기
  - Flower Dryad_temp Bossbar 에 캔버스_boss 오브젝트 하위의 text(TMP)집어넣기
  - LazerSpawner 오브젝트에 LazerSpawner태그
+ - Effect1 오브젝트에 Effect1Spawner 태그
+ - Effect2 오브젝트에 Effect2Spawner 태그
 ****************************************************************************** */
 
 /*  인터페이스  */
@@ -211,14 +214,19 @@ public class Boss : MonoBehaviour
     public IEnumerator Gimick1Lazer(Boss boss)
     {
         boss.LazerGimick = true;
-        GameObject getLazer = PoolManager.Instance.GetPoolObject(PoolObjectType.Lazer);
+        GameObject getLazer = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerParents);
+        Transform Effect1 = FindChildWithTag(getLazer.transform, "Effect1Spawner");
+        Transform Effect2 = FindChildWithTag(getLazer.transform, "Effect2Spawner");
+
+
+
         Vector3 startPosition = boss.transform.position;
         startPosition.y -= 5f; // Adjust this value as needed to set the starting position below the boss
         getLazer.transform.position = startPosition;
         getLazer.SetActive(true);
 
-        float riseTime = 4f; // Time it takes for the laser to reach the boss's position
-        float elapsedTime = 0f;
+        float riseTime = 4f; // 레이저가 보스의 위치에 도달하는 데 걸리는 총 시간
+        float elapsedTime = 0f;  // 경과 시간 (초기에는 0)
         bool test = false;
         while (elapsedTime < riseTime)
         {
@@ -228,10 +236,10 @@ public class Boss : MonoBehaviour
             {
                 boss.SetAnimation("Skill");
             }
-
+            // while 루프 내에서 다음 코드가 매 프레임 실행됩니다.
             getLazer.transform.position = Vector3.Lerp(startPosition, boss.transform.position, elapsedTime / riseTime);
-            elapsedTime += Time.deltaTime;
-            yield return null; // Wait until the next frame
+            elapsedTime += Time.deltaTime;// 경과 시간을 증가시킵니다 (매 프레임마다)
+            yield return null;
         }
 
         boss.SetAnimation("Stage1");
@@ -242,8 +250,162 @@ public class Boss : MonoBehaviour
         childOneTransform.gameObject.SetActive(true);
         
         yield return new WaitForSeconds(1f);
-        Debug.Log("hi..11.");
+        float lazerMonTimer = 0f;
+        float lazerMon1Timer = 0f;
+        float lazerMonInterval = 10f;
+        float lazerMon1Interval = 3f;
+        while (true)
+        {
+            lazerMonTimer += Time.deltaTime;
+            lazerMon1Timer += Time.deltaTime;
 
+            if (lazerMonTimer >= lazerMonInterval)
+            {
+                SpawnLazerMon();
+                lazerMonTimer = 0f; // Reset the timer for LazerMon
+            }
+
+            if (lazerMon1Timer >= lazerMon1Interval)
+            {
+                SpawnLazerMon1();
+                lazerMon1Timer = 0f; // Reset the timer for LazerMon1
+            }
+
+            yield return null; // Wait until the next frame
+        }
+        Transform FindChildWithTag(Transform parent, string tag)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.CompareTag(tag))
+                {
+                    return child;
+                }
+            }
+            return null;
+        }
+        // Local functions for spawning
+        void SpawnLazerMon()
+        {
+            GameObject LazerMon = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerMon);
+            if (LazerMon == null)
+            {
+                Debug.LogError("Failed to get LazerMon from the pool.");
+                return;
+            }
+
+            // 밟는 지점 초기화
+            Vector3 spawnPosition = Effect1.position;
+            if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+            {
+                LazerMon.transform.position = hit.position;
+            }
+            else
+            {
+                Debug.LogError("LazerMon spawn position is not on the NavMesh.");
+                return;
+            }
+            // 회전 초기화 
+            LazerMon.transform.rotation = Quaternion.identity; // Reset rotation
+
+            NavMeshAgent agent = LazerMon.GetComponent<NavMeshAgent>();
+            if (agent == null)
+            {
+                Debug.LogError("NavMeshAgent component missing from LazerMon.");
+                return;
+            }
+
+            // 네비메쉬 껏다 켜서 초기화 시키기
+            StartCoroutine(EnableNavMeshAgent(agent, Effect1.position));
+
+            // 몬스터 정보 초기화 
+            MonsterInfo monsterInfo = LazerMon.GetComponent<MonsterInfo>();
+            if (monsterInfo == null)
+            {
+                Debug.LogError("LazerMon does not have a MonsterInfo component.");
+                return;
+            }
+            monsterInfo._hp = 100;
+
+            CapsuleCollider capsuleCollider = LazerMon.GetComponent<CapsuleCollider>();
+            if (capsuleCollider != null)
+            {
+                capsuleCollider.enabled = true;
+            }
+
+            // 초기화 작업 마무리 되면 아래에서 Active
+            LazerMon.SetActive(true);
+
+            Debug.Log("Spawned LazerMon with HP: " + monsterInfo._hp);
+        }
+
+        void SpawnLazerMon1()
+        {
+            GameObject LazerMon1 = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerMon1);
+            if (LazerMon1 == null)
+            {
+                Debug.LogError("Failed to get LazerMon1 from the pool.");
+                return;
+            }
+
+            Vector3 spawnPosition = Effect2.position;
+            if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+            {
+                LazerMon1.transform.position = hit.position;
+            }
+            else
+            {
+                Debug.LogError("LazerMon1 spawn position is not on the NavMesh.");
+                return;
+            }
+
+            LazerMon1.transform.rotation = Quaternion.identity; // Reset rotation
+
+            NavMeshAgent agent = LazerMon1.GetComponent<NavMeshAgent>();
+            if (agent == null)
+            {
+                Debug.LogError("NavMeshAgent component missing from LazerMon1.");
+                return;
+            }
+
+            StartCoroutine(EnableNavMeshAgent(agent, Effect2.position));
+
+            MonsterInfo monsterInfo = LazerMon1.GetComponent<MonsterInfo>();
+            if (monsterInfo == null)
+            {
+                Debug.LogError("LazerMon1 does not have a MonsterInfo component.");
+                return;
+            }
+            monsterInfo._hp = 10;
+
+            CapsuleCollider capsuleCollider = LazerMon1.GetComponent<CapsuleCollider>();
+            if (capsuleCollider != null)
+            {
+                capsuleCollider.enabled = true;
+            }
+
+            LazerMon1.SetActive(true);
+
+            Debug.Log("Spawned LazerMon1 with HP: " + monsterInfo._hp);
+        }
+
+        IEnumerator EnableNavMeshAgent(NavMeshAgent agent, Vector3 targetPosition)
+        {
+            yield return new WaitForEndOfFrame(); // Wait for the end of the frame to ensure NavMesh is updated
+
+            agent.enabled = false;
+            agent.enabled = true;
+
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(targetPosition);
+                Debug.Log("NavMeshAgent enabled and destination set.");
+            }
+            else
+            {
+                Debug.LogError("NavMeshAgent is not on a NavMesh after enabling the agent.");
+            }
+        }
         // Additional logic for after the laser has reached the boss's position
     }
 

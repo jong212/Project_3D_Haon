@@ -12,6 +12,8 @@ TagManager:
   - Boss
   - Lazer_point
   - LazerSpawner
+  - Effect1Spawner
+  - Effect2Spawner
   layers:
   - Default
   - TransparentFX
