@@ -151,38 +151,32 @@ public class Boss : MonoBehaviour
 
     /*  보스 상태 체크 (공통)  */
     public void CheckHealthAndChangeState(bool chk, Boss boss)
-    {          
-        switch (previousState) //현재 인스턴스가 아닌 이전 인스턴스로 체크
+    {
+                                                                 // previousState 이전 상태
+        switch (previousState) 
         {
-            case ("NoState"):
+            //Jonghwa 0523 주석처리
+            /* case ("NoState"):
+                 {
+                     if (currentHealth <= Stage2Hp)             
+                     {
+                         ChangeState(new Stage2());             
+                     }
+                     break;
+                 }*/
+            case ("Stage1"): 
                 {
-                    if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
-                    {
-                        ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
-                    }
-                    else
-                    {
 
-                        if (chk) {
-                            Debug.Log("상태를 재실행해요..");
-                            ChangeState(new Stage1());
-                            
-                                }
-                    }
-                    break;
-                }
-            case ("Stage1"):
-                {
-                    if (currentHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (currentHealth <= Stage2Hp)
                     {
-                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(this));                        
-                            ChangeState(new Stage1());
+                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(this));     
+                            ChangeState(new Stage1());                            
 
                         //ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
                     else
                     {
-                        if (chk)
+                        if (chk)  // 기믹 1.5로 넘어가기 전에는 여기 탐 
                         {
                             Debug.Log("상태를 재실행해요..");
                             ChangeState(new Stage1());
@@ -256,6 +250,7 @@ public class Boss : MonoBehaviour
         float lazerMon1Interval = 3f;
         while (true)
         {
+            Debug.Log("test");
             lazerMonTimer += Time.deltaTime;
             lazerMon1Timer += Time.deltaTime;
 
@@ -467,7 +462,13 @@ public class NoState : IBossState
     public void Execute(Boss boss)
     {
         Debug.Log("기본1탓어요");
+        // 게임 시작 시 if문 체크하지만 FAlSE 되어서 실행 안 됨 인스펙터에서 체크해야 탐 
+        // 보스맵 진입 안 하고 있으면 여기서 Loop돔
+        // 게임 스타트 하면 강제로 상태를 State1 로 변환하여 문어 스킬 발동
         if (boss.bosssRoomStartCheck) boss.ChangeState(new Stage1());
+
+        // 상태 변하지 않았다면 null이라 여기서 걸림 
+        // 상태 바뀐 시점부터는 NoState상태로 바꾸는 처리가 있을 때마다 아래 함수로 진입
         if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange, boss);
     }
 
