@@ -150,20 +150,12 @@ public class Boss : MonoBehaviour
     }
 
     /*  보스 상태 체크 (공통)  */
-    public void CheckHealthAndChangeState(bool chk, Boss boss)
+    public void CheckHealthAndChangeState( Boss boss)
     {
                                                                  // previousState 이전 상태
         switch (previousState) 
         {
-            //Jonghwa 0523 주석처리
-            /* case ("NoState"):
-                 {
-                     if (currentHealth <= Stage2Hp)             
-                     {
-                         ChangeState(new Stage2());             
-                     }
-                     break;
-                 }*/
+            
             case ("Stage1"): 
                 {
 
@@ -175,28 +167,24 @@ public class Boss : MonoBehaviour
                         //ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
                     else
-                    {
-                        if (chk)  // 기믹 1.5로 넘어가기 전에는 여기 탐 
+                  ////  {
+                        //if (chk)  // 기믹 1.5로 넘어가기 전에는 여기 탐 
                         {
                             Debug.Log("상태를 재실행해요..");
                             ChangeState(new Stage1());
 
-                        }
+                     //   }
                     }
                     break;
                 }
             case ("Stage2"):
                 { 
-                    if (currentHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
+                    if (currentHealth <= Stage3Hp)
                     {
-                        ChangeState(new Stage3()); // 가장 높은 임계값부터 체크
+                        ChangeState(new Stage3());
                     }
                     else
                     {
-
-                        /*if ("타임...채워지면 Stage1으로..") {
-                            Debug.Log()
-                        } */
                     }
                     break;
                 }
@@ -469,7 +457,7 @@ public class NoState : IBossState
 
         // 상태 변하지 않았다면 null이라 여기서 걸림 
         // 상태 바뀐 시점부터는 NoState상태로 바꾸는 처리가 있을 때마다 아래 함수로 진입
-        if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange, boss);
+        boss.CheckHealthAndChangeState(boss);
     }
 
     public void Exit(Boss boss)
