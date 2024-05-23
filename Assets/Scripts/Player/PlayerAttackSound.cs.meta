@@ -3,7 +3,11 @@ guid: 694a2b66551f8454cbda857945cd514f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - audioSource: {instanceID: 0}
+  - baseAttackSound: {fileID: 8300000, guid: 01999991d21504b5abb7a554bba05227, type: 3}
+  - biologySound: {fileID: 8300000, guid: bcdeed9190f3641f4887ff7cbea4dd66, type: 3}
+  - nonBiologySound: {fileID: 8300000, guid: 26e9b0607a7504b8ca6ae8b0b885ab08, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

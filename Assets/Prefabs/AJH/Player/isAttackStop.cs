@@ -51,19 +51,6 @@ public class isAttackStop : StateMachineBehaviour
                 
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
                 
-                //Attack Sound 추가(준후)
-                if (otherCollider.GetComponent<MonsterType>().monsterType == 1)
-                {
-                    attackSound.BiologyAttack();
-                }
-                else if (otherCollider.GetComponent<MonsterType>().monsterType == 2)
-                {
-                    attackSound.NonBiologyAttack();
-                }
-                else
-                { 
-                    attackSound.BaseAttack();
-                }
             }
             //파괴 되는 오브젝트 조건 추가(준후)
             else if (otherCollider.gameObject.name == "DestroyBox")
@@ -73,7 +60,7 @@ public class isAttackStop : StateMachineBehaviour
             {
                 otherCollider.GetComponent<Boss>().TakeDamage(playerAnimator.getstr);
             }
-            //=======================================================================(준후작업 라인 끝)
+            //==
             hasCollided = true;
 
             // 여기에서 충돌을 처리하는 코드를 추가하세요.
