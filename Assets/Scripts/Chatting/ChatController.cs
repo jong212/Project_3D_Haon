@@ -15,6 +15,8 @@ public class ChatController : NetworkBehaviour
     [SerializeField]
     private TMP_InputField inputField;
     [SerializeField]
+    private TMP_InputField nameInputField; // 사용자 이름 입력 필드 추가
+    [SerializeField]
     private Sprite[] spriteChatInputType;
     [SerializeField]
     private Image imageChatInputType;
@@ -28,7 +30,7 @@ public class ChatController : NetworkBehaviour
     private string lastChatData = "";
     private string lastWhisperID = "";
 
-    private string ID = "Good I D er";
+    private string userName = "Anonymous"; // 기본 사용자 이름 설정
     private string friendID = "Noname";
 
     private void Awake()
@@ -57,18 +59,32 @@ public class ChatController : NetworkBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        if (clientId == NetworkManager.Singleton.LocalClientId)
+        if (IsServer)
         {
-            Debug.Log("Connected to server");
+            string systemMessage = $"Player {clientId} connected.";
+            SendSystemMessage(systemMessage);
         }
     }
 
     private void OnClientDisconnected(ulong clientId)
     {
-        if (clientId == NetworkManager.Singleton.LocalClientId)
+        if (IsServer)
         {
-            Debug.Log("Disconnected from server");
+            string systemMessage = $"Player {clientId} disconnected.";
+            SendSystemMessage(systemMessage);
         }
+    }
+
+    private void SendSystemMessage(string message)
+    {
+        var chatMessage = new ChatMessage
+        {
+            SenderName = "System",
+            Message = message,
+            SenderId = NetworkManager.Singleton.LocalClientId
+        };
+
+        UpdateChatDisplayClientRpc(chatMessage);
     }
 
     void Update()
@@ -98,16 +114,18 @@ public class ChatController : NetworkBehaviour
 
         if (IsClient)
         {
-            SendChatMessageServerRpc(inputField.text);
+            userName = nameInputField.text;
+            SendChatMessageServerRpc(userName, inputField.text);
             inputField.text = "";
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void SendChatMessageServerRpc(string message, ServerRpcParams serverRpcParams = default)
+    public void SendChatMessageServerRpc(string senderName, string message, ServerRpcParams serverRpcParams = default)
     {
         var chatMessage = new ChatMessage
         {
+            SenderName = senderName,
             Message = message,
             SenderId = serverRpcParams.Receive.SenderClientId
         };
@@ -124,8 +142,8 @@ public class ChatController : NetworkBehaviour
 
     private void AddMessageToChat(ChatMessage chatMessage)
     {
-        string messageText = $"{chatMessage.SenderId} : {chatMessage.Message}";
-        PrintChatData(currentInputType, currentTextColor, messageText);
+        string messageText = $"{chatMessage.SenderName}: {chatMessage.Message}";
+        PrintChatData(chatMessage.SenderName == "System" ? ChatType.System : currentInputType, chatMessage.SenderName == "System" ? Color.yellow : currentTextColor, messageText);
     }
 
     private void PrintChatData(ChatType type, Color color, string text)
@@ -179,15 +197,17 @@ public class ChatController : NetworkBehaviour
         return colors[(int)type];
     }
 }
-
 public struct ChatMessage : INetworkSerializable
 {
     public ulong SenderId;
+    public string SenderName;
     public string Message;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref SenderId);
+        serializer.SerializeValue(ref SenderName);
         serializer.SerializeValue(ref Message);
     }
 }
+

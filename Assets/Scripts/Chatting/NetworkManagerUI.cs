@@ -23,7 +23,7 @@ public class NetworkManagerUI : MonoBehaviour
             Debug.Log("Host started");
         }
     }
-
+  
     private void StartClient()
     {
         if (NetworkManager.Singleton != null)
