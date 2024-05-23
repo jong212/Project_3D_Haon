@@ -158,22 +158,16 @@ public class Boss : MonoBehaviour
             
             case ("Stage1"): 
                 {
-
                     if (currentHealth <= Stage2Hp)
                     {
                         if (!LazerGimick) StartCoroutine(Gimick1Lazer(this));     
                             ChangeState(new Stage1());                            
-
-                        //ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
                     }
                     else
-                  ////  {
-                        //if (chk)  // 기믹 1.5로 넘어가기 전에는 여기 탐 
+                      // 기믹 1.5로 넘어가기 전에는 여기 탐 
                         {
                             Debug.Log("상태를 재실행해요..");
                             ChangeState(new Stage1());
-
-                     //   }
                     }
                     break;
                 }
