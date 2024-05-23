@@ -7,6 +7,7 @@ public class UpDownMoveGate : MonoBehaviour
     public float speed = 1;
     public bool down = false;
     public float upDownStopSecond = 0;
+    [SerializeField] private BgmManager bgmManager;
 
 
     [SerializeField] private bool isMoving = false;
@@ -44,6 +45,8 @@ public class UpDownMoveGate : MonoBehaviour
     {
         isMoving = false;
         point++;
+        bgmManager.BgmSet = true;
+        if (bgmManager == null) return;
         gate.gameObject.SetActive(false);
         gameObject.SetActive(false );
     }
@@ -52,6 +55,8 @@ public class UpDownMoveGate : MonoBehaviour
     {
         isMoving = false;
         point++;
+        bgmManager.BgmSet = true;
+        if (bgmManager == null) return;
         if (isMoving == false) { gameObject.SetActive(false); }
     }
 }
