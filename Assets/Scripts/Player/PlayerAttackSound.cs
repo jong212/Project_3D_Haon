@@ -9,19 +9,19 @@ public class PlayerAttackSound : MonoBehaviour
     [SerializeField] AudioClip biologySound;
     [SerializeField] AudioClip nonBiologySound;
 
-    void BaseAttack()
+    public void BaseAttack()
     { 
         audioSource.clip = baseAttackSound;
         audioSource.PlayOneShot(baseAttackSound);
     }
 
-    void BiologyAttack()
+    public void BiologyAttack()
     {
         audioSource.clip = biologySound;
         audioSource.PlayOneShot(biologySound);
     }
 
-    void NonBiologyAttack()
+    public void NonBiologyAttack()
     {
         audioSource.clip = nonBiologySound;
         audioSource.PlayOneShot(nonBiologySound);
