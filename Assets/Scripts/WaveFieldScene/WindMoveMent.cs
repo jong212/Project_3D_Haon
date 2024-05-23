@@ -1,13 +1,13 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+
 
 public class WindMoveMent : MonoBehaviour
 {
     [SerializeField] private ParticleSystem windEffect;
-    [SerializeField] private float stopWindTime = 1.0f;
+    [SerializeField] private float stopWindTime = 1.2f;
 
     [SerializeField] GameObject player;
-    [SerializeField] float moveSpeed = 1.0f;
+    [SerializeField] float moveSpeed = 5.0f;
    
     private void Update()
     {
@@ -18,14 +18,16 @@ public class WindMoveMent : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            PlayerInput playerInput = other.GetComponent<PlayerInput>();
-            playerInput.enabled = false;
-            player.gameObject.layer = 7;
+            if(other.GetComponent<NetworkPlayerController>() != null)
+            {
+                other.GetComponent<NetworkPlayerController>().enabled = false;
+            }
+
             player.transform.Translate(Vector3.zero);
-            
             windEffect.gameObject.SetActive(true);
             Invoke("StopWind" , stopWindTime);
-            playerInput.enabled = true;
+
+            other.GetComponent<NetworkPlayerController>().enabled = true;
         }
     }
 

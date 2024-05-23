@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: -4901017628983577897}
   - component: {fileID: 5809705883827337413}
   - component: {fileID: 5284535821770768907}
+  - component: {fileID: -3681322274590455903}
   m_Layer: 0
   m_Name: mon7
   m_TagString: Monster
@@ -428,6 +429,19 @@ CapsuleCollider:
   m_Height: 1.5105103
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &-3681322274590455903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591548031869842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a9b5ba4560833146bccfcf330116161, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterType: 1
 --- !u!1 &1752920092077010
 GameObject:
   m_ObjectHideFlags: 0

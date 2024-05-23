@@ -584,6 +584,7 @@ GameObject:
   - component: {fileID: -4860506105751568735}
   - component: {fileID: -188091796565240182}
   - component: {fileID: 2019832394}
+  - component: {fileID: -1724937723632697507}
   m_Layer: 0
   m_Name: mon10
   m_TagString: Monster
@@ -698,6 +699,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mieddleMonser: {fileID: -4860506105751568735}
   dieCheck: 0
+--- !u!114 &-1724937723632697507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1355366978745300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a9b5ba4560833146bccfcf330116161, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterType: 1
 --- !u!1 &1372462145831158
 GameObject:
   m_ObjectHideFlags: 0
