@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem.Layouts;
 
 [RequireComponent(typeof(LineRenderer))]
 public class Gimick2 : MonoBehaviour
@@ -10,7 +12,8 @@ public class Gimick2 : MonoBehaviour
     public float defaultLength = 50f;
     public int numOfReflections = 2;
     public GameObject boss;
-    public Boss bossObject;
+    public Boss realboss;
+    ///public Boss bossObject;
     private LineRenderer _lineRenderer;
     private Camera _myCam;
     private RaycastHit hit;
@@ -21,7 +24,14 @@ public class Gimick2 : MonoBehaviour
     void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-      
+        if (realboss == null)
+        {
+            GameObject bossObject = GameObject.FindWithTag("Boss");
+            if (bossObject != null)
+            {
+                realboss = bossObject.GetComponent<Boss>();
+            }
+        }
         _myCam = Camera.main;
     }
 
@@ -50,8 +60,8 @@ public class Gimick2 : MonoBehaviour
 
                 if (hit.collider.gameObject == boss)
                 {
-                    bossObject.LazerStartFiveMin = true;
-                    // Additional logic for when the boss is hit can go here
+                    realboss.LazerStartFiveMin = true;
+
                     break;
                 }
 
@@ -59,7 +69,7 @@ public class Gimick2 : MonoBehaviour
             }
             else
             {
-                bossObject.LazerStartFiveMin = false;
+                realboss.LazerStartFiveMin = false;
                 _lineRenderer.positionCount += 1;
                 _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, ray.origin + (ray.direction * remainLength));
                 break;

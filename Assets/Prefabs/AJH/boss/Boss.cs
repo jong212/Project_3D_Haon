@@ -37,7 +37,7 @@ public class Boss : MonoBehaviour
     public BossBar bossbar;
     public float fixHealth;                       // 보스 체력 세팅
     public bool LazerGimick;
-    public bool LazerStartFiveMin; 
+    public bool LazerStartFiveMin { get;  set; }
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
 
@@ -51,7 +51,11 @@ public class Boss : MonoBehaviour
     public bool IsUsingLaser { get; private set; }                     // 레이저 사용 여부
 
     private List<Coroutine> runningCoroutines = new List<Coroutine>(); // Running coroutine references!!!!
-
+    
+    public void LazerStartFiveMinS()
+    {
+        LazerStartFiveMin = true;
+    }
     /*  초기화  */
     void Start()
     {
