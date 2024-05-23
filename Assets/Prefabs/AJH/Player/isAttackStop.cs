@@ -5,7 +5,7 @@ public class isAttackStop : StateMachineBehaviour
     ColliderScript weaponColliderScript;
     playerAnimator playerAnimator;
     bool hasCollided = false;
-    [SerializeField] PlayerAttackSound attackSound;
+    
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
