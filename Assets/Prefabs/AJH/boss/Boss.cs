@@ -37,6 +37,7 @@ public class Boss : MonoBehaviour
     public BossBar bossbar;
     public float fixHealth;                       // 보스 체력 세팅
     public bool LazerGimick;
+    public bool LazerStartFiveMin; 
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
 
@@ -227,15 +228,22 @@ public class Boss : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
         float lazerMonTimer = 0f;
-        float lazerMon1Timer = 0f;
         float lazerMonInterval = 10f;
+        float lazerMon1Timer = 0f;        
         float lazerMon1Interval = 3f;
+        float lazerStarTimer = 0f;
+        float lazerStarInterval = .5f;
         while (true)
         {
-            Debug.Log("test");
+            Debug.Log(LazerStartFiveMin);
             lazerMonTimer += Time.deltaTime;
             lazerMon1Timer += Time.deltaTime;
-
+            lazerStarTimer += Time.deltaTime;
+            if (lazerStarTimer >= lazerStarInterval)
+            {
+               
+                lazerStarTimer = 0f; // Reset the timer for LazerMon
+            }
             if (lazerMonTimer >= lazerMonInterval)
             {
                 SpawnLazerMon();
@@ -433,7 +441,7 @@ public class Boss : MonoBehaviour
 public class NoState : IBossState
 {
     public bool timer = false;
-    public bool isChange = false;
+    
     public void Enter(Boss boss)
     {
         Debug.Log("1");
@@ -467,7 +475,7 @@ public class NoState : IBossState
         Debug.Log("타이머 on...");
         yield return new WaitForSeconds(endTime);
         Debug.Log("3초 지났어요....");
-        isChange = true;
+        
     }
 
 }

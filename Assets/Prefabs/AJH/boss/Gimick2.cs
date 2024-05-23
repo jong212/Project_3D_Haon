@@ -10,7 +10,7 @@ public class Gimick2 : MonoBehaviour
     public float defaultLength = 50f;
     public int numOfReflections = 2;
     public GameObject boss;
-
+    public Boss bossObject;
     private LineRenderer _lineRenderer;
     private Camera _myCam;
     private RaycastHit hit;
@@ -21,6 +21,7 @@ public class Gimick2 : MonoBehaviour
     void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
+      
         _myCam = Camera.main;
     }
 
@@ -49,7 +50,7 @@ public class Gimick2 : MonoBehaviour
 
                 if (hit.collider.gameObject == boss)
                 {
-                    Debug.Log("Boss hit by laser!");
+                    bossObject.LazerStartFiveMin = true;
                     // Additional logic for when the boss is hit can go here
                     break;
                 }
@@ -58,6 +59,7 @@ public class Gimick2 : MonoBehaviour
             }
             else
             {
+                bossObject.LazerStartFiveMin = false;
                 _lineRenderer.positionCount += 1;
                 _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, ray.origin + (ray.direction * remainLength));
                 break;
