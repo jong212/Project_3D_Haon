@@ -7,6 +7,7 @@ public class PlayInfo : MonoBehaviour
     public static int defalthp = 500;
     public static int defaltatk = 40;
     public static int hp=500;
+    public static int currenthp = 500;
     public static int atk=40;
     public static int coins = 100;
     public static int jewels = 100;

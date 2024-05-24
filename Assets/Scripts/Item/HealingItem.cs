@@ -37,6 +37,7 @@ public class HealingItem : MonoBehaviour
         transform.DOMoveY(upposition.y + 2, 2.0f);
         transform.DORotate(new Vector3(0, 900, 0), 2f,RotateMode.FastBeyond360);
         Invoke("GetHealing", 1.5f);
+        PlayInfo.currenthp += 100;
     }
   
     void GetHealing()
