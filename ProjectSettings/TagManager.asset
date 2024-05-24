@@ -14,6 +14,7 @@ TagManager:
   - LazerSpawner
   - Effect1Spawner
   - Effect2Spawner
+  - Locate
   layers:
   - Default
   - TransparentFX
