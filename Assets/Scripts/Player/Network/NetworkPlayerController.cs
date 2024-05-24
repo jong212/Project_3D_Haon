@@ -31,8 +31,11 @@ public class NetworkPlayerController : NetworkBehaviour
     [SerializeField]
     private Collider WeaponCollider;             // 무기 콜라이더
 
+
     [SerializeField]
     private Canvas _hpCanvas;
+
+    [SerializeField] private PlayerAttackSound playerSound;
 
     private CinemachineVirtualCamera virtualCamera;
 
@@ -276,6 +279,7 @@ public class NetworkPlayerController : NetworkBehaviour
             return;
 
         Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
+        playerSound.Dash();//대시 사운드 출력
         float dashDistance = 5f;  // 대시 거리
         float dashDuration = 0.2f; // 대시 지속 시간
 
@@ -315,6 +319,8 @@ public class NetworkPlayerController : NetworkBehaviour
         //}
         _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
         _animator.Play("ChargeSkillA_Skill");
+        playerSound.SkillA(); // 스킬 A 사운드 출력
+       
     }
 
     public void SkillB()
@@ -325,13 +331,14 @@ public class NetworkPlayerController : NetworkBehaviour
         //    return;
         //}
         if (skill.getSkillTimes[2] > 0) return;
-        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
+        StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f)); 
+        playerSound.SkillB();// 스킬B 사운드 출력
     }
 
     public void Click()
     {
         _animator.SetTrigger("onWeaponAttack");
-
+        playerSound.BaseAttack();//기본 공격 사운드 출력(허공)
     }
 
     public void SkillClick()
