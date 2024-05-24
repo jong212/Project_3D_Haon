@@ -41,6 +41,7 @@ public class NPC : MonoBehaviour
     public GameObject portalDoor;
     
     private bool IsNear=false;
+    private bool canProceed = true;
     public CinemachineVirtualCamera talkcamera;
     public CinemachineVirtualCamera portalcamera;
     public CinemachineVirtualCamera moncamera;
@@ -56,15 +57,20 @@ public class NPC : MonoBehaviour
     
     void Update()
     {
-       
         if(IsNear&& Input.GetKeyDown(KeyCode.F))
         {
-            HandleTalk();
+            if(canProceed)
+            {
+                HandleTalk();
+            }
+            
         }
 
+       
     }
     private void HandleTalk()
     {
+        canProceed = false;
         switch(talkIndex)
         {
             case 0:
@@ -78,6 +84,7 @@ public class NPC : MonoBehaviour
                 break;
 
         }
+        canProceed= true;
     }
 
     //첫번째 대화
@@ -116,6 +123,7 @@ public class NPC : MonoBehaviour
                 talkIndex = 1;
                 break;
         }
+        talkCount++;
     }
     private void HandleSecondTalk()
     {
@@ -155,10 +163,12 @@ public class NPC : MonoBehaviour
                 talkIndex = 2;
                 break;
         }
+        talkCount++;
     }
 
     private void HandleThirdTalk()
     {
+        
         switch (talkCount)
         {
             case 0:
@@ -168,6 +178,8 @@ public class NPC : MonoBehaviour
                 EndTalk(talkBullon, talktext3);
                 break;
         }
+        talkCount++;
+        
     }
     // 대화 시작 공통 로직
     private void StartTalk()
@@ -179,7 +191,6 @@ public class NPC : MonoBehaviour
         AttackInfo.SetActive(false);
         Invoke("talkballonAppear", 2f);
         player.GetComponent<PlayerInput>().enabled = false;
-        talkCount++;
     }
 
     // 대화 텍스트 전환 로직
@@ -187,7 +198,6 @@ public class NPC : MonoBehaviour
     {
         hideText.SetActive(false);
         showText.SetActive(true);
-        talkCount++;
     }
 
     // 몬스터 말풍선 숨기기
@@ -215,7 +225,6 @@ public class NPC : MonoBehaviour
     private void HideTalk()
     {
         talkBullon.SetActive(false);
-        talkCount++;
     }
     // 대화 종료 공통 로직
     private void EndTalk(GameObject hideText, GameObject showText)
