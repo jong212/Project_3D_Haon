@@ -13,6 +13,7 @@ public class isAttackStop : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
        
+
         if (shieldCollision != null)
         {
             shieldCollision.count += 1;

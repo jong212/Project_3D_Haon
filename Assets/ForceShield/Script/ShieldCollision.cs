@@ -22,6 +22,9 @@ public class ShieldCollision : MonoBehaviour
             {
                 isAttackstop = playerAnimator.GetBehaviour<isAttackStop>();
             }
+        } else
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
         }
 
         if (GetComponent<Renderer>())

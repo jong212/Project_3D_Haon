@@ -70,6 +70,7 @@ public class playerAnimator : MonoBehaviour
         _level = playerData.level;
         _str = playerData.str;
     }
+
     public static int getstr
     {
         get { return _str; }
