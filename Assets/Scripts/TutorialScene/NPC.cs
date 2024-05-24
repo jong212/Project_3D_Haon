@@ -41,6 +41,7 @@ public class NPC : MonoBehaviour
     public GameObject portalDoor;
     
     private bool IsNear=false;
+    private bool canProceed = true;
     public CinemachineVirtualCamera talkcamera;
     public CinemachineVirtualCamera portalcamera;
     public CinemachineVirtualCamera moncamera;
@@ -56,146 +57,20 @@ public class NPC : MonoBehaviour
     
     void Update()
     {
-       
-        
-        ////대화1
-        //if(IsNear==true&& talkCount == 0&&talkIndex==0&&Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talkcamera.Priority = 2;
-        //    Mark.SetActive(false);
-        //    TalkButton.SetActive(false);
-        //    MoveInfo.SetActive(false);
-        //    Invoke("talkballonAppear", 2f);
-        //    player.GetComponent<PlayerInput>().enabled = false;
-        //    talkCount+=1;
-        //}
-        //else if (IsNear == true && talkCount == 1 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talktext1_1.SetActive(false);
-           
-        //    talktext1_2.SetActive(true);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 2 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talktext1_2.SetActive(false);
-        //    talktext1_3.SetActive(true);
-        //    Invoke("MonsterBallunAppear", 1f);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 3 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    monsterBullon.SetActive(false);
-        //    moncamera.Priority = 3;
-        //    talkBullon.SetActive(false);
-        //    AttackInfo.SetActive(true);
-        //    Invoke("MonsterAppear", 2.5f);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 4 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    monsterBullon.SetActive(false);
-        //    moncamera.Priority = 0;
-        //    Invoke("talkballonAppear", 2f);
-        //    talktext1_3.SetActive(false);
-        //    talktext1_4.SetActive(true);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 5 && talkIndex == 0 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talktext1_4.SetActive(false);
-        //    talktext2_1.SetActive(true);
-        //    talkBullon.SetActive(false); 
-        //    talkcamera.Priority = 0;
-        //    player.GetComponent<PlayerInput>().enabled = true;
-        //    talkIndex = 1;
-        //    talkCount = 0;
-        //}
-        ////대화2
-        //else if (IsNear == true && talkCount == 0 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talkcamera.Priority = 2;
-        //    TalkButton.SetActive(false);
-        //    AttackInfo.SetActive(false);
-        //    Invoke("talkballonAppear", 2f);          
-        //    player.GetComponent<PlayerInput>().enabled = false;
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 1 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talktext2_1.SetActive(false);
-        //    talktext2_2.SetActive(true);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 2 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    chestcamera.Priority = 3;
-        //    talkBullon.SetActive(false);
-        //    Invoke("ChestAppear", 2f);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 3 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    chestcamera.Priority = 0;
-        //    Invoke("talkballonAppear", 2f);
-        //    talktext2_2.SetActive(false);
-        //    talktext2_3.SetActive(true);
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 4 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    portalcamera.Priority = 3;
-        //    Invoke("TreeOpen", 2f);
-        //    StartCoroutine(ShakeCamera());
-        //    talkBullon.SetActive(false);
-
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 5 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    portalcamera.Priority = 0;
-        //    Invoke("talkballonAppear", 2f);
-        //    talktext2_3.SetActive(false);
-        //    talktext2_4.SetActive(true);
-
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 6 && talkIndex == 1 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talktext2_4.SetActive(false);
-        //    talktext3.SetActive(true);
-        //    talkBullon.SetActive(false);
-        //    talkcamera.Priority = 0;
-        //    player.GetComponent<PlayerInput>().enabled = true;
-        //    talkIndex = 2;
-        //    talkCount = 0;
-        //}
-        ////대화3
-        //else if (IsNear == true && talkCount == 0 && talkIndex == 2 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talkcamera.Priority = 2;
-        //    TalkButton.SetActive(false);
-        //    Invoke("talkballonAppear", 2f);
-        //    player.GetComponent<PlayerInput>().enabled = false;
-        //    talkCount += 1;
-        //}
-        //else if (IsNear == true && talkCount == 1 && talkIndex == 2 && Input.GetKeyDown(KeyCode.F))
-        //{
-        //    talkBullon.SetActive(false);
-        //    talkcamera.Priority = 0;
-        //    player.GetComponent<PlayerInput>().enabled = true;
-        //    talkCount = 0;
-        //}
-
         if(IsNear&& Input.GetKeyDown(KeyCode.F))
         {
-            HandleTalk();
+            if(canProceed)
+            {
+                HandleTalk();
+            }
+            
         }
 
        
     }
     private void HandleTalk()
     {
+        canProceed = false;
         switch(talkIndex)
         {
             case 0:
@@ -209,6 +84,7 @@ public class NPC : MonoBehaviour
                 break;
 
         }
+        canProceed= true;
     }
 
     //첫번째 대화
@@ -247,6 +123,7 @@ public class NPC : MonoBehaviour
                 talkIndex = 1;
                 break;
         }
+        talkCount++;
     }
     private void HandleSecondTalk()
     {
@@ -286,10 +163,12 @@ public class NPC : MonoBehaviour
                 talkIndex = 2;
                 break;
         }
+        talkCount++;
     }
 
     private void HandleThirdTalk()
     {
+        
         switch (talkCount)
         {
             case 0:
@@ -299,6 +178,8 @@ public class NPC : MonoBehaviour
                 EndTalk(talkBullon, talktext3);
                 break;
         }
+        talkCount++;
+        
     }
     // 대화 시작 공통 로직
     private void StartTalk()
@@ -310,7 +191,6 @@ public class NPC : MonoBehaviour
         AttackInfo.SetActive(false);
         Invoke("talkballonAppear", 2f);
         player.GetComponent<PlayerInput>().enabled = false;
-        talkCount++;
     }
 
     // 대화 텍스트 전환 로직
@@ -318,7 +198,6 @@ public class NPC : MonoBehaviour
     {
         hideText.SetActive(false);
         showText.SetActive(true);
-        talkCount++;
     }
 
     // 몬스터 말풍선 숨기기
@@ -346,7 +225,6 @@ public class NPC : MonoBehaviour
     private void HideTalk()
     {
         talkBullon.SetActive(false);
-        talkCount++;
     }
     // 대화 종료 공통 로직
     private void EndTalk(GameObject hideText, GameObject showText)
