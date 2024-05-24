@@ -43,6 +43,7 @@ public class AttackState : StateMachineBehaviour
             playerinfo.TakeDamage(monsterinfo._str);
 
         }
+
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
