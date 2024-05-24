@@ -5,7 +5,7 @@ public class isAttackStop : StateMachineBehaviour
     ColliderScript weaponColliderScript;
     playerAnimator playerAnimator;
     bool hasCollided = false;
-    [SerializeField] PlayerAttackSound attackSound;
+    //[SerializeField] PlayerAttackSound attackSound;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -52,18 +52,18 @@ public class isAttackStop : StateMachineBehaviour
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
                 
                 //Attack Sound 추가(준후)
-                if (otherCollider.GetComponent<MonsterType>().monsterType == 1)
-                {
-                    attackSound.BiologyAttack();
-                }
-                else if (otherCollider.GetComponent<MonsterType>().monsterType == 2)
-                {
-                    attackSound.NonBiologyAttack();
-                }
-                else
-                { 
-                    attackSound.BaseAttack();
-                }
+                //if (otherCollider.GetComponent<MonsterType>().monsterType == 1)
+                //{
+                //    attackSound.BiologyAttack();
+                //}
+                //else if (otherCollider.GetComponent<MonsterType>().monsterType == 2)
+                //{
+                //    attackSound.NonBiologyAttack();
+                //}
+                //else
+                //{ 
+                //    attackSound.BaseAttack();
+                //}
             }
             //파괴 되는 오브젝트 조건 추가(준후)
             else if (otherCollider.gameObject.name == "DestroyBox")

@@ -169,15 +169,13 @@ public class NetworkPlayerController : NetworkBehaviour
     }
 
     // 플레이어 데이터 설정 함수
-    private static void SetPlayerData(PlayerData playerData)
-    {
-        _PlayerName = playerData.name;
-        _hp = playerData.hp;
-        _level = playerData.level;
-        _str = playerData.str;
-    }
-
-
+    //private static void SetPlayerData(PlayerData playerData)
+    //{
+    //    _PlayerName = playerData.name;
+    //    _hp = playerData.hp;
+    //    _level = playerData.level;
+    //    _str = playerData.str;
+    //}
 
     private void HandleInput()
     {

@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene/TutorialScene.unity
     guid: 08f7f780de25b2946bd3f38f4cda9c89
+  - enabled: 1
+    path: Assets/Scenes/GameScene/LobbyScene_WJH.unity
+    guid: 2a039f4410d0ad547ad170194087e5ad
   m_configObjects: {}
