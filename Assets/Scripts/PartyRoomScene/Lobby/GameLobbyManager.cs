@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameLobbyManager : Singleton<GameLobbyManager>
 {
@@ -127,7 +126,8 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             if (lobbyData.RelayJoinCode != default && !inGame)
             {
                 await JoinRelayServer(lobbyData.RelayJoinCode);
-                SceneManager.LoadSceneAsync(lobbyData.SceneName);
+                // SceneManager.LoadSceneAsync(lobbyData.SceneName);
+                SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
             }
         }
         catch (Exception ex)
@@ -138,7 +138,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
     public List<LobbyPlayerData> GetPlayers()
     {
-        
+
         return lobbyPlayerDatas;
     }
 
@@ -182,7 +182,8 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             string connectionData = RelayManager.Instance.GetConnectionData();
             await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
 
-            SceneManager.LoadSceneAsync(lobbyData.SceneName);
+            // SceneManager.LoadSceneAsync(lobbyData.SceneName);
+            SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
         }
         catch (Exception ex)
         {

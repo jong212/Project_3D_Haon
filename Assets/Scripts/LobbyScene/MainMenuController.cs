@@ -38,10 +38,6 @@ public class MainMenuController : MonoBehaviour
             bool succeeded = await GameLobbyManager.Instance.CreateLobby();
             if (succeeded)
             {
-                if (FadeInFadeOutSceneManager.Instance != null)
-                {
-                    Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
-                }
                 SceneManager.LoadSceneAsync("LobbyRoomScene");
             }
             else
@@ -75,10 +71,7 @@ public class MainMenuController : MonoBehaviour
             bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
             if (succeeded)
             {
-                if (FadeInFadeOutSceneManager.Instance != null)
-                {
-                    Destroy(FadeInFadeOutSceneManager.Instance.gameObject);
-                }
+                
                 SceneManager.LoadSceneAsync("LobbyRoomScene");
             }
             else

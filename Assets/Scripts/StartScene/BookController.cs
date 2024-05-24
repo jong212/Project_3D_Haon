@@ -49,17 +49,12 @@ public class BookController : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Book")))
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Book")) && !RegisterLoginManager.isLogin)
         {
             if (book.CurrentState == EndlessBook.StateEnum.ClosedFront)
             {
                 gameStart.gameObject.SetActive(false);
                 auth.gameObject.SetActive(true);
-
-                //if (RegisterLoginManager.isLogin)
-                //{
-                //    HandleLoginSuccess();
-                //}
 
             }
         }
@@ -72,7 +67,8 @@ public class BookController : MonoBehaviour
 
         if (book.CurrentLeftPageNumber == 7)
         {
-            FadeInFadeOutSceneManager.Instance.ChangeScene("TutorialScene");
+            
+            SceneLoader.Instance.LoadSceneAsync("TutorialScene");
         }
 
     }

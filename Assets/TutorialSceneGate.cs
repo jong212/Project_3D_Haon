@@ -8,7 +8,7 @@ public class TutorialSceneGate : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player"))
         {
-            FadeInFadeOutSceneManager.Instance.ChangeScene("LobbyScene_WJH");
+            //FadeInFadeOutSceneManager.Instance.ChangeScene("LobbyScene_WJH");
         }
     }
 

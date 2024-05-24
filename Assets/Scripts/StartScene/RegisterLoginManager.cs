@@ -12,7 +12,7 @@ public class RegisterLoginManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private GameObject authPanel;
     [SerializeField] private TextMeshProUGUI loginText;
-
+    
     private string registerUrl;
     private string loginUrl;
 
@@ -28,8 +28,8 @@ public class RegisterLoginManager : MonoBehaviour
 
         registerUrl = $"{RemoteConfigManager.ServerUrl}/api/register";
         loginUrl = $"{RemoteConfigManager.ServerUrl}/api/login";
-        //Debug.Log("Register URL: " + registerUrl);
-        //Debug.Log("Login URL: " + loginUrl);
+        // Debug.Log("Register URL: " + registerUrl);
+        // Debug.Log("Login URL: " + loginUrl);
     }
 
     public void OnRegisterButtonClicked()
@@ -76,26 +76,33 @@ public class RegisterLoginManager : MonoBehaviour
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
 
-        yield return request.SendWebRequest();
+        try
+        {
+            yield return request.SendWebRequest();
 
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            ShowFeedback("회원가입 성공");
-        }
-        else
-        {
-            if (request.responseCode == 400)
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                ShowFeedback("아이디가 이미 있습니다.");
-            }
-            else if (request.responseCode == 500)
-            {
-                ShowFeedback("서버 오류");
+                ShowFeedback("회원가입 성공");
             }
             else
             {
-                ShowFeedback("Error: " + request.error);
+                if (request.responseCode == 400)
+                {
+                    ShowFeedback("아이디가 이미 있습니다.");
+                }
+                else if (request.responseCode == 500)
+                {
+                    ShowFeedback("서버 오류");
+                }
+                else
+                {
+                    ShowFeedback("Error: " + request.error);
+                }
             }
+        }
+        finally
+        {
+            request.Dispose();
         }
 
     }
@@ -128,31 +135,37 @@ public class RegisterLoginManager : MonoBehaviour
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
 
-        yield return request.SendWebRequest();
+        try
+        {
+            yield return request.SendWebRequest();
 
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            // todo
-            ShowFeedback("로그인 성공");
-            authPanel.SetActive(false);
-            yield return new WaitForSeconds(2);
-            isLogin = true;
-            OnLoginSuccess?.Invoke();
-        }
-        else
-        {
-            if (request.responseCode == 500)
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                ShowFeedback("서버 오류");
-            }
-            else if (request.responseCode == 404)
-            {
-                ShowFeedback("아이디가 없거나 비밀번호가 틀렸습니다");
+                ShowFeedback("로그인 성공");
+                isLogin = true;
+                yield return new WaitForSeconds(1);
+                authPanel.SetActive(false);
+                OnLoginSuccess?.Invoke();
             }
             else
             {
-                ShowFeedback("Error: " + request.error);
+                if (request.responseCode == 500)
+                {
+                    ShowFeedback("서버 오류");
+                }
+                else if (request.responseCode == 404)
+                {
+                    ShowFeedback("아이디가 없거나 비밀번호가 틀렸습니다");
+                }
+                else
+                {
+                    ShowFeedback("Error: " + request.error);
+                }
             }
+        }
+        finally
+        {
+            request.Dispose();
         }
     }
 
@@ -162,17 +175,4 @@ public class RegisterLoginManager : MonoBehaviour
         feedbackText.DOFade(1, 1).OnComplete(() => feedbackText.DOFade(0, 2));
     }
 
-    [System.Serializable]
-    public class RegisterData
-    {
-        public string Username;
-        public string Password;
-    }
-
-    [System.Serializable]
-    public class LoginData
-    {
-        public string Username;
-        public string Password;
-    }
 }
