@@ -144,8 +144,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de02ce4c36d01e3468ff6ca987cbae39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAnimator: {fileID: 0}
   rotationStep: 2
   hasCollided: 0
+  AttackCheck: 0
+  shieldCollision: {fileID: 0}
 --- !u!1101 &-5994639048076840327
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -183,8 +186,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de02ce4c36d01e3468ff6ca987cbae39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAnimator: {fileID: 0}
   rotationStep: 2
   hasCollided: 0
+  AttackCheck: 0
+  shieldCollision: {fileID: 0}
 --- !u!1101 &-5816651015840807550
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -281,8 +287,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de02ce4c36d01e3468ff6ca987cbae39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerAnimator: {fileID: 0}
   rotationStep: 2
   hasCollided: 0
+  AttackCheck: 0
+  shieldCollision: {fileID: 0}
 --- !u!1102 &-3062061396861761875
 AnimatorState:
   serializedVersion: 6
