@@ -21203,15 +21203,16 @@ MonoBehaviour:
   talkIndex: 0
   talkBullon: {fileID: 851779534}
   monsterBullon: {fileID: 945686021}
-  talktext1_1: {fileID: 103715157}
-  text2: {fileID: 0}
-  talktext1_2: {fileID: 843294724}
-  talktext1_3: {fileID: 528198265}
-  talktext1_4: {fileID: 200861081}
-  talktext2_1: {fileID: 441181045}
-  talktext2_2: {fileID: 224824123}
-  talktext2_3: {fileID: 2101989995}
-  talktext2_4: {fileID: 752582945}
+  talktext1:
+  - {fileID: 103715157}
+  - {fileID: 843294724}
+  - {fileID: 528198265}
+  - {fileID: 200861081}
+  talktext2:
+  - {fileID: 441181045}
+  - {fileID: 224824123}
+  - {fileID: 2101989995}
+  - {fileID: 752582945}
   talktext3: {fileID: 110060085}
   MoveInfo: {fileID: 1437236620}
   AttackInfo: {fileID: 991666057}
@@ -22494,8 +22495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e2727ee609e454da4afc93a5dcb042, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cointext: {fileID: 1201427281}
-  Jeweltext: {fileID: 57120138}
 --- !u!114 &2030197373
 MonoBehaviour:
   m_ObjectHideFlags: 0
