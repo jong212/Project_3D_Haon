@@ -54,21 +54,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Displacement: 0.15
-    - _EdgeLength: 6.3
+    - _Displacement: 0.09
+    - _EdgeLength: 18.7
     - _HitLenght: 1
-    - _HitSize: 0.2
+    - _HitSize: 0.35
     - _HitTime: 0
     - _IntersectIntensity: 0.191
-    - _Opacity: 0.378
+    - _Opacity: 0.681
     - _Phong: 0.5
-    - _ShieldPatternPower: 3
+    - _ShieldPatternPower: 12.1
     - _ShieldPatternSize: 1
     - _ShieldRimPower: 7.76
     m_Colors:
     - _Color: {r: 0.11151922, g: 1, b: 0, a: 1}
     - _HitColor: {r: 0.006026864, g: 1, b: 0, a: 1}
-    - _HitPosition: {r: -0.5003681, g: 0.3219361, b: -0.17179036, a: 0}
+    - _HitPosition: {r: -0.55367804, g: 0.16154516, b: -0.17162207, a: 0}
     - _IntersectColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShieldPatternColor: {r: 0, g: 0.754717, b: 0.018636776, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
