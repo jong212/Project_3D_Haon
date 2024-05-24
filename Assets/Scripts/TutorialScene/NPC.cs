@@ -18,18 +18,7 @@ public class NPC : MonoBehaviour
     public GameObject talkBullon;
     public GameObject monsterBullon;
     public GameObject[] talktext1;
-    //public GameObject talktext1_1;
-    //public TextMeshProUGUI text2;
-    //public GameObject talktext1_2;
-    //public GameObject talktext1_3;
-    //public GameObject talktext1_4;
-
     public GameObject[] talktext2;
-    //public GameObject talktext2_1;
-    //public GameObject talktext2_2;
-    //public GameObject talktext2_3;
-    //public GameObject talktext2_4;
-
     public GameObject talktext3;
 
     public GameObject MoveInfo;
@@ -52,17 +41,12 @@ public class NPC : MonoBehaviour
     public GameObject player;
     public GameObject chest;
     public ParticleSystem chesteffect;
-
-  
-    
     void Update()
     {
         if(IsNear&& Input.GetKeyDown(KeyCode.F))
         {
-            if(canProceed)
-            {
+            
                 HandleTalk();
-            }
             
         }
 
@@ -70,12 +54,12 @@ public class NPC : MonoBehaviour
     }
     private void HandleTalk()
     {
-        canProceed = false;
+       
         switch(talkIndex)
         {
             case 0:
                 HandleFirstTalk();
-                break;
+                break;        
             case 1:
                 HandleSecondTalk();
                 break;
@@ -84,7 +68,7 @@ public class NPC : MonoBehaviour
                 break;
 
         }
-        canProceed= true;
+
     }
 
     //첫번째 대화
@@ -108,14 +92,15 @@ public class NPC : MonoBehaviour
                 break;
             case 4:
                 HideMonsterBallon();
+                MoveInfo.SetActive(false);
                 moncamera.Priority = 3;
                 ShowAttackInfo();
                 HideTalk();
-                Invoke("MonsterAppear", 2f);
+                Invoke("MonsterAppear", 1f);
                 break;
             case 5:
                 moncamera.Priority = 0;
-                Invoke("ShowTalk",2f);
+                ShowTalk();
                 ShowTalkText(talktext1[2], talktext1[3]);
                 break;
             case 6:
@@ -127,43 +112,47 @@ public class NPC : MonoBehaviour
     }
     private void HandleSecondTalk()
     {
-        switch (talkCount)
+        if (MonsterDeadCheck.isDead)
         {
-            case 0:
-                StartTalk();
-                HideAttackInfo();
-                break;
-            case 1:
-                ShowTalkText(talktext2[0], talktext2[1]);
-                break;
-            case 2:
-                HideTalk();
-                chestcamera.Priority = 3;
-                Invoke("ChestAppear", 2f);
+            switch (talkCount)
+            {
+                case 0:
+                    StartTalk();
+                    HideAttackInfo();
+                    break;
+                case 1:
+                    ShowTalkText(talktext2[0], talktext2[1]);
+                    break;
+                case 2:
+                    HideTalk();
+                    chestcamera.Priority = 3;
+                    ChestAppear();
+
+                    break;
+                case 3:
+                    ShowTalk();
+                    chestcamera.Priority = 0;
+                    ShowTalkText(talktext2[1], talktext2[2]);
+                    break;
+                case 4:
+                    HideTalk();
+                    portalcamera.Priority = 3;
+                    TreeOpen();
+                    StartCoroutine(ShakeCamera());
+                    break;
+                case 5:
+                    ShowTalk();
+                    portalcamera.Priority = 0;
+                    ShowTalkText(talktext2[2], talktext2[3]);
+                    break;
+                case 6:
+                    EndTalk(talktext2[3], talktext3);
+                    talkIndex = 2;
+                    break;
                 
-                break;
-            case 3:
-                Invoke("ShowTalk", 2f);
-                chestcamera.Priority = 0;
-                ShowTalkText(talktext2[1], talktext2[2]);
-                break;
-            case 4:
-                HideTalk();
-                portalcamera.Priority = 3;
-                Invoke("TreeOpen", 2f);
-                StartCoroutine(ShakeCamera());
-                break;
-            case 5:
-                Invoke("ShowTalk", 2f);               
-                portalcamera.Priority = 0;
-                ShowTalkText(talktext2[2], talktext2[3]);
-                break;
-            case 6:
-                EndTalk(talktext2[3], talktext3);
-                talkIndex = 2;
-                break;
+            }
+            talkCount++;
         }
-        talkCount++;
     }
 
     private void HandleThirdTalk()
@@ -187,9 +176,9 @@ public class NPC : MonoBehaviour
         talkcamera.Priority = 2;
         Mark.SetActive(false);
         TalkButton.SetActive(false);
-        MoveInfo.SetActive(false);
+        
         AttackInfo.SetActive(false);
-        Invoke("talkballonAppear", 2f);
+        talkballonAppear();
         player.GetComponent<PlayerInput>().enabled = false;
     }
 
@@ -234,7 +223,7 @@ public class NPC : MonoBehaviour
         talkBullon.SetActive(false);
         talkcamera.Priority = 0;
         player.GetComponent<PlayerInput>().enabled = true;
-        talkCount = 0;
+        talkCount = -1;
     }
 
     IEnumerator ShakeBullon()
