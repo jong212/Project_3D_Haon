@@ -5,9 +5,13 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - audioSource: {instanceID: 0}
-  - baseAttackSound: {fileID: 8300000, guid: 01999991d21504b5abb7a554bba05227, type: 3}
-  - biologySound: {fileID: 8300000, guid: bcdeed9190f3641f4887ff7cbea4dd66, type: 3}
-  - nonBiologySound: {fileID: 8300000, guid: 26e9b0607a7504b8ca6ae8b0b885ab08, type: 3}
+  - baseAttackSound: {fileID: 8300000, guid: 1785fff83652f42399d9b2017b05656c, type: 3}
+  - biologySound: {fileID: 8300000, guid: e76ca0f1ee6bdfc4a91994a25a59c795, type: 3}
+  - nonBiologySound: {fileID: 8300000, guid: 3cbdd2aedafbbad45bbfd32fbe4892ce, type: 3}
+  - skillASound: {fileID: 8300000, guid: baccb59570e163f4fabc196a6f819eba, type: 3}
+  - skillBSound: {fileID: 8300000, guid: 3a0d40d68c8b6034f815d817d38d5e5a, type: 3}
+  - dashSound: {fileID: 8300000, guid: 8a6abeeeb09cdd841aa299da0fe57a4f, type: 3}
+  - monsterDieSound: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

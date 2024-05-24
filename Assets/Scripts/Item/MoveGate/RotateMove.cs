@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+using Cinemachine;
+using Cinemachine.Utility;
 
 public class RotateMove : MonoBehaviour
 {
@@ -23,6 +26,7 @@ public class RotateMove : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player"))
         {
+            
             active = true;
         }
     }

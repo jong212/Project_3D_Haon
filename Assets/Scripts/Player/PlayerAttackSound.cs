@@ -4,26 +4,15 @@ using UnityEngine;
 
 public class PlayerAttackSound : MonoBehaviour
 {
-    [SerializeField] AudioSource audioSource;
-    [SerializeField] AudioClip baseAttackSound;
-    [SerializeField] AudioClip biologySound;
-    [SerializeField] AudioClip nonBiologySound;
-    [SerializeField] Animator animator;
-
-    ////Attack Sound 추가(준후)
-    //if (otherCollider.GetComponent<MonsterType>().monsterType == 1)
-    //{
-    //    attackSound.BiologyAttack();
-    //}
-    //else if (otherCollider.GetComponent<MonsterType>().monsterType == 2)
-    //{
-    //    attackSound.NonBiologyAttack();
-    //}
-    //else
-    //{ 
-    //    attackSound.BaseAttack();
-    //}
-
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip baseAttackSound;
+    [SerializeField] private AudioClip biologySound;
+    [SerializeField] private AudioClip nonBiologySound;
+    [SerializeField] private AudioClip skillASound;
+    [SerializeField] private AudioClip skillBSound;
+    [SerializeField] private AudioClip dashSound;
+    [SerializeField] private AudioClip monsterDieSound;
+    
     public void BaseAttack()
     { 
         audioSource.clip = baseAttackSound;
@@ -40,5 +29,29 @@ public class PlayerAttackSound : MonoBehaviour
     {
         audioSource.clip = nonBiologySound;
         audioSource.PlayOneShot(nonBiologySound);
+    }
+
+    public void Dash()
+    {
+        audioSource.clip = dashSound;
+        audioSource.PlayOneShot(dashSound);
+    }
+
+    public void SkillA()
+    {
+        audioSource.clip = skillASound;
+        audioSource.PlayOneShot(skillASound);
+    }
+
+    public void SkillB()
+    {
+        audioSource.clip = skillBSound;
+        audioSource.PlayOneShot(skillBSound);
+    }
+
+    public void MonsterDie()
+    {
+        audioSource.clip = monsterDieSound;
+        audioSource.PlayOneShot(monsterDieSound);
     }
 }

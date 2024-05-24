@@ -45,8 +45,7 @@ public class UpDownMoveGate : MonoBehaviour
     {
         isMoving = false;
         point++;
-        bgmManager.BgmSet = true;
-        if (bgmManager == null) return;
+        
         gate.gameObject.SetActive(false);
         gameObject.SetActive(false );
     }

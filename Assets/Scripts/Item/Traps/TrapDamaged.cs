@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TrapDamaged : MonoBehaviour
 {
     public playerAnimator player;
+    public NetworkPlayerController playerController;
     public int damageIntPoint = 1;
     public float sladeSpeed = 1;
 
@@ -10,12 +12,22 @@ public class TrapDamaged : MonoBehaviour
     {
         if (hit.gameObject.CompareTag("Trap"))
         {
-            player.TakeDamage(damageIntPoint);
-            Debug.Log("Trap Damaged");
+            if (!player && playerController)
+            {
+                player.TakeDamage(damageIntPoint);
+                Debug.Log("Trap Damaged(single)");
+            }
+            else if (!playerController && player)
+            {
+                playerController.TakeDamage(damageIntPoint);
+                Debug.Log("Trap Damaged(Network)");
+            }
+            else { Debug.Log("playerControler 부착되지 않음"); }
+           
         }
         else if(hit.gameObject.name == "SladeRock")
         {
-            hit.gameObject.transform.Translate(gameObject.transform.forward * sladeSpeed * Time.deltaTime);
+            hit.gameObject.transform.Translate(gameObject.transform.forward * Time.deltaTime);
         }
     }
 }

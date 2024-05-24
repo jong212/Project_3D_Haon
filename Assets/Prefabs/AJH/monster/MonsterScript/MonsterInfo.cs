@@ -12,6 +12,10 @@ public class MonsterInfo : MonoBehaviour
     public Animator animator;
     public Transform wayPoint;
 
+    [SerializeField] private PlayerAttackSound playerSound;
+    [SerializeField] private MonsterType monsterType; //몬스터 유형 판정 컴포넌트 따로 존재(몬스터에 부착)
+    
+
     void Awake()
     {
         //몬스터 정보를 게임오브젝트 이름으로 가져오기 위한 변수
@@ -41,11 +45,20 @@ public class MonsterInfo : MonoBehaviour
         if ( _hp <= 0 )
         {
             animator.SetTrigger("die");
+            playerSound.MonsterDie();//몬스터 사망 사운드 출력
             transform.GetComponent<CapsuleCollider>().enabled = false;
+            
         } else
         {
             animator.SetTrigger("damage");
+            if (monsterType.monsterType == 1)
+            {
+                playerSound.BiologyAttack();// 생물형 몬스터 타격음
+            }
+            else if (monsterType.monsterType == 2)
+            {
+                playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
+            }
         }
     }
-
 }
