@@ -3,7 +3,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager1 : MonoBehaviour
 {
 
 

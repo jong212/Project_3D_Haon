@@ -9,6 +9,12 @@ TagManager:
   - skill
   - Trap
   - FxTemporaire
+  - Boss
+  - Lazer_point
+  - LazerSpawner
+  - Effect1Spawner
+  - Effect2Spawner
+  - Locate
   layers:
   - Default
   - TransparentFX
@@ -27,8 +33,8 @@ TagManager:
   - Book
   - 
   - 
-  - 
-  - 
+  - laserCube
+  - Boss
   - 
   - 
   - 

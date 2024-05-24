@@ -1853,6 +1853,7 @@ MonoBehaviour:
   currentHealth: 3680
   bossbar: {fileID: 1326261238889916748}
   fixHealth: 5000
+  LazerGimick: 0
   players: []
   playerTags5:
   - Player2
@@ -3426,6 +3427,37 @@ Transform:
   m_Father: {fileID: 1832805804717022539}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1836633065320263273
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 292367251191697765}
+  m_Layer: 0
+  m_Name: LazerMonsterContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &292367251191697765
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1836633065320263273}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5902652625179832588}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2962794297524484957
 GameObject:
   m_ObjectHideFlags: 0
@@ -3456,6 +3488,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5902652625179832588}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3130875371211322491
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6650464775090374449}
+  m_Layer: 0
+  m_Name: LazerGimickContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6650464775090374449
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3130875371211322491}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5902652625179832588}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3323721238758062407
 GameObject:
@@ -3649,6 +3712,9 @@ Transform:
   - {fileID: 5902652624926458237}
   - {fileID: 7124789092528055373}
   - {fileID: 8129045021067657666}
+  - {fileID: 6650464775090374449}
+  - {fileID: 292367251191697765}
+  - {fileID: 2581193103992960127}
   m_Father: {fileID: 1429806573957770987}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3680,6 +3746,52 @@ MonoBehaviour:
     prefab: {fileID: 1169398297775579342, guid: 2631e0f1662b33846aaa5c180c0bb9ca, type: 3}
     container: {fileID: 3323721238758062407}
     pool: []
+  - type: 3
+    amount: 2
+    prefab: {fileID: 3488605760802272179, guid: 1a941c53e3330cc47b6d964a55cc6542, type: 3}
+    container: {fileID: 3130875371211322491}
+    pool: []
+  - type: 4
+    amount: 1
+    prefab: {fileID: 3942947099176526723, guid: a53f25b08d1539a41b44973d5b3a929a, type: 3}
+    container: {fileID: 1836633065320263273}
+    pool: []
+  - type: 5
+    amount: 30
+    prefab: {fileID: 7068627753541949809, guid: e1b273e2e9795be4cb6d9ec8140d8a3d, type: 3}
+    container: {fileID: 7234911725984454552}
+    pool: []
+--- !u!1 &7234911725984454552
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2581193103992960127}
+  m_Layer: 0
+  m_Name: LazerMonster1Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2581193103992960127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7234911725984454552}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5902652625179832588}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7852784838492762271
 GameObject:
   m_ObjectHideFlags: 0

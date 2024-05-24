@@ -1,10 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using System.Security.Cryptography.X509Certificates;
-using System.Linq;
-using UnityEngine.Rendering.Universal;
+using UnityEngine.AI;
+using static UnityEngine.Rendering.DebugUI.Table;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -16,7 +14,10 @@ using UnityEngine.Rendering.Universal;
  - public string[] playerTags3 = { "Player2", "Player3", "Player4","Player5" }; 여기 변수에 설정 된 태그에 맞게 하이어라키 플레이어 태그를 설정해야 함  
  - 보스맵 진입 시  [SerializeField] public bool bosssRoomStartCheck; true로 수정하는 로직 상의 후 넣어야함
  - 보스 오브젝트에 Boss 태그 달기
-  
+ - Flower Dryad_temp Bossbar 에 캔버스_boss 오브젝트 하위의 text(TMP)집어넣기
+ - LazerSpawner 오브젝트에 LazerSpawner태그
+ - Effect1 오브젝트에 Effect1Spawner 태그
+ - Effect2 오브젝트에 Effect2Spawner 태그
 ****************************************************************************** */
 
 /*  인터페이스  */
@@ -36,9 +37,11 @@ public class Boss : MonoBehaviour
     [SerializeField] public float currentHealth;                       // 현재 체력 
     public BossBar bossbar;
     public float fixHealth;                       // 보스 체력 세팅
-
+    public bool LazerGimick;
+    public bool NoAttack;
+    public bool LazerStartFiveMin { get;  set; }
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = { "Player2", "Player3", "Player4", "Player5" ,"Player"};
+    public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
 
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
@@ -50,7 +53,11 @@ public class Boss : MonoBehaviour
     public bool IsUsingLaser { get; private set; }                     // 레이저 사용 여부
 
     private List<Coroutine> runningCoroutines = new List<Coroutine>(); // Running coroutine references!!!!
-
+    
+    public void LazerStartFiveMinS()
+    {
+        LazerStartFiveMin = true;
+    }
     /*  초기화  */
     void Start()
     {
@@ -80,6 +87,7 @@ public class Boss : MonoBehaviour
     /*  보스 체력 관리 시스템  */
     public void TakeDamage(int damageAmout)
     {
+        if (NoAttack) return ;
         currentHealth -= damageAmout;
         bossbar.RefreshBossHp(this, currentHealth);
 
@@ -150,65 +158,260 @@ public class Boss : MonoBehaviour
     }
 
     /*  보스 상태 체크 (공통)  */
-    public void CheckHealthAndChangeState(bool chk)
-    {          
-        switch (previousState) //현재 인스턴스가 아닌 이전 인스턴스로 체크
+    public void CheckHealthAndChangeState( Boss boss)
+    {
+                                                                 // previousState 이전 상태
+        switch (previousState) 
         {
-            case ("NoState"):
+            
+            case ("Stage1"): 
                 {
-                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
+                    if (currentHealth <= Stage2Hp)
                     {
-                        ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
+                        if (!LazerGimick) StartCoroutine(Gimick1Lazer(this));     
+                            ChangeState(new Stage1());                            
                     }
                     else
-                    {
-
-                        if (chk) {
-                            Debug.Log("상태를 재실행해요..");
-                            ChangeState(new Stage1());
-                            
-                                }
-                    }
-                    break;
-                }
-            case ("Stage1"):
-                {
-                    if (fixHealth <= Stage2Hp) // 전 스테이지가 NoState 이고 보스 체력을 90 이하로 깎았다면 Stage2로 넘어갈 수 있음
-                    {
-                        ChangeState(new Stage2()); // 가장 높은 임계값부터 체크
-                    }
-                    else
-                    {
-
-                        if (chk)
+                      // 기믹 1.5로 넘어가기 전에는 여기 탐 
                         {
                             Debug.Log("상태를 재실행해요..");
                             ChangeState(new Stage1());
-
-                        }
                     }
                     break;
                 }
             case ("Stage2"):
                 { 
-                    if (fixHealth <= Stage3Hp) // 전 스테이지가 Stage2 이고 보스 체력을 90 이하로 깎았다면 Stage3로 넘어갈 수 있음
+                    if (currentHealth <= Stage3Hp)
                     {
-                        ChangeState(new Stage3()); // 가장 높은 임계값부터 체크
+                        ChangeState(new Stage3());
                     }
                     else
                     {
-
-                        /*if ("타임...채워지면 Stage1으로..") {
-                            Debug.Log()
-                        } */
                     }
                     break;
                 }
         }
-
+     
     }
 
-/*  기믹2 패턴  */
+
+    public IEnumerator Gimick1Lazer(Boss boss)
+    {
+        boss.LazerGimick = true;
+        GameObject getLazer = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerParents);
+        Transform Effect1 = FindChildWithTag(getLazer.transform, "Effect1Spawner");
+        Transform Effect2 = FindChildWithTag(getLazer.transform, "Effect2Spawner");
+
+
+
+        Vector3 startPosition = boss.transform.position;
+        startPosition.y -= 5f; // Adjust this value as needed to set the starting position below the boss
+        getLazer.transform.position = startPosition;
+        getLazer.SetActive(true);
+
+        float riseTime = 4f; // 레이저가 보스의 위치에 도달하는 데 걸리는 총 시간
+        float elapsedTime = 0f;  // 경과 시간 (초기에는 0)
+        bool test = false;
+        while (elapsedTime < riseTime)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0); // Assumes the animation is on layer 0
+
+            if (!stateInfo.IsName("Skill"))
+            {
+                boss.SetAnimation("Skill");
+            }
+            // while 루프 내에서 다음 코드가 매 프레임 실행됩니다.
+            getLazer.transform.position = Vector3.Lerp(startPosition, boss.transform.position, elapsedTime / riseTime);
+            elapsedTime += Time.deltaTime;// 경과 시간을 증가시킵니다 (매 프레임마다)
+            yield return null;
+        }
+
+        boss.SetAnimation("Stage1");
+        // Ensure the laser reaches the exact position of the boss
+        getLazer.transform.position = boss.transform.position;
+         
+        Transform childOneTransform = getLazer.transform.Find("1").Find("LazerSpawner");
+        childOneTransform.gameObject.SetActive(true);
+        
+        yield return new WaitForSeconds(1f);
+        float lazerMonTimer = 0f;
+        float lazerMonInterval = 100f;
+
+        float lazerMon1Timer = 0f;        
+        float lazerMon1Interval = 5f;
+
+        float lazerStarTimer = 0f;
+        float lazerStarInterval = 5f;
+        while (true)
+        {
+           
+            lazerMonTimer += Time.deltaTime;
+            lazerMon1Timer += Time.deltaTime;
+
+            if(LazerStartFiveMin)
+            {
+                lazerStarTimer += Time.deltaTime;
+                if (lazerStarTimer >= lazerStarInterval)
+                {
+                    lazerStarTimer = 0f;
+                    NoAttack = false;
+                }
+            } else
+            {
+                //dd
+                NoAttack = true;
+            }
+            if (lazerMonTimer >= lazerMonInterval)
+            {
+                SpawnLazerMon();
+                lazerMonTimer = 0f; // Reset the timer for LazerMon
+            }
+
+            if (lazerMon1Timer >= lazerMon1Interval)
+            {
+                SpawnLazerMon1();
+                lazerMon1Timer = 0f; // Reset the timer for LazerMon1
+            }
+
+            yield return null; // Wait until the next frame
+        }
+        Transform FindChildWithTag(Transform parent, string tag)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.CompareTag(tag))
+                {
+                    return child;
+                }
+            }
+            return null;
+        }
+        // Local functions for spawning
+        void SpawnLazerMon()
+        {
+            GameObject LazerMon = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerMon);
+            if (LazerMon == null)
+            {
+                Debug.LogError("Failed to get LazerMon from the pool.");
+                return;
+            }
+
+            // 밟는 지점 초기화
+            Vector3 spawnPosition = Effect1.position;
+            if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+            {
+                LazerMon.transform.position = hit.position;
+            }
+            else
+            {
+                Debug.LogError("LazerMon spawn position is not on the NavMesh.");
+                return;
+            }
+            // 회전 초기화 
+            LazerMon.transform.rotation = Quaternion.identity; // Reset rotation
+
+            NavMeshAgent agent = LazerMon.GetComponent<NavMeshAgent>();
+            if (agent == null)
+            {
+                Debug.LogError("NavMeshAgent component missing from LazerMon.");
+                return;
+            }
+
+            // 네비메쉬 껏다 켜서 초기화 시키기
+            StartCoroutine(EnableNavMeshAgent(agent, Effect1.position));
+
+            // 몬스터 정보 초기화 
+            MonsterInfo monsterInfo = LazerMon.GetComponent<MonsterInfo>();
+            if (monsterInfo == null)
+            {
+                Debug.LogError("LazerMon does not have a MonsterInfo component.");
+                return;
+            }
+            monsterInfo._hp = 100;
+
+            CapsuleCollider capsuleCollider = LazerMon.GetComponent<CapsuleCollider>();
+            if (capsuleCollider != null)
+            {
+                capsuleCollider.enabled = true;
+            }
+
+            // 초기화 작업 마무리 되면 아래에서 Active
+            LazerMon.SetActive(true);
+
+            Debug.Log("Spawned LazerMon with HP: " + monsterInfo._hp);
+        }
+
+        void SpawnLazerMon1()
+        {
+            GameObject LazerMon1 = PoolManager.Instance.GetPoolObject(PoolObjectType.LazerMon1);
+            if (LazerMon1 == null)
+            {
+                Debug.LogError("Failed to get LazerMon1 from the pool.");
+                return;
+            }
+
+            Vector3 spawnPosition = Effect2.position;
+            if (NavMesh.SamplePosition(spawnPosition, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
+            {
+                LazerMon1.transform.position = hit.position;
+            }
+            else
+            {
+                Debug.LogError("LazerMon1 spawn position is not on the NavMesh.");
+                return;
+            }
+
+            LazerMon1.transform.rotation = Quaternion.identity; // Reset rotation
+
+            NavMeshAgent agent = LazerMon1.GetComponent<NavMeshAgent>();
+            if (agent == null)
+            {
+                Debug.LogError("NavMeshAgent component missing from LazerMon1.");
+                return;
+            }
+
+            StartCoroutine(EnableNavMeshAgent(agent, Effect2.position));
+
+            MonsterInfo monsterInfo = LazerMon1.GetComponent<MonsterInfo>();
+            if (monsterInfo == null)
+            {
+                Debug.LogError("LazerMon1 does not have a MonsterInfo component.");
+                return;
+            }
+            monsterInfo._hp = 10;
+
+            CapsuleCollider capsuleCollider = LazerMon1.GetComponent<CapsuleCollider>();
+            if (capsuleCollider != null)
+            {
+                capsuleCollider.enabled = true;
+            }
+
+            LazerMon1.SetActive(true);
+
+            Debug.Log("Spawned LazerMon1 with HP: " + monsterInfo._hp);
+        }
+
+        IEnumerator EnableNavMeshAgent(NavMeshAgent agent, Vector3 targetPosition)
+        {
+            yield return new WaitForEndOfFrame(); // Wait for the end of the frame to ensure NavMesh is updated
+
+            agent.enabled = false;
+            agent.enabled = true;
+
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(targetPosition);
+                Debug.Log("NavMeshAgent enabled and destination set.");
+            }
+            else
+            {
+                Debug.LogError("NavMeshAgent is not on a NavMesh after enabling the agent.");
+            }
+        }
+        // Additional logic for after the laser has reached the boss's position
+    }
+
+    /*  기믹2 패턴  */
     #region Stage2
     public void StartLaser(Vector3 position)
     {
@@ -255,19 +458,25 @@ public class Boss : MonoBehaviour
 public class NoState : IBossState
 {
     public bool timer = false;
-    public bool isChange = false;
+    
     public void Enter(Boss boss)
     {
         Debug.Log("1");
         boss.SetAnimation("Idle1");
-        if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,5f), 10f);
+        if(boss.previousState != null) boss.StartBossCoroutine(changeClass(this,1f), 10f);
     }
 
     public void Execute(Boss boss)
     {
         Debug.Log("기본1탓어요");
+        // 게임 시작 시 if문 체크하지만 FAlSE 되어서 실행 안 됨 인스펙터에서 체크해야 탐 
+        // 보스맵 진입 안 하고 있으면 여기서 Loop돔
+        // 게임 스타트 하면 강제로 상태를 State1 로 변환하여 문어 스킬 발동
         if (boss.bosssRoomStartCheck) boss.ChangeState(new Stage1());
-        if (boss.previousState != null) boss.CheckHealthAndChangeState(isChange);
+
+        // 상태 변하지 않았다면 null이라 여기서 걸림 
+        // 상태 바뀐 시점부터는 NoState상태로 바꾸는 처리가 있을 때마다 아래 함수로 진입
+        boss.CheckHealthAndChangeState(boss);
     }
 
     public void Exit(Boss boss)
@@ -282,9 +491,10 @@ public class NoState : IBossState
     {
         Debug.Log("타이머 on...");
         yield return new WaitForSeconds(endTime);
-        Debug.Log("5초 지났어요....");
-        isChange = true;
+        Debug.Log("3초 지났어요....");
+        
     }
+
 }
 
 /* 보스 Stage1 Class */
