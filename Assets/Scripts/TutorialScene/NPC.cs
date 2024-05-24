@@ -224,22 +224,25 @@ public class NPC : MonoBehaviour
                 ShowTalkText(talktext1[0], talktext1[1]);
                 break;
             case 2:
-                ShowTalkText(talktext1[1], talktext1[2]);
-                Invoke("MonsterBallunAppear", 1f);
+                ShowTalkText(talktext1[1], talktext1[2]);                
                 break;
             case 3:
+                MonsterBallunAppear();
+                HideTalk();
+                break;
+            case 4:
                 HideMonsterBallon();
                 moncamera.Priority = 3;
                 ShowAttackInfo();
                 HideTalk();
                 Invoke("MonsterAppear", 2f);
                 break;
-            case 4:
+            case 5:
                 moncamera.Priority = 0;
                 Invoke("ShowTalk",2f);
                 ShowTalkText(talktext1[2], talktext1[3]);
                 break;
-            case 5:
+            case 6:
                 EndTalk(talktext1[3], talktext2[0]);
                 talkIndex = 1;
                 break;
@@ -359,7 +362,7 @@ public class NPC : MonoBehaviour
     IEnumerator ShakeBullon()
     {
         float time = 3f;
-        float shakePower = 500f;
+        float shakePower = 50f;
         Vector3 origin = monsterBullon.transform.position;
 
         while(time>0f)

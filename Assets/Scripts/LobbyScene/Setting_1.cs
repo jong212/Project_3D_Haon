@@ -1,58 +1,8 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 public class Setting_1 : MonoBehaviour
 {
-
-
-    //public static float hp = 10;
-    //public static float atk = 1;
-    //public static float coins;
-    //public static float jewels;
-
-    //public static float jewelAtkUpgradeCount;
-    //public static float jewelHPUpgradeCount;
-    //public static float coinAtkUpgradeCount;
-    //public static float coinHPUpgradeCount;
-
-    //public TextMeshProUGUI cointext;
-    //public TextMeshProUGUI jeweltext;
-    //public TextMeshProUGUI currentatk;
-    //public TextMeshProUGUI currenthp;
-    //public TextMeshProUGUI afteratk;
-    //public TextMeshProUGUI afterhp;
-    //public TextMeshProUGUI jewelAtkUpgradetext;
-    //public TextMeshProUGUI jewelHPUpgradetext;
-    //public TextMeshProUGUI coinAtkUpgradetext;
-    //public TextMeshProUGUI coinHPUpgradetext;
-
-
-    //public void Start()
-    //{
-
-    //    //coins = 100;
-    //    //jewels = 50;
-    //    //jewelAtkUpgradeCount = 1;
-    //    //jewelHPUpgradeCount = 1;
-    //    //coinAtkUpgradeCount = 1;
-    //    //coinHPUpgradeCount = 1;
-
-    //}
-    //void Update()
-    //{
-    //    cointext.text = $"{coins}";
-    //    jeweltext.text = $"{jewels}";
-    //    jewelAtkUpgradetext.text = $"-{jewelAtkUpgradeCount}";
-    //    jewelHPUpgradetext.text = $"-{jewelHPUpgradeCount}";
-    //    coinAtkUpgradetext.text = $"-{coinAtkUpgradeCount * 5}";
-    //    coinHPUpgradetext.text = $"-{coinHPUpgradeCount * 5}";
-    //    currentatk.text = $"ATK  :  {atk}  >";
-    //    currenthp.text = $"HP  :  {hp}  >";
-    //    afteratk.text = $"{atk + 1}";
-    //    afterhp.text = $"{hp + 5}";
-
-
-    //}
-
     public static void JewelUpGradeATK()
     {
         if (PlayInfo.jewels > PlayInfo.jewelAtkUpgradeCount)
@@ -134,5 +84,5 @@ public class Setting_1 : MonoBehaviour
     {
         PlayInfo.jewels++;
     }
-
+    
 }

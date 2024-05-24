@@ -14,7 +14,6 @@ public class PlayInfo : MonoBehaviour
     public static int jewelHPUpgradeCount = 1;
     public static int coinAtkUpgradeCount = 1;
     public static int coinHPUpgradeCount = 1;
-    
-   
-    
+    public static string userName = "KGA";
+    public static string userID = "123"; 
 }

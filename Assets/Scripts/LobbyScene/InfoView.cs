@@ -15,6 +15,7 @@ public class InfoView : MonoBehaviour
     public TextMeshProUGUI jewelHPUpgradetext;
     public TextMeshProUGUI coinAtkUpgradetext;
     public TextMeshProUGUI coinHPUpgradetext;
+
     private void Update()
     {
         cointext.text = $" {PlayInfo.coins}";
