@@ -4,6 +4,7 @@ public class isAttackStop : StateMachineBehaviour
 {
     ColliderScript weaponColliderScript;
     playerAnimator playerAnimator;
+    public float rotationStep = 2f;
     bool hasCollided = false;
     
 
@@ -45,8 +46,16 @@ public class isAttackStop : StateMachineBehaviour
         if (!hasCollided)
         {
             Debug.Log(otherCollider.gameObject.name);
+            if (otherCollider.CompareTag("Lazer_point"))
+            {
+                Debug.Log("포탑" + otherCollider.transform.position.x);
+                Debug.Log("플레이어" + playerAnimator.transform.position.x);
+
+                // Rotate the turret to face the player
+                RotateTurretTowardsPlayer(otherCollider.transform);
+            }
             //Debug.Log("콤보 공격중.. " + otherCollider.gameObject.name);
-            if(otherCollider.gameObject.tag == "Monster")
+            if (otherCollider.gameObject.tag == "Monster")
             {
                 
                 otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
@@ -65,6 +74,31 @@ public class isAttackStop : StateMachineBehaviour
 
             // 여기에서 충돌을 처리하는 코드를 추가하세요.
         }
+    }
+    private void RotateTurretTowardsPlayer(Transform turretTransform)
+    {
+        float currentYRotation = turretTransform.eulerAngles.y;
+        float targetYRotation;
+
+        if (playerAnimator.transform.position.x < turretTransform.position.x)
+        {
+            // Player is on the left side, rotate counterclockwise
+            targetYRotation = currentYRotation - rotationStep;
+        }
+        else
+        {
+            // Player is on the right side, rotate clockwise
+            targetYRotation = currentYRotation + rotationStep;
+        }
+
+        // Ensure the rotation is within 0-360 degrees
+        if (targetYRotation < 0)
+            targetYRotation += 360;
+        else if (targetYRotation > 360)
+            targetYRotation -= 360;
+
+        // Apply the new rotation
+        turretTransform.rotation = Quaternion.Euler(0, targetYRotation, 0);
     }
 }
 /*
