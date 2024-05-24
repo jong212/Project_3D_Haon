@@ -24,7 +24,6 @@ public class Chest : MonoBehaviour
     {
         if (isChest==true &&Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("열어!");
             ChestCollider.enabled = false;
             BoxOpen();
             button.SetActive(false);
@@ -37,7 +36,6 @@ public class Chest : MonoBehaviour
         if(other.gameObject.CompareTag("Player"))
         {
             button.SetActive(true);
-            Debug.Log("상자열래");
 
             isChest = true;
         }
@@ -47,8 +45,7 @@ public class Chest : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            button.SetActive(false);
-            Debug.Log("상자안열래");
+            button.SetActive(false);        
             isChest = false;
         }
     }

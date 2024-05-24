@@ -6,6 +6,7 @@ public class SoundManager : MonoBehaviour
 {
     public static SoundManager instance;
 
+    [Header("BGM")]
     public AudioClip bgmClip;
     public AudioClip[] bgmClips;
     public float bgmVolume;

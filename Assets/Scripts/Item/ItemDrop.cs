@@ -11,7 +11,7 @@ public class ItemDrop : MonoBehaviour
 
     public Transform boxtransform;
     Vector3 randomposition;
-    private Vector3 hideposition = new Vector3(0,-100,0);
+    
     private int randomCoins;
     private int randomHeals;
     
@@ -34,23 +34,25 @@ public class ItemDrop : MonoBehaviour
             heals[i].SetActive(false);
         }
     }
-    private void Update()
-    {
-        
-    }
-     
 
     public void ItemSpawn(Transform transform)
     {
         randomCoins = Random.Range(5, 10);
         randomHeals = Random.Range(0, 3);
+        // ·£´ý µ¿Àü »ý¼º
+        SpawnItems(coins, randomCoins, transform);
 
-        for (int i = 0;i < randomCoins;i++)
+        // ·£´ý Èú¸µ ¾ÆÀÌÅÛ »ý¼º
+        SpawnItems(heals, randomHeals, transform);
+    }
+    private void SpawnItems(GameObject[] items, int itemCount, Transform spawnTransform)
+    {
+        for (int i = 0;i < itemCount;i++)
         {
-            if (coins[i].activeSelf == false)
+            if (items[i].activeSelf == false)
             {
-                coins[i].transform.position = transform.position;
-                coins[i].SetActive(true);
+                items[i].transform.position = spawnTransform.position;
+                items[i].SetActive(true);
             }
             else
             {
@@ -58,29 +60,13 @@ public class ItemDrop : MonoBehaviour
                 continue;
             }
 
-            randomposition = (Vector3)Random.insideUnitSphere.normalized * 3 + transform.position;
+            randomposition = (Vector3)Random.insideUnitSphere.normalized * 3 + spawnTransform.position;
             randomposition.y = 1f;
-            coins[i].transform.DOJump(randomposition, 2f, 1, 1f);
+            items[i].transform.DOJump(randomposition, 2f, 1, 1f);
             
         }
 
-        for (int i = 0;i<randomHeals;i++)
-        {
-            if (heals[i].activeSelf == false)
-            {
-                heals[i].transform.position = transform.position;
-                heals[i].SetActive(true);
-            }
-            else
-            {
-                i++;
-                continue;
-            }
-            heals[i].SetActive(true);
-            randomposition = (Vector3)Random.insideUnitSphere.normalized * 2 + transform.position;
-            randomposition.y = 1f;
-            heals[i].transform.DOJump(randomposition, 2f, 1, 1f);
-        }
+       
 
     }
 }

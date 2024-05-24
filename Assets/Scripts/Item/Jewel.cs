@@ -43,7 +43,7 @@ public class Jewel : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            PlayInfo.JewelPlus();
+            Setting_1.PlusJewels();
             GetJewel();
             jewelEffect.Play();
             jewelcollider.enabled = false;
