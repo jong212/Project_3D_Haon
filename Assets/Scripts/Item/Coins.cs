@@ -34,7 +34,7 @@ public class Coins : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            PlayInfo.CoinPlus();
+            Setting_1.PlusCoins();
             GetCoin();
             coincollider.enabled = false;
             magnet.SetActive(false);
