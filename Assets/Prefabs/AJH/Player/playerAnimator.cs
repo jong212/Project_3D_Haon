@@ -8,6 +8,7 @@ public class playerAnimator : MonoBehaviour
 
     //변수들 선언
     public GameObject skillControlObject;
+    public ShieldCollision shieldCollision;
     public SkillControl skill;
     public Animator _animator;
     private CharacterController _characterController;
@@ -53,6 +54,11 @@ public class playerAnimator : MonoBehaviour
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
         PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
         _animator = GetComponent<Animator>();
+        var behaviours = _animator.GetBehaviours<isAttackStop>();
+        foreach (var behaviour in behaviours)
+        {
+            behaviour.shieldCollision = shieldCollision;
+        }
         _characterController = GetComponent<CharacterController>();
         SetPlayerData(playerData);
     }

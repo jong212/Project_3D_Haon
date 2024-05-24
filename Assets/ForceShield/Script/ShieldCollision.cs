@@ -4,22 +4,36 @@ using UnityEngine;
 
 public class ShieldCollision : MonoBehaviour
 {
+    public isAttackStop isAttackstop;
 
+    [SerializeField] private GameObject player; // 플레이어 오브젝트를 인스펙터에서 참조합니다.
     [SerializeField] string[] _collisionTag;
     float hitTime;
     Material mat;
-
+    private Animator playerAnimator;
+    public float count = 0;
+    public float count_temp = 0;
     void Start()
     {
+        if (player != null)
+        {
+            playerAnimator = player.GetComponent<Animator>();
+            if (playerAnimator != null)
+            {
+                isAttackstop = playerAnimator.GetBehaviour<isAttackStop>();
+            }
+        }
+
         if (GetComponent<Renderer>())
         {
             mat = GetComponent<Renderer>().sharedMaterial;
         }
-
     }
 
     void Update()
     {
+        
+        
 
         if (hitTime > 0)
         {
@@ -31,21 +45,19 @@ public class ShieldCollision : MonoBehaviour
             }
             mat.SetFloat("_HitTime", hitTime);
         }
-
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider other)
     {
-        for (int i = 0; i < _collisionTag.Length; i++)
+        if (count != count_temp)
         {
-
-            if (_collisionTag.Length > 0 || collision.transform.CompareTag(_collisionTag[i]))
+            count_temp++;
+            for (int i = 0; i < _collisionTag.Length; i++)
             {
-                //Debug.Log("hit");
-                ContactPoint[] _contacts = collision.contacts;
-                for (int i2 = 0; i2 < _contacts.Length; i2++)
+                if (_collisionTag.Length > 0 || other.CompareTag(_collisionTag[i]))
                 {
-                    mat.SetVector("_HitPosition", transform.InverseTransformPoint(_contacts[i2].point));
+                    //Debug.Log("hit");
+                    mat.SetVector("_HitPosition", transform.InverseTransformPoint(other.transform.position));
                     hitTime = 500;
                     mat.SetFloat("_HitTime", hitTime);
                 }
@@ -54,3 +66,5 @@ public class ShieldCollision : MonoBehaviour
     }
 }
 
+
+ 
