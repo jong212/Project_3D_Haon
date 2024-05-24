@@ -6,20 +6,43 @@ using UnityEngine;
 public class BookController : MonoBehaviour
 {
 
-    public EndlessBook book;
+    [SerializeField] private EndlessBook book;
 
-    [SerializeField] TextMeshProUGUI gameStart;
+    [SerializeField] private TextMeshProUGUI gameStart;
 
-    [SerializeField] CinemachineVirtualCamera startView;
-    [SerializeField] CinemachineVirtualCamera bookView;
+    [SerializeField] private CinemachineVirtualCamera startView;
+    [SerializeField] private CinemachineVirtualCamera bookView;
 
-    public AudioSource audioSource;
-    public AudioClip openBook;
-    public AudioClip pagingBook;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip openBook;
+    [SerializeField] private AudioClip pagingBook;
+
+    [SerializeField] private GameObject auth;
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+    }
+
+    private void OnEnable()
+    {
+        RegisterLoginManager.OnLoginSuccess += HandleLoginSuccess;
+    }
+    private void OnDisable()
+    {
+        RegisterLoginManager.OnLoginSuccess -= HandleLoginSuccess;
+    }
+
+    private void HandleLoginSuccess()
+    {
+        // 로그인 성공 시 책을 여는 동작 수행
+        if (book.CurrentState == EndlessBook.StateEnum.ClosedFront)
+        {
+            book.SetState(EndlessBook.StateEnum.OpenMiddle);
+            BookSound(openBook);
+            startView.Priority = 0;
+            bookView.Priority = 1;
+        }
     }
 
     private void OnMouseDown()
@@ -31,10 +54,13 @@ public class BookController : MonoBehaviour
             if (book.CurrentState == EndlessBook.StateEnum.ClosedFront)
             {
                 gameStart.gameObject.SetActive(false);
-                book.SetState(EndlessBook.StateEnum.OpenMiddle);
-                BookSound(openBook);
-                startView.Priority = 0;
-                bookView.Priority = 1;
+                auth.gameObject.SetActive(true);
+
+                //if (RegisterLoginManager.isLogin)
+                //{
+                //    HandleLoginSuccess();
+                //}
+
             }
         }
 

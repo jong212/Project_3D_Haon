@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -6,14 +7,17 @@ using UnityEngine.Networking;
 
 public class RegisterLoginManager : MonoBehaviour
 {
-    public TMP_InputField usernameField;
-    public TMP_InputField passwordField;
-    public TextMeshProUGUI feedbackText;
-    public GameObject authPanel;
+    [SerializeField] private TMP_InputField usernameField;
+    [SerializeField] private TMP_InputField passwordField;
+    [SerializeField] private TextMeshProUGUI feedbackText;
+    [SerializeField] private GameObject authPanel;
+    [SerializeField] private TextMeshProUGUI loginText;
 
     private string registerUrl;
     private string loginUrl;
 
+    public static bool isLogin = false;
+    public static event Action OnLoginSuccess;
     IEnumerator Start()
     {
         // Remote Config 값이 로드될 때까지 대기
@@ -24,32 +28,37 @@ public class RegisterLoginManager : MonoBehaviour
 
         registerUrl = $"{RemoteConfigManager.ServerUrl}/api/register";
         loginUrl = $"{RemoteConfigManager.ServerUrl}/api/login";
-        Debug.Log("Register URL: " + registerUrl);
-        Debug.Log("Login URL: " + loginUrl);
+        //Debug.Log("Register URL: " + registerUrl);
+        //Debug.Log("Login URL: " + loginUrl);
     }
 
     public void OnRegisterButtonClicked()
     {
-        Debug.Log("Register button clicked");
         StartCoroutine(RegisterUser());
     }
 
     public void OnLoginButtonClicked()
     {
-        Debug.Log("Login button clicked");
         StartCoroutine(LoginUser());
     }
 
     public void OnCancelButtonClicked()
     {
         authPanel.SetActive(false);
+        loginText.gameObject.SetActive(true);
     }
 
     IEnumerator RegisterUser()
     {
-        if (string.IsNullOrEmpty(usernameField.text) || string.IsNullOrEmpty(passwordField.text))
+        if (string.IsNullOrEmpty(usernameField.text))
         {
-            ShowFeedback("Please fill in all fields.");
+            ShowFeedback("아이디를 입력해주세요");
+            yield break;
+        }
+
+        if (string.IsNullOrEmpty(passwordField.text))
+        {
+            ShowFeedback("패스워드를 입력해주세요");
             yield break;
         }
 
@@ -79,7 +88,7 @@ public class RegisterLoginManager : MonoBehaviour
             {
                 ShowFeedback("아이디가 이미 있습니다.");
             }
-            else if(request.responseCode == 500)
+            else if (request.responseCode == 500)
             {
                 ShowFeedback("서버 오류");
             }
@@ -125,7 +134,10 @@ public class RegisterLoginManager : MonoBehaviour
         {
             // todo
             ShowFeedback("로그인 성공");
-            //yield return new WaitForSeconds(3);
+            authPanel.SetActive(false);
+            yield return new WaitForSeconds(2);
+            isLogin = true;
+            OnLoginSuccess?.Invoke();
         }
         else
         {

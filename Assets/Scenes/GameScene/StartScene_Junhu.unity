@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.065619856, g: 0.121488005, b: 0.22171965, a: 1}
+  m_IndirectSpecularColor: {r: 0.06566834, g: 0.121541075, b: 0.22177945, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -280,6 +280,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2027159221, guid: 5ef2bcca2a96f38498a8dcf52868e53e, type: 3}
+      propertyPath: auth
+      value: 
+      objectReference: {fileID: 1169506591}
     - target: {fileID: 2027159221, guid: 5ef2bcca2a96f38498a8dcf52868e53e, type: 3}
       propertyPath: bookView
       value: 
@@ -791,6 +795,7 @@ MonoBehaviour:
   passwordField: {fileID: 1890586684}
   feedbackText: {fileID: 221325045}
   authPanel: {fileID: 1169506591}
+  loginText: {fileID: 1677406799}
 --- !u!1 &502400364
 GameObject:
   m_ObjectHideFlags: 0
@@ -874,7 +879,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 502400367}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 462389450}
+        m_TargetAssemblyTypeName: RegisterLoginManager, Assembly-CSharp
+        m_MethodName: OnCancelButtonClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &502400367
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2663,7 +2680,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1169506592
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3688,7 +3705,7 @@ GameObject:
   - component: {fileID: 1677406800}
   - component: {fileID: 1677406799}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: LoginText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3734,7 +3751,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAC8C\uC784 \uC2DC\uC791"
+  m_text: "\uB85C\uADF8\uC778"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26098a8a981979f4d9e817b7de75a793, type: 2}
   m_sharedMaterial: {fileID: 8052596942956615401, guid: 26098a8a981979f4d9e817b7de75a793, type: 2}
