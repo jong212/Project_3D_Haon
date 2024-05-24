@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using static UnityEngine.Rendering.DebugUI.Table;
 /****************************************************************************** 
  [ 코드 동작 방식 정리 ]
  - 스킬 및 이펙트는 StartBossCoroutine(stage1.IDangerStart(this), 10f) 이런식으로 재생할 코루틴과 종료시간을 같이 넘겨서 코루틴이 종료될 수 있게 처리
@@ -37,6 +38,7 @@ public class Boss : MonoBehaviour
     public BossBar bossbar;
     public float fixHealth;                       // 보스 체력 세팅
     public bool LazerGimick;
+    public bool NoAttack;
     public bool LazerStartFiveMin { get;  set; }
     public List<GameObject> players = new List<GameObject>();
     public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
@@ -85,6 +87,7 @@ public class Boss : MonoBehaviour
     /*  보스 체력 관리 시스템  */
     public void TakeDamage(int damageAmout)
     {
+        if (NoAttack) return ;
         currentHealth -= damageAmout;
         bossbar.RefreshBossHp(this, currentHealth);
 
@@ -232,21 +235,31 @@ public class Boss : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
         float lazerMonTimer = 0f;
-        float lazerMonInterval = 10f;
+        float lazerMonInterval = 100f;
+
         float lazerMon1Timer = 0f;        
-        float lazerMon1Interval = 3f;
+        float lazerMon1Interval = 5f;
+
         float lazerStarTimer = 0f;
-        float lazerStarInterval = .5f;
+        float lazerStarInterval = 5f;
         while (true)
         {
-            Debug.Log(LazerStartFiveMin);
+           
             lazerMonTimer += Time.deltaTime;
             lazerMon1Timer += Time.deltaTime;
-            lazerStarTimer += Time.deltaTime;
-            if (lazerStarTimer >= lazerStarInterval)
+
+            if(LazerStartFiveMin)
             {
-               
-                lazerStarTimer = 0f; // Reset the timer for LazerMon
+                lazerStarTimer += Time.deltaTime;
+                if (lazerStarTimer >= lazerStarInterval)
+                {
+                    lazerStarTimer = 0f;
+                    NoAttack = false;
+                }
+            } else
+            {
+                //dd
+                NoAttack = true;
             }
             if (lazerMonTimer >= lazerMonInterval)
             {

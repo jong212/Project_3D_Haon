@@ -13,6 +13,9 @@ public class Gimick2 : MonoBehaviour
     public int numOfReflections = 2;
     public GameObject boss;
     public Boss realboss;
+    public GameObject LazerLoc;
+
+    private materialRocate materialRocateComponent; // Reference to the materialRocate component
     ///public Boss bossObject;
     private LineRenderer _lineRenderer;
     private Camera _myCam;
@@ -23,7 +26,9 @@ public class Gimick2 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _lineRenderer = GetComponent<LineRenderer>();
+        materialRocateComponent = LazerLoc.GetComponent<materialRocate>();
+
+       _lineRenderer = GetComponent<LineRenderer>();
         if (realboss == null)
         {
             GameObject bossObject = GameObject.FindWithTag("Boss");
@@ -60,8 +65,9 @@ public class Gimick2 : MonoBehaviour
 
                 if (hit.collider.gameObject == boss)
                 {
-                    realboss.LazerStartFiveMin = true;
+                    materialRocateComponent.StartScrolling();
 
+                    realboss.LazerStartFiveMin = true;
                     break;
                 }
 
@@ -69,6 +75,7 @@ public class Gimick2 : MonoBehaviour
             }
             else
             {
+                materialRocateComponent.StopScrolling();
                 realboss.LazerStartFiveMin = false;
                 _lineRenderer.positionCount += 1;
                 _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, ray.origin + (ray.direction * remainLength));
