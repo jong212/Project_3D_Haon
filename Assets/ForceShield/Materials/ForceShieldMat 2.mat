@@ -60,7 +60,7 @@ Material:
     - _HitSize: 0.35
     - _HitTime: 0
     - _IntersectIntensity: 0.191
-    - _Opacity: 0.601
+    - _Opacity: 0.551
     - _Phong: 0.5
     - _ShieldPatternPower: 10.5
     - _ShieldPatternSize: 1
@@ -68,7 +68,7 @@ Material:
     m_Colors:
     - _Color: {r: 0.19842473, g: 0.43479705, b: 0.46226418, a: 1}
     - _HitColor: {r: 0.5086666, g: 0.8862745, b: 0.15294117, a: 1}
-    - _HitPosition: {r: -0.26101723, g: -0.05747735, b: 0.49105898, a: 0}
+    - _HitPosition: {r: 0.21077152, g: -0.027875848, b: 0.563671, a: 0}
     - _IntersectColor: {r: 1, g: 1, b: 1, a: 1}
     - _ShieldPatternColor: {r: 0.23241146, g: 1, b: 0.05098039, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
