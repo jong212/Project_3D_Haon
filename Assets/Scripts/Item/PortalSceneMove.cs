@@ -8,7 +8,7 @@ public class PortalSceneMove : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Player"))
         {
-            SceneLoader.Instance.LoadSceneAsync("LobbyScene_WJH");
+            SceneLoader.Instance.LoadSceneAsync("LobbyScene");
         }
     }
 }

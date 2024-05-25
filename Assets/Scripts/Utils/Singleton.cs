@@ -23,8 +23,9 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour //모노만 상속�
                 T[] _finds = FindObjectsOfType<T>();
                 if (_finds.Length > 0)
                 {
+                    
                     m_instance = _finds[0];
-                    DontDestroyOnLoad(m_instance.gameObject);
+                    DontDestroyOnLoadChildren(m_instance.gameObject);
                 }
                 if (_finds.Length > 1)
                 {
@@ -45,6 +46,17 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour //모노만 상속�
 
             return m_instance;
 
+        }
+    }
+
+    private static void DontDestroyOnLoadChildren(GameObject root)
+    {
+        DontDestroyOnLoad(root);
+
+        // 모든 자식 오브젝트에 대해 재귀적으로 DontDestroyOnLoad를 호출
+        foreach (Transform child in root.transform)
+        {
+            DontDestroyOnLoadChildren(child.gameObject);
         }
     }
 

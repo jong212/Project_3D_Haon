@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028353, g: 0.2257137, b: 0.30692255, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028381, g: 0.22571406, b: 0.30692294, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -25314,6 +25314,7 @@ MonoBehaviour:
   isAction: 0
   dashCooldownDuration: 5
   WeaponCollider: {fileID: 3470717823217122486}
+  playerSound: {fileID: 0}
   _hpCanvas: {fileID: 2264004106051446836}
 --- !u!4 &1922664149677028043
 Transform:
@@ -30730,7 +30731,7 @@ Animator:
   m_GameObject: {fileID: 6034705668811327657}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: ad1ae03d33f04374cbfa1a4e4f957090, type: 3}
-  m_Controller: {fileID: 9100000, guid: 83dda7db3ba1e8547811aed118f4cfcd, type: 2}
+  m_Controller: {fileID: 9100000, guid: 8505f767f37f98e48b43e530d3d19d5d, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -30825,6 +30826,8 @@ MonoBehaviour:
   _str: 0
   animator: {fileID: 0}
   wayPoint: {fileID: 4702296826044674049}
+  playerSound: {fileID: 0}
+  monsterType: {fileID: 0}
 --- !u!4 &6029228896259031243
 Transform:
   m_ObjectHideFlags: 0

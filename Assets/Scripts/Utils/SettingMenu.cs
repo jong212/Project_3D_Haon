@@ -5,43 +5,53 @@ using UnityEngine.UI;
 public class SettingMenu : MonoBehaviour
 {
     public Sprite[] sprites;
-    public GameObject button1280;
-    public GameObject button1920;
-    public GameObject buttonfull;
+    public Button resolutionHD;
+    public Button resolutionFHD;
+    public Button resolutionFullScreen;
 
 
     public Slider masterVolume;
     public Slider bgm;
     public Slider sfx;
 
-    
-  
-
-    public void OnClickResolutionButton1()
+    private void OnEnable()
     {
-        button1280.GetComponent<Image>().sprite = sprites[0];
-        button1920.GetComponent<Image>().sprite = sprites[1];
-        buttonfull.GetComponent<Image>().sprite = sprites[1];
+        // 버튼 클릭 이벤트에 리스너 추가
+        resolutionHD.onClick.AddListener(OnClickResolutionHD);
+        resolutionFHD.onClick.AddListener(OnClickResolutionFHD);
+        resolutionFullScreen.onClick.AddListener(OnClickResolutionFullScreen);
+    }
+
+    private void OnDisable()
+    {
+        // 버튼 클릭 이벤트에서 리스너 제거
+        resolutionHD.onClick.RemoveListener(OnClickResolutionHD);
+        resolutionFHD.onClick.RemoveListener(OnClickResolutionFHD);
+        resolutionFullScreen.onClick.RemoveListener(OnClickResolutionFullScreen);
+    }
+
+    public void OnClickResolutionHD()
+    {
+        resolutionHD.GetComponent<Image>().sprite = sprites[0];
+        resolutionFHD.GetComponent<Image>().sprite = sprites[1];
+        resolutionFullScreen.GetComponent<Image>().sprite = sprites[1];
+        Screen.SetResolution(1280, 720, false);
+        
+    }
+    public void OnClickResolutionFHD()
+    {
+        resolutionHD.GetComponent<Image>().sprite = sprites[1];
+        resolutionFHD.GetComponent<Image>().sprite = sprites[0];
+        resolutionFullScreen.GetComponent<Image>().sprite = sprites[1];
         Screen.SetResolution(1920, 1080, false);
     }
-    public void OnClickResolutionButton2()
+
+    public void OnClickResolutionFullScreen()
     {
-        button1280.GetComponent<Image>().sprite = sprites[1];
-        button1920.GetComponent<Image>().sprite = sprites[0];
-        buttonfull.GetComponent<Image>().sprite = sprites[1];
+        resolutionHD.GetComponent<Image>().sprite = sprites[1];
+        resolutionFHD.GetComponent<Image>().sprite = sprites[1];
+        resolutionFullScreen.GetComponent<Image>().sprite = sprites[0];
         Screen.SetResolution(1920, 1080, true);
     }
-
-    public void OnClickResolutionButton3()
-    {
-        button1280.GetComponent<Image>().sprite = sprites[1];
-        button1920.GetComponent<Image>().sprite = sprites[1];
-        buttonfull.GetComponent<Image>().sprite = sprites[0];
-        Screen.SetResolution(1280, 720, false);
-    }
-
-
-
-
 
 }

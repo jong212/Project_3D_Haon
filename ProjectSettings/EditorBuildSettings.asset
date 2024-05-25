@@ -10,8 +10,8 @@ EditorBuildSettings:
     guid: 51a5856acc3a62d4bb9983f14df24575
   - enabled: 1
     path: Assets/Scenes/GameScene/TutorialScene.unity
-    guid: 08f7f780de25b2946bd3f38f4cda9c89
+    guid: 1d884e6616e5d8e439ff0606bd625857
   - enabled: 1
-    path: Assets/Scenes/GameScene/LobbyScene_WJH.unity
-    guid: 2a039f4410d0ad547ad170194087e5ad
+    path: Assets/Scenes/GameScene/LobbyScene.unity
+    guid: 4b9449e4d05c5e5429f176a82bb253e9
   m_configObjects: {}
