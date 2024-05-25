@@ -9,36 +9,86 @@ public class NameButton : MonoBehaviour
     public TextMeshProUGUI nameText;
     private bool isName = true;
 
+    public string _playerName;
+    public string _userName;
 
-    private void Awake()
+    private void Start()
     {
-        nameText.text = PlayInfo.userName;
+        // Load player data from UserData on start
+        LoadPlayerDataFromUserData();
     }
+
     private void OnEnable()
     {
-        if(nameButton != null && nameText != null)
+        // Assign listener to the button click event
+        if (nameButton != null)
         {
-            nameButton.onClick.AddListener(ToggleText);            
+            nameButton.onClick.AddListener(ToggleText);
+        }
+        else
+        {
+            Debug.LogWarning("NameButton is not assigned.");
+        }
+
+        // Set initial name text
+        if (nameText != null)
+        {
+            UpdateNameText();
+        }
+        else
+        {
+            Debug.LogWarning("NameText is not assigned.");
         }
     }
+
     private void OnDisable()
     {
-        if (nameButton != null && nameText != null)
+        // Remove listener from the button click event
+        if (nameButton != null)
         {
             nameButton.onClick.RemoveListener(ToggleText);
         }
     }
 
-    void ToggleText()
+    private void ToggleText()
     {
-        if(isName)
+        // Toggle between player name and player ID
+        isName = !isName;
+        UpdateNameText();
+    }
+
+    private void UpdateNameText()
+    {
+        // Update the text based on the current state
+        if (isName)
         {
-            nameText.text = PlayInfo.userID;
+            nameText.text = UserData.Instance.Character?.PlayerName ?? "Unknown Player";
         }
         else
         {
-            nameText.text = PlayInfo.userName;
+            nameText.text = UserData.Instance.Character?.PlayerId ?? "Unknown ID";
         }
-        isName = !isName;
+    }
+
+    private void LoadPlayerDataFromUserData()
+    {
+        // Load data from UserData instance
+        if (UserData.Instance != null)
+        {
+            if (UserData.Instance.Character != null)
+            {
+                _playerName = UserData.Instance.Character.PlayerName;
+                _userName = UserData.Instance.Character.PlayerId; // 수정: PlayerId는 Players 테이블의 Username
+                UpdateNameText(); 
+            }
+            else
+            {
+                Debug.LogError("Character data is not loaded in UserData.");
+            }
+        }
+        else
+        {
+            Debug.LogError("UserData is not loaded or user is not logged in.");
+        }
     }
 }

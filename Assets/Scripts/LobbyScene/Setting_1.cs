@@ -5,84 +5,111 @@ public class Setting_1 : MonoBehaviour
 {
     public static void JewelUpGradeATK()
     {
-        if (PlayInfo.jewels > PlayInfo.jewelAtkUpgradeCount)
+        if (UserData.Instance.Character.Gems > UserData.Instance.Character.AttackEnhancement)
         {
-            PlayInfo.atk++;
-            PlayInfo.jewels -= PlayInfo.jewelAtkUpgradeCount;
-            PlayInfo.jewelAtkUpgradeCount++;
+            UserData.Instance.Character.AttackPower++;
+            UserData.Instance.Character.Gems -= UserData.Instance.Character.AttackEnhancement;
+            UserData.Instance.Character.AttackEnhancement++;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 공격력을 보석으로 다운그레이드
     public static void JewelDownGradeATK()
     {
-        if (PlayInfo.atk > PlayInfo.defaltatk)
+        if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
         {
-            PlayInfo.atk--;
-            PlayInfo.jewels += (PlayInfo.jewelAtkUpgradeCount - 1);
-            PlayInfo.jewelAtkUpgradeCount--;
+            UserData.Instance.Character.AttackPower--;
+            UserData.Instance.Character.Gems += (UserData.Instance.Character.AttackEnhancement - 1);
+            UserData.Instance.Character.AttackEnhancement--;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 체력을 보석으로 업그레이드
     public static void JewelUpGradeHP()
     {
-        if (PlayInfo.jewels > PlayInfo.jewelHPUpgradeCount * 5)
+        if (UserData.Instance.Character.Gems > UserData.Instance.Character.HealthEnhancement * 5)
         {
-            PlayInfo.hp += 5;
-            PlayInfo.jewels -= PlayInfo.jewelHPUpgradeCount;
-            PlayInfo.jewelHPUpgradeCount++;
-
+            UserData.Instance.Character.MaxHealth += 5;
+            UserData.Instance.Character.Gems -= UserData.Instance.Character.HealthEnhancement * 5;
+            UserData.Instance.Character.HealthEnhancement++;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 체력을 보석으로 다운그레이드
     public static void JewelDownGradeHP()
     {
-        if (PlayInfo.hp > PlayInfo.defalthp)
+        if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
         {
-            PlayInfo.hp -= 5;
-            PlayInfo.jewels += (PlayInfo.jewelHPUpgradeCount - 1);
-            PlayInfo.jewelHPUpgradeCount--;
+            UserData.Instance.Character.MaxHealth -= 5;
+            UserData.Instance.Character.Gems += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
+            UserData.Instance.Character.HealthEnhancement--;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 공격력을 코인으로 업그레이드
     public static void CoinUpGradeATK()
     {
-        if (PlayInfo.coins > PlayInfo.coinAtkUpgradeCount * 5)
+        if (UserData.Instance.Character.Coins > UserData.Instance.Character.AttackEnhancement * 5)
         {
-            PlayInfo.atk++;
-            PlayInfo.coins -= PlayInfo.coinAtkUpgradeCount * 5;
-            PlayInfo.coinAtkUpgradeCount++;
+            UserData.Instance.Character.AttackPower++;
+            UserData.Instance.Character.Coins -= UserData.Instance.Character.AttackEnhancement * 5;
+            UserData.Instance.Character.AttackEnhancement++;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 공격력을 코인으로 다운그레이드
     public static void CoinDownGradeATK()
     {
-        if (PlayInfo.atk > PlayInfo.defaltatk)
+        if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
         {
-            PlayInfo.atk--;
-            PlayInfo.coins += (PlayInfo.coinAtkUpgradeCount - 1) * 5;
-            PlayInfo.coinAtkUpgradeCount--;
+            UserData.Instance.Character.AttackPower--;
+            UserData.Instance.Character.Coins += (UserData.Instance.Character.AttackEnhancement - 1) * 5;
+            UserData.Instance.Character.AttackEnhancement--;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 체력을 코인으로 업그레이드
     public static void CoinUpGradeHP()
     {
-        if (PlayInfo.coins > PlayInfo.coinHPUpgradeCount * 5)
+        if (UserData.Instance.Character.Coins > UserData.Instance.Character.HealthEnhancement * 5)
         {
-            PlayInfo.hp += 5;
-            PlayInfo.coins -= PlayInfo.coinHPUpgradeCount * 5;
-            PlayInfo.coinHPUpgradeCount++;
+            UserData.Instance.Character.MaxHealth += 5;
+            UserData.Instance.Character.Coins -= UserData.Instance.Character.HealthEnhancement * 5;
+            UserData.Instance.Character.HealthEnhancement++;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 체력을 코인으로 다운그레이드
     public static void CoinDownGradeHP()
     {
-        if (PlayInfo.hp > PlayInfo.defalthp)
+        if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
         {
-            PlayInfo.hp -= 5;
-            PlayInfo.coins += (PlayInfo.coinHPUpgradeCount - 1) * 5;
-            PlayInfo.coinHPUpgradeCount--;
+            UserData.Instance.Character.MaxHealth -= 5;
+            UserData.Instance.Character.Coins += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
+            UserData.Instance.Character.HealthEnhancement--;
+            UserData.Instance.SavePlayerData();
         }
     }
+
+    // 코인 증가
     public static void PlusCoins()
     {
-        PlayInfo.coins++;
+        UserData.Instance.Character.Coins++;
+        UserData.Instance.SavePlayerData();
     }
+
+    // 보석 증가
     public static void PlusJewels()
     {
-        PlayInfo.jewels++;
+        UserData.Instance.Character.Gems++;
+        UserData.Instance.SavePlayerData();
     }
-    
+
 }

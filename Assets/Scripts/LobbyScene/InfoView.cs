@@ -1,33 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class InfoView : MonoBehaviour
 {
-    public TextMeshProUGUI cointext;
-    public TextMeshProUGUI jeweltext;
-    public TextMeshProUGUI currentatk;
-    public TextMeshProUGUI currenthp;
-    public TextMeshProUGUI afteratk;
-    public TextMeshProUGUI afterhp;
-    public TextMeshProUGUI jewelAtkUpgradetext;
-    public TextMeshProUGUI jewelHPUpgradetext;
-    public TextMeshProUGUI coinAtkUpgradetext;
-    public TextMeshProUGUI coinHPUpgradetext;
+    [SerializeField] private TextMeshProUGUI cointext;
+    [SerializeField] private TextMeshProUGUI jeweltext;
+    [SerializeField] private TextMeshProUGUI currentatk;
+    [SerializeField] private TextMeshProUGUI currenthp;
+    [SerializeField] private TextMeshProUGUI afteratk;
+    [SerializeField] private TextMeshProUGUI afterhp;
+    [SerializeField] private TextMeshProUGUI jewelAtkUpgradetext;
+    [SerializeField] private TextMeshProUGUI jewelHPUpgradetext;
+    [SerializeField] private TextMeshProUGUI coinAtkUpgradetext;
+    [SerializeField] private TextMeshProUGUI coinHPUpgradetext;
 
     private void Update()
     {
-        cointext.text = $" {PlayInfo.coins}";
-        jeweltext.text = $" {PlayInfo.jewels}";
-        jewelAtkUpgradetext.text = $"-{PlayInfo.jewelAtkUpgradeCount}";
-        jewelHPUpgradetext.text = $"-{PlayInfo.jewelHPUpgradeCount}";
-        coinAtkUpgradetext.text = $"-{PlayInfo.coinAtkUpgradeCount * 5}";
-        coinHPUpgradetext.text = $"-{PlayInfo.coinHPUpgradeCount * 5}";
-        currentatk.text = $"ATK  :  {PlayInfo.atk}  >";
-        currenthp.text = $"HP  :  {PlayInfo.hp}  >";
-        afteratk.text = $"{PlayInfo.atk + 1}";
-        afterhp.text = $"{PlayInfo.hp + 5}";
+        if (UserData.Instance != null && UserData.Instance.Character != null)
+        {
+            var character = UserData.Instance.Character;
 
+            cointext.text = $" {character.Coins}";
+            jeweltext.text = $" {character.Gems}";
+            jewelAtkUpgradetext.text = $"-{character.AttackEnhancement}";
+            jewelHPUpgradetext.text = $"-{character.HealthEnhancement}";
+            coinAtkUpgradetext.text = $"-{character.AttackEnhancement * 5}";
+            coinHPUpgradetext.text = $"-{character.HealthEnhancement * 5}";
+            currentatk.text = $"ATK  :  {character.AttackPower}  >";
+            currenthp.text = $"HP  :  {character.MaxHealth}  >";
+            afteratk.text = $"{character.AttackPower + 1}";
+            afterhp.text = $"{character.MaxHealth + 5}";
+        }
+        else
+        {
+            Debug.LogWarning("UserData.Instance or UserData.Instance.Character is null.");
+        }
     }
 }

@@ -8,9 +8,10 @@ CREATE TABLE Users (
 CREATE TABLE Players (
     PlayerID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
+    Username NVARCHAR(50) NOT NULL, 
     PlayerName NVARCHAR(50) NOT NULL,
-    Gems INT DEFAULT 0,
-    Coins INT DEFAULT 0,
+    Gems INT DEFAULT 50,
+    Coins INT DEFAULT 50,
     MaxHealth INT DEFAULT 500 NOT NULL,
     HealthEnhancement INT DEFAULT 0,
     AttackPower INT DEFAULT 40 NOT NULL,

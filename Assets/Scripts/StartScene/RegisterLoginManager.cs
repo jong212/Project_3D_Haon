@@ -32,6 +32,7 @@ public class RegisterLoginManager : MonoBehaviour
 
         registerUrl = $"{RemoteConfigManager.ServerUrl}/api/register";
         loginUrl = $"{RemoteConfigManager.ServerUrl}/api/login";
+
         Debug.Log("Register URL: " + registerUrl);
         Debug.Log("Login URL: " + loginUrl);
     }
@@ -148,6 +149,24 @@ public class RegisterLoginManager : MonoBehaviour
 
             if (request.result == UnityWebRequest.Result.Success)
             {
+                var response = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
+                UserData.Instance.UserId = response.UserId;
+
+                CharacterData character = new CharacterData
+                {
+                    PlayerId = response.Character.PlayerId,
+                    PlayerName = response.Character.PlayerName,
+                    Gems = response.Character.Gems,
+                    Coins = response.Character.Coins,
+                    MaxHealth = response.Character.MaxHealth,
+                    HealthEnhancement = response.Character.HealthEnhancement,
+                    AttackPower = response.Character.AttackPower,
+                    AttackEnhancement = response.Character.AttackEnhancement,
+                    WeaponEnhancement = response.Character.WeaponEnhancement,
+                    ArmorEnhancement = response.Character.ArmorEnhancement
+                };
+                UserData.Instance.Character = character;
+
                 ShowFeedback("로그인 성공");
                 isLogin = true;
                 yield return new WaitForSeconds(1);

@@ -51,11 +51,31 @@ public class playerAnimator : MonoBehaviour
         }
 
         MyObjectName = gameObject.name;          // 플레이어 오브젝트의 이름 가져오기
-        PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
+        //PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
+
+        LoadPlayerDataFromUserData();
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
-        SetPlayerData(playerData);
+        
+        //SetPlayerData(playerData);
     }
+
+    // UserData 싱글톤을 사용하여 플레이어 데이터 로드
+    private void LoadPlayerDataFromUserData()
+    {
+        if (UserData.Instance != null)
+        {
+            _PlayerName = UserData.Instance.Character.PlayerName;
+            _hp = UserData.Instance.Character.MaxHealth;
+            _str = UserData.Instance.Character.AttackPower;
+        }
+        else
+        {
+            Debug.LogError("UserData is not loaded or user is not logged in.");
+        }
+        Debug.Log($"{_PlayerName}, {_hp}, {_str}");
+    }
+
     // 플레이어 데이터 설정 함수
     private static void SetPlayerData(PlayerData playerData)
     {

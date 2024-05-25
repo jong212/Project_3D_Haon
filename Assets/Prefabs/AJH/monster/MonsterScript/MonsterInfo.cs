@@ -1,6 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
-using static DataManager;
+// using static DataManager;
 
 public class MonsterInfo : MonoBehaviour
 {

@@ -80,8 +80,9 @@ app.post('/api/register', async (req, res) => {
         await request
             .input('InsertNewUserID', sql.Int, newUserId)
             .input('InsertPlayerNamePlayer', sql.NVarChar, PlayerName)
-            .input('InsertGems', sql.Int, 0)
-            .input('InsertCoins', sql.Int, 0)
+            .input('InsertUsername', sql.NVarChar, Username) // 수정: Players 테이블에 Username 추가
+            .input('InsertGems', sql.Int, 50)
+            .input('InsertCoins', sql.Int, 50)
             .input('InsertMaxHealth', sql.Int, 500)
             .input('InsertHealthEnhancement', sql.Int, 0)
             .input('InsertAttackPower', sql.Int, 40)
@@ -89,8 +90,8 @@ app.post('/api/register', async (req, res) => {
             .input('InsertWeaponEnhancement', sql.Int, 0)
             .input('InsertArmorEnhancement', sql.Int, 0)
             .query(`
-        INSERT INTO Players (UserID, PlayerName, Gems, Coins, MaxHealth, HealthEnhancement, AttackPower, AttackEnhancement, WeaponEnhancement, ArmorEnhancement)
-        VALUES (@InsertNewUserID, @InsertPlayerNamePlayer, @InsertGems, @InsertCoins, @InsertMaxHealth, @InsertHealthEnhancement, @InsertAttackPower, @InsertAttackEnhancement, @InsertWeaponEnhancement, @InsertArmorEnhancement)
+        INSERT INTO Players (UserID, Username, PlayerName, Gems, Coins, MaxHealth, HealthEnhancement, AttackPower, AttackEnhancement, WeaponEnhancement, ArmorEnhancement)
+        VALUES (@InsertNewUserID, @InsertUsername, @InsertPlayerNamePlayer, @InsertGems, @InsertCoins, @InsertMaxHealth, @InsertHealthEnhancement, @InsertAttackPower, @InsertAttackEnhancement, @InsertWeaponEnhancement, @InsertArmorEnhancement)
       `);
 
         // 트랜잭션 커밋
@@ -140,7 +141,7 @@ app.post('/api/login', async (req, res) => {
         // 사용자 정보 조회
         const userResult = await pool.request()
             .input('LoginUsername', sql.NVarChar, Username)
-            .query('SELECT UserID, Username, PasswordHash FROM Users WHERE Username = @LoginUsername');
+            .query('SELECT UserID, Username, PasswordHash, PlayerName FROM Users WHERE Username = @LoginUsername');
 
         if (userResult.recordset.length === 0) {
             return res.status(404).json({ message: 'Invalid username or password' });
@@ -154,7 +155,27 @@ app.post('/api/login', async (req, res) => {
             return res.status(404).json({ message: 'Invalid username or password' });
         }
 
-        res.status(200).json({ message: 'Login successful', userID: user.UserID });
+        // 플레이어 정보 조회
+        const playerResult = await pool.request()
+            .input('UserId', sql.Int, user.UserID)
+            .query('SELECT * FROM Players WHERE UserID = @UserId');
+
+        const player = playerResult.recordset[0];
+
+        const characterData = {
+            PlayerId: player.Username, // 수정: PlayerId는 Players 테이블의 Username
+            PlayerName: player.PlayerName,
+            Gems: player.Gems,
+            Coins: player.Coins,
+            MaxHealth: player.MaxHealth,
+            HealthEnhancement: player.HealthEnhancement,
+            AttackPower: player.AttackPower,
+            AttackEnhancement: player.AttackEnhancement,
+            WeaponEnhancement: player.WeaponEnhancement,
+            ArmorEnhancement: player.ArmorEnhancement
+        };
+
+        res.status(200).json({ message: 'Login successful', UserId: user.UserID, Character: characterData });
     } catch (err) {
         console.error('로그인 오류:', err);
         res.status(500).send('서버 오류');
@@ -196,45 +217,6 @@ app.get('/api/players/:id', async (req, res) => {
     }
 });
 
-// 플레이어 정보 업데이트 엔드포인트
-app.put('/api/players/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { PlayerName, Gems, Coins, MaxHealth, HealthEnhancement, AttackPower, AttackEnhancement, WeaponEnhancement, ArmorEnhancement } = req.body;
-        const pool = await sql.connect(dbConfig);
-
-        await pool.request()
-            .input('UpdatePlayerID', sql.Int, id)
-            .input('UpdatePlayerName', sql.NVarChar, PlayerName) // 파라미터 이름 변경
-            .input('UpdateGems', sql.Int, Gems) // 파라미터 이름 변경
-            .input('UpdateCoins', sql.Int, Coins) // 파라미터 이름 변경
-            .input('UpdateMaxHealth', sql.Int, MaxHealth) // 파라미터 이름 변경
-            .input('UpdateHealthEnhancement', sql.Int, HealthEnhancement) // 파라미터 이름 변경
-            .input('UpdateAttackPower', sql.Int, AttackPower) // 파라미터 이름 변경
-            .input('UpdateAttackEnhancement', sql.Int, AttackEnhancement) // 파라미터 이름 변경
-            .input('UpdateWeaponEnhancement', sql.Int, WeaponEnhancement) // 파라미터 이름 변경
-            .input('UpdateArmorEnhancement', sql.Int, ArmorEnhancement) // 파라미터 이름 변경
-            .query(`
-        UPDATE Players SET 
-          PlayerName = @UpdatePlayerName,
-          Gems = @UpdateGems,
-          Coins = @UpdateCoins,
-          MaxHealth = @UpdateMaxHealth,
-          HealthEnhancement = @UpdateHealthEnhancement,
-          AttackPower = @UpdateAttackPower,
-          AttackEnhancement = @UpdateAttackEnhancement,
-          WeaponEnhancement = @UpdateWeaponEnhancement,
-          ArmorEnhancement = @UpdateArmorEnhancement
-        WHERE PlayerID = @UpdatePlayerID
-      `);
-
-        res.status(200).send('플레이어 정보 업데이트 성공');
-    } catch (err) {
-        console.error('데이터 업데이트 오류:', err);
-        res.status(500).send('서버 오류');
-    }
-});
-
 // 모든 플레이어 정보 조회 엔드포인트
 app.get('/api/players', async (req, res) => {
     try {
@@ -243,6 +225,109 @@ app.get('/api/players', async (req, res) => {
         res.json(result.recordset);
     } catch (err) {
         console.error('데이터 조회 오류:', err);
+        res.status(500).send('서버 오류');
+    }
+});
+
+// 특정 플레이어 정보 조회 시 Username 포함 엔드포인트
+app.get('/api/player-data/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .input('Username', sql.NVarChar, username)
+            .query(`
+                SELECT p.*, u.Username 
+                FROM Players p 
+                JOIN Users u ON p.UserID = u.UserID 
+                WHERE u.Username = @Username
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ message: 'Player data not found' });
+        }
+
+        res.json(result.recordset[0]);
+    } catch (err) {
+        console.error('데이터 조회 오류:', err);
+        res.status(500).send('서버 오류');
+    }
+});
+
+// 모든 플레이어 정보 조회 시 Username 포함 엔드포인트
+app.get('/api/players/with-username', async (req, res) => {
+    try {
+        const pool = await sql.connect(dbConfig);
+        const result = await pool.request()
+            .query(`
+                SELECT p.*, u.Username 
+                FROM Players p 
+                JOIN Users u ON p.UserID = u.UserID
+            `);
+        res.json(result.recordset);
+    } catch (err) {
+        console.error('데이터 조회 오류:', err);
+        res.status(500).send('서버 오류');
+    }
+});
+
+// 플레이어 정보 업데이트 엔드포인트
+app.put('/api/players/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const {
+            PlayerName, Gems, Coins, MaxHealth,
+            HealthEnhancement, AttackPower, AttackEnhancement,
+            WeaponEnhancement, ArmorEnhancement
+        } = req.body;
+
+        // 음수 값 검증
+        if (Gems < 0 || Coins < 0 || MaxHealth < 0 ||
+            HealthEnhancement < 0 || AttackPower < 0 ||
+            AttackEnhancement < 0 || WeaponEnhancement < 0 ||
+            ArmorEnhancement < 0) {
+            return res.status(400).json({ message: 'Negative values are not allowed' });
+        }
+
+        const pool = await sql.connect(dbConfig);
+
+        console.log(`Updating player data for PlayerID: ${id}`);
+        console.log(`Request Body: ${JSON.stringify(req.body)}`);
+
+        const result = await pool.request()
+            .input('UpdatePlayerID', sql.Int, id)
+            .input('UpdatePlayerName', sql.NVarChar, PlayerName)
+            .input('UpdateGems', sql.Int, Gems)
+            .input('UpdateCoins', sql.Int, Coins)
+            .input('UpdateMaxHealth', sql.Int, MaxHealth)
+            .input('UpdateHealthEnhancement', sql.Int, HealthEnhancement)
+            .input('UpdateAttackPower', sql.Int, AttackPower)
+            .input('UpdateAttackEnhancement', sql.Int, AttackEnhancement)
+            .input('UpdateWeaponEnhancement', sql.Int, WeaponEnhancement)
+            .input('UpdateArmorEnhancement', sql.Int, ArmorEnhancement)
+            .query(`
+                UPDATE Players SET 
+                  PlayerName = @UpdatePlayerName,
+                  Gems = @UpdateGems,
+                  Coins = @UpdateCoins,
+                  MaxHealth = @UpdateMaxHealth,
+                  HealthEnhancement = @UpdateHealthEnhancement,
+                  AttackPower = @UpdateAttackPower,
+                  AttackEnhancement = @UpdateAttackEnhancement,
+                  WeaponEnhancement = @UpdateWeaponEnhancement,
+                  ArmorEnhancement = @UpdateArmorEnhancement
+                WHERE PlayerID = @UpdatePlayerID
+            `);
+
+        if (result.rowsAffected[0] > 0) {
+            res.status(200).send('플레이어 정보 업데이트 성공');
+            console.log('플레이어 정보 업데이트 성공');
+        } else {
+            res.status(404).send('플레이어 정보를 찾을 수 없습니다.');
+            console.log('플레이어 정보를 찾을 수 없습니다.');
+        }
+    } catch (err) {
+        console.error('데이터 업데이트 오류:', err);
         res.status(500).send('서버 오류');
     }
 });
