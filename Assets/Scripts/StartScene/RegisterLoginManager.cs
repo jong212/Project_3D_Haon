@@ -7,8 +7,11 @@ using UnityEngine.Networking;
 
 public class RegisterLoginManager : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField usernameField;
-    [SerializeField] private TMP_InputField passwordField;
+    [SerializeField] private TMP_InputField loginUsernameField;
+    [SerializeField] private TMP_InputField loginPasswordField;
+    [SerializeField] private TMP_InputField RegisterUsernameField;
+    [SerializeField] private TMP_InputField RegisterPasswordField;
+    [SerializeField] private TMP_InputField RegisterPlayerNameField;
     [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private GameObject authPanel;
     [SerializeField] private TextMeshProUGUI loginText;
@@ -18,6 +21,7 @@ public class RegisterLoginManager : MonoBehaviour
 
     public static bool isLogin = false;
     public static event Action OnLoginSuccess;
+
     IEnumerator Start()
     {
         // Remote Config 값이 로드될 때까지 대기
@@ -28,8 +32,8 @@ public class RegisterLoginManager : MonoBehaviour
 
         registerUrl = $"{RemoteConfigManager.ServerUrl}/api/register";
         loginUrl = $"{RemoteConfigManager.ServerUrl}/api/login";
-        // Debug.Log("Register URL: " + registerUrl);
-        // Debug.Log("Login URL: " + loginUrl);
+        Debug.Log("Register URL: " + registerUrl);
+        Debug.Log("Login URL: " + loginUrl);
     }
 
     public void OnRegisterButtonClicked()
@@ -50,13 +54,13 @@ public class RegisterLoginManager : MonoBehaviour
 
     IEnumerator RegisterUser()
     {
-        if (string.IsNullOrEmpty(usernameField.text))
+        if (string.IsNullOrEmpty(RegisterUsernameField.text))
         {
             ShowFeedback("아이디를 입력해주세요");
             yield break;
         }
 
-        if (string.IsNullOrEmpty(passwordField.text))
+        if (string.IsNullOrEmpty(RegisterPasswordField.text))
         {
             ShowFeedback("패스워드를 입력해주세요");
             yield break;
@@ -64,20 +68,20 @@ public class RegisterLoginManager : MonoBehaviour
 
         var formData = new RegisterData
         {
-            Username = usernameField.text,
-            Password = passwordField.text
+            Username = RegisterUsernameField.text,
+            Password = RegisterPasswordField.text,
+            PlayerName = RegisterPlayerNameField.text
         };
 
         string jsonData = JsonUtility.ToJson(formData);
 
-        UnityWebRequest request = new UnityWebRequest(registerUrl, "POST");
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        try
+        using (UnityWebRequest request = new UnityWebRequest(registerUrl, "POST"))
         {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
@@ -86,9 +90,17 @@ public class RegisterLoginManager : MonoBehaviour
             }
             else
             {
-                if (request.responseCode == 400)
+                if (request.responseCode == 409)
                 {
-                    ShowFeedback("아이디가 이미 있습니다.");
+                    var response = JsonUtility.FromJson<ErrorResponse>(request.downloadHandler.text);
+                    if (response.errorCode == "USERNAME_EXISTS")
+                    {
+                        ShowFeedback("아이디가 이미 있습니다.");
+                    }
+                    else if (response.errorCode == "PLAYERNAME_EXISTS")
+                    {
+                        ShowFeedback("플레이어 이름이 이미 있습니다.");
+                    }
                 }
                 else if (request.responseCode == 500)
                 {
@@ -100,22 +112,18 @@ public class RegisterLoginManager : MonoBehaviour
                 }
             }
         }
-        finally
-        {
-            request.Dispose();
-        }
 
     }
 
     IEnumerator LoginUser()
     {
-        if (string.IsNullOrEmpty(usernameField.text))
+        if (string.IsNullOrEmpty(loginUsernameField.text))
         {
             ShowFeedback("아이디를 입력해주세요");
             yield break;
         }
 
-        if (string.IsNullOrEmpty(passwordField.text))
+        if (string.IsNullOrEmpty(loginPasswordField.text))
         {
             ShowFeedback("패스워드를 입력해주세요");
             yield break;
@@ -123,20 +131,19 @@ public class RegisterLoginManager : MonoBehaviour
 
         var formData = new LoginData
         {
-            Username = usernameField.text,
-            Password = passwordField.text
+            Username = loginUsernameField.text,
+            Password = loginPasswordField.text
         };
 
         string jsonData = JsonUtility.ToJson(formData);
 
-        UnityWebRequest request = new UnityWebRequest(loginUrl, "POST");
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        try
+        using (UnityWebRequest request = new UnityWebRequest(loginUrl, "POST"))
         {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
@@ -144,6 +151,7 @@ public class RegisterLoginManager : MonoBehaviour
                 ShowFeedback("로그인 성공");
                 isLogin = true;
                 yield return new WaitForSeconds(1);
+                loginText.gameObject.SetActive(false);
                 authPanel.SetActive(false);
                 OnLoginSuccess?.Invoke();
             }
@@ -162,10 +170,6 @@ public class RegisterLoginManager : MonoBehaviour
                     ShowFeedback("Error: " + request.error);
                 }
             }
-        }
-        finally
-        {
-            request.Dispose();
         }
     }
 
