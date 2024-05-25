@@ -12,12 +12,12 @@ public class TrapDamaged : MonoBehaviour
     {
         if (hit.gameObject.CompareTag("Trap"))
         {
-            if (!player && playerController)
+            if (!playerController && player)
             {
                 player.TakeDamage(damageIntPoint);
                 Debug.Log("Trap Damaged(single)");
             }
-            else if (!playerController && player)
+            else if (!player && playerController)
             {
                 playerController.TakeDamage(damageIntPoint);
                 Debug.Log("Trap Damaged(Network)");
