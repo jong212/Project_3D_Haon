@@ -22,7 +22,8 @@ public class ShieldCollision : MonoBehaviour
             {
                 isAttackstop = playerAnimator.GetBehaviour<isAttackStop>();
             }
-        } else
+        }
+        else
         {
             player = GameObject.FindGameObjectWithTag("Player");
         }
@@ -35,8 +36,8 @@ public class ShieldCollision : MonoBehaviour
 
     void Update()
     {
-        
-        
+
+
 
         if (hitTime > 0)
         {
@@ -62,7 +63,12 @@ public class ShieldCollision : MonoBehaviour
                     //Debug.Log("hit");
                     mat.SetVector("_HitPosition", transform.InverseTransformPoint(other.transform.position));
                     hitTime = 500;
-                    mat.SetFloat("_HitTime", hitTime);
+                    float opacity = mat.GetFloat("_Opacity");
+                    opacity -= 0.050f; // Subtract 0.050 from the opacity
+                    if (opacity < 0) opacity = 0; // Ensure opacity does not go below 0
+                    mat.SetFloat("_Opacity", opacity); // Assign the updated opacity back to the material
+               
+                mat.SetFloat("_HitTime", hitTime);
                 }
             }
         }
@@ -70,4 +76,3 @@ public class ShieldCollision : MonoBehaviour
 }
 
 
- 

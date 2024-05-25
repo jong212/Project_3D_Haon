@@ -62,6 +62,7 @@ public class Gimick2 : MonoBehaviour
                 _lineRenderer.SetPosition(_lineRenderer.positionCount - 1, hit.point);
 
                 remainLength -= Vector3.Distance(ray.origin, hit.point);
+                if (hit.collider.gameObject.tag == "Wall2") break;
 
                 if (hit.collider.gameObject == boss)
                 {
@@ -71,7 +72,7 @@ public class Gimick2 : MonoBehaviour
                     break;
                 }
 
-                ray = new Ray(hit.point, Vector3.Reflect(ray.direction, hit.normal));
+                    ray = new Ray(hit.point, Vector3.Reflect(ray.direction, hit.normal));
             }
             else
             {

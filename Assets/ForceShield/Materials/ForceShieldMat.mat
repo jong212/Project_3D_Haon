@@ -54,22 +54,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Displacement: 0.216
+    - _Displacement: 0.329
     - _EdgeLength: 18.7
     - _HitLenght: 1
     - _HitSize: 0.35
     - _HitTime: 0
     - _IntersectIntensity: 0.191
-    - _Opacity: 0.233
+    - _Opacity: 0
     - _Phong: 0.5
-    - _ShieldPatternPower: 12.9
+    - _ShieldPatternPower: 10.5
     - _ShieldPatternSize: 1
-    - _ShieldRimPower: 3.33
+    - _ShieldRimPower: 3.7
     m_Colors:
-    - _Color: {r: 0.40472588, g: 0.8018868, b: 0.7382767, a: 1}
-    - _HitColor: {r: 0.15477037, g: 0.29942134, b: 0.8867924, a: 1}
-    - _HitPosition: {r: 0.5207202, g: 0.25884062, b: -0.057394143, a: 0}
+    - _Color: {r: 0.19842371, g: 0.43479598, b: 0.462264, a: 0}
+    - _HitColor: {r: 0.5086666, g: 0.8862745, b: 0.15294117, a: 1}
+    - _HitPosition: {r: -0.28975454, g: -0.013074551, b: 0.52111924, a: 0}
     - _IntersectColor: {r: 1, g: 1, b: 1, a: 1}
-    - _ShieldPatternColor: {r: 0.28934047, g: 0.85882354, b: 0.20784311, a: 1}
+    - _ShieldPatternColor: {r: 0.23241146, g: 1, b: 0.05098039, a: 1}
     - _SpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   m_BuildTextureStacks: []
