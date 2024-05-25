@@ -128,7 +128,7 @@ public class playerAnimator : MonoBehaviour
         isKnockedBack = true;
         canInput = false;
         // Apply knockback effect here, e.g., add force to the Rigidbody
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
         canInput = true;
         isKnockedBack = false;
     }

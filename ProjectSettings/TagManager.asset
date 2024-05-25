@@ -19,6 +19,8 @@ TagManager:
   - Walls
   - PlayerWeapon
   - Wall2
+  - BossShield
+  - Parents
   layers:
   - Default
   - TransparentFX
