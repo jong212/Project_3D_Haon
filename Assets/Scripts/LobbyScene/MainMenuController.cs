@@ -84,5 +84,4 @@ public class MainMenuController : MonoBehaviour
             Debug.LogError($"로비 입장 실패 : {ex.Message}");
         }
     }
-
 }

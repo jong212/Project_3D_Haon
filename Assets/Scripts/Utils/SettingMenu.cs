@@ -3,23 +3,31 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 public class SettingMenu : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] private GameObject settingUI;
     [SerializeField] private Button settingActive;
     [SerializeField] private Button settingInActive;
 
+    [Header("Resolution Button")]
     [SerializeField] private Sprite[] sprites;
     [SerializeField] private Button resolutionHD;
     [SerializeField] private Button resolutionFHD;
     [SerializeField] private Button resolutionFullScreen;
 
+    [Header("Volume")]
     [SerializeField] private Slider masterVolume;
     [SerializeField] private Slider bgm;
     [SerializeField] private Slider sfx;
-
     [SerializeField] private AudioMixer audioMixer;
+
+    [Header("Title")]
+    [SerializeField] private Button titleButton;
+    [Header("Quit")]
+    [SerializeField] private Button quitButton;
 
     private void OnEnable()
     {
+        // UI
         settingActive.onClick.AddListener(ShowSettingUI);
         settingInActive.onClick.AddListener(HideSettingUI);
 
@@ -33,10 +41,15 @@ public class SettingMenu : MonoBehaviour
         bgm.onValueChanged.AddListener(SetBGMVolume);
         sfx.onValueChanged.AddListener(SetSFXVolume);
 
+        // 타이틀
+        titleButton.onClick.AddListener(ClickTitle);
+        // 종료
+        quitButton.onClick.AddListener(ClickQuit);
     }
 
     private void OnDisable()
     {
+        // UI
         settingActive.onClick.RemoveListener(ShowSettingUI);
         settingInActive.onClick.RemoveListener(HideSettingUI);
 
@@ -49,6 +62,11 @@ public class SettingMenu : MonoBehaviour
         masterVolume.onValueChanged.RemoveListener(SetMasterVolume);
         bgm.onValueChanged.RemoveListener(SetBGMVolume);
         sfx.onValueChanged.RemoveListener(SetSFXVolume);
+
+        // 타이틀
+        titleButton.onClick.RemoveListener(ClickTitle);
+        // 종료
+        quitButton.onClick.RemoveListener(ClickQuit);
 
     }
 
@@ -74,6 +92,24 @@ public class SettingMenu : MonoBehaviour
         resolutionFHD.GetComponent<Image>().sprite = sprites[1];
         resolutionFullScreen.GetComponent<Image>().sprite = sprites[0];
         Screen.SetResolution(1920, 1080, true);
+    }
+
+    //타이틀버튼
+    private void ClickTitle()
+    {
+        //타이틀로
+        SceneLoader.Instance.LoadSceneAsync("StartScene");
+    }
+    //종료버튼
+    private void ClickQuit()
+    {
+        // 빌드된 상태에서 게임을 종료합니다.
+        Application.Quit();
+
+        // 에디터 모드에서 게임을 종료합니다.
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     private void ShowSettingUI()

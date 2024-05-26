@@ -80,7 +80,7 @@ app.post('/api/register', async (req, res) => {
         await request
             .input('InsertNewUserID', sql.Int, newUserId)
             .input('InsertPlayerNamePlayer', sql.NVarChar, PlayerName)
-            .input('InsertUsername', sql.NVarChar, Username) // 수정: Players 테이블에 Username 추가
+            .input('InsertUsername', sql.NVarChar, Username) 
             .input('InsertGems', sql.Int, 50)
             .input('InsertCoins', sql.Int, 50)
             .input('InsertMaxHealth', sql.Int, 500)
@@ -163,7 +163,7 @@ app.post('/api/login', async (req, res) => {
         const player = playerResult.recordset[0];
 
         const characterData = {
-            PlayerId: player.Username, // 수정: PlayerId는 Players 테이블의 Username
+            PlayerId: player.Username,
             PlayerName: player.PlayerName,
             Gems: player.Gems,
             Coins: player.Coins,
@@ -290,6 +290,15 @@ app.put('/api/players/:id', async (req, res) => {
         }
 
         const pool = await sql.connect(dbConfig);
+
+        // 플레이어가 존재하는지 확인
+        const playerCheckResult = await pool.request()
+            .input('PlayerID', sql.Int, id)
+            .query('SELECT COUNT(*) AS count FROM Players WHERE PlayerID = @PlayerID');
+
+        if (playerCheckResult.recordset[0].count === 0) {
+            return res.status(404).send('플레이어 정보를 찾을 수 없습니다.');
+        }
 
         console.log(`Updating player data for PlayerID: ${id}`);
         console.log(`Request Body: ${JSON.stringify(req.body)}`);

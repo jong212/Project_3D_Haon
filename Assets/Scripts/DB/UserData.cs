@@ -39,11 +39,12 @@ public class UserData : Singleton<UserData>
 
     private IEnumerator SavePlayerDataToDatabase(CharacterData characterData)
     {
-        string url = $"{saveDataUrl}/{characterData.PlayerId}";
+        string url = $"{saveDataUrl}/{UserId}";
         Debug.Log($"Saving player data to URL: {url}");
 
         string jsonData = JsonUtility.ToJson(characterData);
-        Debug.Log($"Saving player data: {jsonData}");
+        Debug.Log($"Saving player data to URL: {url}");
+        Debug.Log($"Request Body: {jsonData}");
 
         using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
         {
