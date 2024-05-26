@@ -1,6 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
-// using static DataManager;
+using static DataManager;
 
 public class MonsterInfo : MonoBehaviour
 {
@@ -12,42 +12,57 @@ public class MonsterInfo : MonoBehaviour
 
     public Animator animator;
     public Transform wayPoint;
-
+    public GameObject[] playerTags5;//1
+    public GameObject randomObject;//2
     [SerializeField] private PlayerAttackSound playerSound;
     [SerializeField] private MonsterType monsterType; //몬스터 유형 판정 컴포넌트 따로 존재(몬스터에 부착)
-    
+
 
     void Awake()
     {
         //몬스터 정보를 게임오브젝트 이름으로 가져오기 위한 변수
-        //MyObjectName = (gameObject.name == "LazerMon1(Clone)" || gameObject.name == "LazerMon1" || gameObject.name == "LazerMon(Clone)") ? "mon6" : gameObject.name;
-        
+        MyObjectName = (gameObject.name == "LazerMon1(Clone)" || gameObject.name == "LazerMon1" || gameObject.name == "LazerMon(Clone)") ? "mon6" : gameObject.name;
+
         // 위에서 언급했듯 게임오브젝트 이름으로 몬스터 정보를 가져온다.
-        //MonsterData monsterData = DataManager.Instance.GetMonster($"{MyObjectName}");
+        MonsterData monsterData = DataManager.Instance.GetMonster($"{MyObjectName}");
         animator = GetComponent<Animator>();
         //가져온 정보를 함수에 넘겨서 hp,level,str 등등 세팅
-        //SetMonsterData(monsterData);
-        //Debug.Log("1...몬스터 정보 세팅.." + _monsterName);        
+        SetMonsterData(monsterData);
+        Debug.Log("1...몬스터 정보 세팅.." + _monsterName);
     }
     //몬스터 정보 세팅
-    //private void SetMonsterData(MonsterData monsterData)
-    //{
+    private void SetMonsterData(MonsterData monsterData)
+    {
 
-    //    this._monsterName = monsterData.name;
-    //    this._hp = monsterData.hp;
-    //    this._level = monsterData.level;
-    //    this._str = monsterData.str;
-    //    if (gameObject.name == "LazerMon1(Clone)" || gameObject.name == "LazerMon1" )
-    //    {
-    //        this._hp = 10;
-    //        this._str = 10;
-    //    } else if (gameObject.name == "LazerMon(Clone)")
-    //    {
-    //        this._hp = 100;
-    //        this._str = 100;
-    //    }
-    //}
+        this._monsterName = monsterData.name;
+        this._hp = monsterData.hp;
+        this._level = monsterData.level;
+        this._str = monsterData.str;
+        if (gameObject.name == "LazerMon1(Clone)" || gameObject.name == "LazerMon1")
+        {
+            this._hp = 10;
+            this._str = 10;
+        }
+        else if (gameObject.name == "LazerMon(Clone)")
+        {
+            this._hp = 10;
+            this._str = 10;
+        }
+    }
+    public GameObject GetRandomGameObject() //3
+    {
 
+ 
+
+        playerTags5 = GameObject.FindGameObjectsWithTag("Player");
+        if (playerTags5 == null || playerTags5.Length == 0)
+        {
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, playerTags5.Length);
+        return playerTags5[randomIndex];
+    }
     public void TakeDamage(int damageAmout)
     {
         //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
@@ -56,20 +71,23 @@ public class MonsterInfo : MonoBehaviour
         if (_hp <= 0)
         {
             animator.SetTrigger("die");
-            playerSound.MonsterDie();//몬스터 사망 사운드 출력
-            transform.GetComponent<CapsuleCollider>().enabled = false;
+            if (playerSound != null)
+            {
+                playerSound.MonsterDie();//몬스터 사망 사운드 출력}
+                transform.GetComponent<CapsuleCollider>().enabled = false;
 
-        }
-        else
-        {
-            animator.SetTrigger("damage");
-            if (monsterType.monsterType == 1)
-            {
-                playerSound.BiologyAttack();// 생물형 몬스터 타격음
             }
-            else if (monsterType.monsterType == 2)
+            else
             {
-                playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
+                animator.SetTrigger("damage");
+                if (monsterType.monsterType == 1)
+                {
+                    playerSound.BiologyAttack();// 생물형 몬스터 타격음
+                }
+                else if (monsterType.monsterType == 2)
+                {
+                    playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
+                }
             }
         }
     }

@@ -15,6 +15,13 @@ TagManager:
   - Effect1Spawner
   - Effect2Spawner
   - Locate
+  - Laser
+  - Walls
+  - PlayerWeapon
+  - Wall2
+  - BossShield
+  - Parents
+  - PoolManager
   layers:
   - Default
   - TransparentFX

@@ -39,10 +39,10 @@ public class Boss : MonoBehaviour
     public float fixHealth;                       // 보스 체력 세팅
     public bool LazerGimick;
     public bool NoAttack;
+    public Transform BossShield1;
     public bool LazerStartFiveMin { get;  set; }
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
-
+    public GameObject[] playerTags5;
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
@@ -61,6 +61,8 @@ public class Boss : MonoBehaviour
     /*  초기화  */
     void Start()
     {
+        playerTags5 = GameObject.FindGameObjectsWithTag("Player");
+
         bosssRoomStartCheck = false;                                   // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
         fixHealth = 5000f;
         currentHealth = fixHealth;
@@ -94,10 +96,11 @@ public class Boss : MonoBehaviour
         Debug.Log(currentHealth);
         if (currentHealth <= 0)
         {
+            ChangeState(new Die());
+            animator.SetTrigger("Die");
         }
         else
         {
-            Debug.Log("보스 공격 당하는중");
         }
     }
     /*  보스 애니메이션 변경(공통)  */
@@ -235,13 +238,23 @@ public class Boss : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
         float lazerMonTimer = 0f;
-        float lazerMonInterval = 100f;
+        float lazerMonInterval = 10f;
 
         float lazerMon1Timer = 0f;        
         float lazerMon1Interval = 5f;
 
         float lazerStarTimer = 0f;
         float lazerStarInterval = 5f;
+        if (BossShield1 == null)
+        {
+            
+                BossShield1 = GameObject.FindGameObjectWithTag("Parents").transform.GetChild(0);
+         
+
+
+
+
+        }
         while (true)
         {
            
@@ -254,11 +267,14 @@ public class Boss : MonoBehaviour
                 if (lazerStarTimer >= lazerStarInterval)
                 {
                     lazerStarTimer = 0f;
-                    NoAttack = false;
+                    BossShield1.gameObject.SetActive(false);
+                  NoAttack = false;
                 }
             } else
             {
-                //dd
+
+                BossShield1.gameObject.SetActive(true);
+                //ddBossshield
                 NoAttack = true;
             }
             if (lazerMonTimer >= lazerMonInterval)
@@ -506,9 +522,9 @@ public class Stage1 : IBossState
     public void Enter(Boss boss)
     {
         boss.bosssRoomStartCheck = false;
-        foreach (string tag in boss.playerTags5)
+       
+        foreach (GameObject player in boss.playerTags5)
         {
-            GameObject player = GameObject.FindGameObjectWithTag(tag);
             if (player != null)
             {
                 boss.players.Add(player);
@@ -682,28 +698,31 @@ public class Stage3 : IBossState
 }
 
 /* 보스 실행On Stage4 */
-public class Stage4 : IBossState
+public class Die : IBossState
 {
-    
-
     private Transform playerTransform; // 플레이어의 Transform
 
     public void Enter(Boss boss)
     {
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform; // 플레이어의 Transform 가져오기
+        boss.StartCoroutine(BossDie(boss));
     }
-
+    
     public void Execute(Boss boss)
     {
-        // 필요 시 추가 로직 추가
     }
 
     public void Exit(Boss boss)
     {
-        boss.GimikAgain(); // 상태 종료 시 레이저 중지
     }
     public override string ToString()
     {
-        return "Stage4";
+        return "Die";
+    }
+    public IEnumerator BossDie(Boss boss)
+    {
+        yield return new WaitForSeconds(2);
+        boss.gameObject.SetActive(false);
+        
     }
 }
+

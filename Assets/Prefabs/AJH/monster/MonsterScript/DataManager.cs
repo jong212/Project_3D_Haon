@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Matchmaker.Models;
 using UnityEngine;
-
 public class DataManager : Singleton<DataManager>
 {
     static private Dictionary<string, MonsterData> monsterDictionary = new Dictionary<string, MonsterData>();

@@ -235,7 +235,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -257,11 +257,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MyObjectName: mon6
   _monsterName: Monster6
-  _hp: 430
+  _hp: 20
   _level: 6
-  _str: 60
+  _str: 10
   animator: {fileID: 4029685431442567707}
   wayPoint: {fileID: 0}
+  playerSound: {fileID: 0}
+  monsterType: {fileID: 0}
 --- !u!136 &8370161556621248252
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -34,7 +34,7 @@ public class particletest : MonoBehaviour
 
             if (Time.time - lastCollisionTime[other] >= 3f)
             {
-                other.gameObject.GetComponent<playerAnimator>().TakeDamage(30);
+                other.gameObject.GetComponent<playerAnimator>().TakeDamage(30, "noattack");
                 lastCollisionTime[other] = Time.time;
             }
         }

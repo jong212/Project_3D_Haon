@@ -5,9 +5,10 @@ using static DataManager;
 
 public class playerAnimator : MonoBehaviour
 {
-
+    private System.Random random;
     //변수들 선언
     public GameObject skillControlObject;
+    public ShieldCollision shieldCollision;
     public SkillControl skill;
     public Animator _animator;
     private CharacterController _characterController;
@@ -20,7 +21,7 @@ public class playerAnimator : MonoBehaviour
     private float _velocity;                     // 플레이어의 수직 속도
     private static string MyObjectName;          // 플레이어 오브젝트 이름
     private static string _PlayerName;           // 플레이어 이름  
-    private static int _hp;                      // 플레이어 체력
+    [SerializeField]private  int _hp;                      // 플레이어 체력
     private static int _level;                   // 플레이어 레벨
     private static int _str;                     // 플레이어 힘
     private static bool isSkillACooldown = false;// 스킬 A 쿨다운 여부를 추적하는 플래그
@@ -29,22 +30,31 @@ public class playerAnimator : MonoBehaviour
     private bool isDashCooldown = false;         // 대시 쿨다운 상태를 추적하는 플래
     private bool canInput = true;
     private bool isKnockedBack = false;
+    private GameObject attack;
+
+    private bool bossstart;
+    public bool BossStart
+    {
+        get { return bossstart; }
+        set { bossstart = value; }
+    }
+    [SerializeField] private Vector3 initialPosition; // 초기 위치를 저장할 변수
     FloatingHealthBar healthBar;
     [SerializeField]
-    private Collider WeaponCollider;             // 무기 콜라이더
-
-    [SerializeField] private PlayerAttackSound playerSound;
-
+    private Collider WeaponCollider;             // 무기 콜라이더 
+    [SerializeField] private PlayerAttackSound playerSound; 
     [SerializeField]
-    private Canvas _hpCanvas;
-
+    private Canvas _hpCanvas; 
     void Start()
     {
+        random = new System.Random();
+        attack = transform.Find("EffectParents").gameObject; // 각 플레이어 오브젝트 내부의 이펙트 부모 오브젝트를 찾습니다.
+
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
         //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
         //healthBar.SetTarget(transform);
-
+        
         if (skillControlObject != null)
         {
             skill = skillControlObject.GetComponent<SkillControl>();
@@ -55,6 +65,11 @@ public class playerAnimator : MonoBehaviour
 
         LoadPlayerDataFromUserData();
         _animator = GetComponent<Animator>();
+        var behaviours = _animator.GetBehaviours<isAttackStop>();
+        foreach (var behaviour in behaviours)
+        {
+            behaviour.shieldCollision = shieldCollision;
+        }
         _characterController = GetComponent<CharacterController>();
         
         //SetPlayerData(playerData);
@@ -77,13 +92,29 @@ public class playerAnimator : MonoBehaviour
     }
 
     // 플레이어 데이터 설정 함수
-    private static void SetPlayerData(PlayerData playerData)
+    private  void SetPlayerData(PlayerData playerData)
     {
         _PlayerName = playerData.name;
         _hp = playerData.hp;
         _level = playerData.level;
         _str = playerData.str;
     }
+    public void attackEvent(string type)
+    {
+        if (attack != null)
+        {
+            GameObject effect = attack.transform.Find($"attack{type}").gameObject;
+            if (effect.activeSelf)
+            {
+                effect.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                effect.SetActive(true);
+            }
+        }
+    }
+
     public static int getstr
     {
         get { return _str; }
@@ -91,6 +122,7 @@ public class playerAnimator : MonoBehaviour
     }
     void Update()
     {
+        
         ApplyGravity();
         if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
 
@@ -109,22 +141,37 @@ public class playerAnimator : MonoBehaviour
         {
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
-    }
+        if (transform.position.y < -10 && bossstart)
+        {
+            Vector3 newPosition = new Vector3(transform.position.x, -2, transform.position.z);
+            transform.position = newPosition;
+        }
 
+    }
+    
     // 플레이어가 피해를 받을 때 호출되는 함수
-    public void TakeDamage(int damageAmout)
+    public void TakeDamage(int damageAmout, string bossAttack = "")
     {
         //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
         _hp -= damageAmout;
         if (_hp <= 0)
         {
+            
+                
             _animator.SetTrigger("Die");
-
+              gameObject.SetActive(false); 
+            
         }
         else
         {
-            _animator.Play("backDown");
-            ApplyKnockback();
+            
+
+            // 0부터 99 사이의 정수를 무작위로 생성하여 15% 확률 확인
+            if (bossAttack == "noattack" || random.Next(100) < 15) //15% 확률
+            {
+                _animator.Play("backDown");
+                ApplyKnockback();
+            }
 
         }
     }
@@ -141,7 +188,7 @@ public class playerAnimator : MonoBehaviour
         isKnockedBack = true;
         canInput = false;
         // Apply knockback effect here, e.g., add force to the Rigidbody
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
         canInput = true;
         isKnockedBack = false;
     }
@@ -179,7 +226,8 @@ public class playerAnimator : MonoBehaviour
         }
         if (skill.getSkillTimes[0] > 0) return;
         Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-        playerSound.Dash();
+        if(playerSound!= null) { playerSound.Dash(); }
+        
         float dashDistance = 5f;  // 대시 거리
         float dashDuration = 0.2f; // 대시 지속 시
 
@@ -214,7 +262,8 @@ public class playerAnimator : MonoBehaviour
             skill.HideSkillSetting(1);
             return;
         }
-        playerSound.SkillA();
+        if(playerSound != null) { playerSound.SkillA(); }
+        
         Debug.Log("스킬 A 사운드 출력");
         _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
         _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
@@ -228,7 +277,8 @@ public class playerAnimator : MonoBehaviour
             return;
         }
         if (skill.getSkillTimes[2] > 0) return;
-        playerSound.SkillB();
+        if(playerSound != null) { playerSound.SkillB(); }
+        
         Debug.Log("스킬 B 사운드 출력");
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
 

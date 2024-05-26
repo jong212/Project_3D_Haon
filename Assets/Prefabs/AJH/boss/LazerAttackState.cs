@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Services.Matchmaker.Models;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class LazerAttackState : StateMachineBehaviour
@@ -9,55 +7,58 @@ public class LazerAttackState : StateMachineBehaviour
     Transform player;
     playerAnimator playerinfo;
     MonsterInfo monsterinfo;
-    float interval ;
+    GameObject RandomGameObject;
+    float interval = 3;
     float timer = 0;
-    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        interval = stateInfo.length;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerinfo = player.GetComponent<playerAnimator>();
         monsterinfo = animator.GetComponent<MonsterInfo>();
-
-
+        SetRandomPlayer(animator, stateInfo);
     }
 
-    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.transform.LookAt(player);
-        float distance = Vector3.Distance(player.position, animator.transform.position);
-        if (distance > 3.5)
-            animator.SetBool("isAttacking", false);
-
-        timer += Time.deltaTime;
-
-        // 설정된 간격마다 isAttacking을 true로 설정하고 타이머를 재설정합니다.
-        if (timer >= interval)
+        if (RandomGameObject != null && RandomGameObject.activeSelf)
         {
-            
-           // Debug.Log("ddd");
-            timer = 0f;
-            playerinfo.TakeDamage(monsterinfo._str);
-
+            AttackPlayer(animator, stateInfo);
+        }
+        else
+        {
+            SetRandomPlayer(animator, stateInfo);
+            if (RandomGameObject == null)
+            {
+                animator.Play("GameEnd");
+            }
         }
     }
 
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    private void SetRandomPlayer(Animator animator, AnimatorStateInfo stateInfo)
     {
-        
+        RandomGameObject = monsterinfo.GetRandomGameObject();
+
+        if (RandomGameObject != null)
+        {
+            player = RandomGameObject.transform;
+            playerinfo = player.GetComponent<playerAnimator>();
+            interval = stateInfo.length;
+        }
     }
 
-    // OnStateMove is called right after Animator.OnAnimatorMove()
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that processes and affects root motion
-    //}
+    private void AttackPlayer(Animator animator, AnimatorStateInfo stateInfo)
+    {
+        animator.transform.LookAt(player);
+        float distance = Vector3.Distance(player.position, animator.transform.position);
+        if (distance > 3.5f)
+        {
+            animator.SetBool("isAttacking", false);
+        }
 
-    // OnStateIK is called right after Animator.OnAnimatorIK()
-    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that sets up animation IK (inverse kinematics)
-    //}
+        timer += Time.deltaTime;
+        if (timer >= interval)
+        {
+            timer = 0f;
+            playerinfo.TakeDamage(monsterinfo._str, "Noattack");
+        }
+    }
 }
