@@ -1,7 +1,9 @@
 using Cinemachine;
 using System.Collections;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static DataManager;
 
 public class NetworkPlayerController : NetworkBehaviour
@@ -11,26 +13,26 @@ public class NetworkPlayerController : NetworkBehaviour
     public Animator _animator;
 
     private CharacterController _characterController;
-    private Vector3 _moveDirection;              // ÇÃ·¹ÀÌ¾îÀÇ ÀÌµ¿ ¹æÇâ
-    private bool _isRunning = false;             // ÇÃ·¹ÀÌ¾î°¡ ´Þ¸®°í ÀÖ´ÂÁö ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private int _skillA = -1;                    // ½ºÅ³ A °¡·»Ã³·³ ºùºù µµ´Â ½ºÅ³
-    private int _skillB = -1;                    // ½ºÅ³ B ¶Ù¾î¼­ ´Ù¸®¿ì½ºÃ³·³ Âï´Â½ºÅ³ 
-    public bool isAction = false;                // ÇÃ·¹ÀÌ¾î°¡ ¾×¼ÇÀ» ¼öÇà ÁßÀÎÁö ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private float _gravity = -9.81f;             // Áß·Â °¡¼Óµµ
-    private float _velocity;                     // ÇÃ·¹ÀÌ¾îÀÇ ¼öÁ÷ ¼Óµµ
-    private static string MyObjectName;          // ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÀÌ¸§
-    private static string _PlayerName;           // ÇÃ·¹ÀÌ¾î ÀÌ¸§  
-    private static int _hp;                      // ÇÃ·¹ÀÌ¾î Ã¼·Â
-    private static int _level;                   // ÇÃ·¹ÀÌ¾î ·¹º§
-    private static int _str;                     // ÇÃ·¹ÀÌ¾î Èû
-    private static bool isSkillACooldown = false;// ½ºÅ³ A Äð´Ù¿î ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private static bool isSkillBCooldown = false;// ½ºÅ³ B Äð´Ù¿î ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    public float dashCooldownDuration = 5f;      // ´ë½Ã Äð´Ù¿î Áö¼Ó ½Ã°£(ÃÊ)
-    private bool isDashCooldown = false;         // ´ë½Ã Äð´Ù¿î »óÅÂ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡
+    private Vector3 _moveDirection;              // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+    private bool _isRunning = false;             // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Þ¸ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private int _skillA = -1;                    // ï¿½ï¿½Å³ A ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³
+    private int _skillB = -1;                    // ï¿½ï¿½Å³ B ï¿½Ù¾î¼­ ï¿½Ù¸ï¿½ï¿½ì½ºÃ³ï¿½ï¿½ ï¿½ï¿½Â½ï¿½Å³ 
+    public bool isAction = false;                // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½×¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private float _gravity = -9.81f;             // ï¿½ß·ï¿½ ï¿½ï¿½ï¿½Óµï¿½
+    private float _velocity;                     // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+    private static string MyObjectName;          // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ì¸ï¿½
+    private static string _PlayerName;           // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ì¸ï¿½  
+    private static int _hp;                      // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã¼ï¿½ï¿½
+    private static int _level;                   // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private static int _str;                     // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½
+    private static bool isSkillACooldown = false;// ï¿½ï¿½Å³ A ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private static bool isSkillBCooldown = false;// ï¿½ï¿½Å³ B ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    public float dashCooldownDuration = 5f;      // ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½(ï¿½ï¿½)
+    private bool isDashCooldown = false;         // ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½
     FloatingHealthBar healthBar;
     [SerializeField]
-    private Collider WeaponCollider;             // ¹«±â ÄÝ¶óÀÌ´õ
-
+    private Collider WeaponCollider;             // ï¿½ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½
+    private GameObject attack;
 
     [SerializeField]
     private Canvas _hpCanvas;
@@ -56,11 +58,13 @@ public class NetworkPlayerController : NetworkBehaviour
     private Vector3 oldInputPosition;
     private Quaternion oldInputRotation;
 
+    public ParticleSystem skillAEffect;
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
+        
     }
 
 
@@ -68,12 +72,15 @@ public class NetworkPlayerController : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-
+            if (transform.Find("EffectParents").gameObject != null)
+            {
+                attack = transform.Find("EffectParents").gameObject; // ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½ï¿½Ï´ï¿½.
+            }
             if (skillControlObject != null)
             {
                 skill = skillControlObject.GetComponent<SkillControlNetwork>();
             }
-            // ½ºÅ³ Äð´Ù¿îÀ» °ü¸®ÇÏ´Â ÄÚ·çÆ¾ ½ÃÀÛ
+            // ï¿½ï¿½Å³ ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
             StartCoroutine(SkillCooldown());
         }
     }
@@ -99,31 +106,31 @@ public class NetworkPlayerController : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
+        
 
         if (IsLocalPlayer)
         {
 
-            MyObjectName = gameObject.name;          // ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®ÀÇ ÀÌ¸§ °¡Á®¿À±â
-                                                     // DataManager¸¦ »ç¿ëÇÏ¿© ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ °¡Á®¿À±â
+            MyObjectName = gameObject.name;          // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                                                     // DataManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
             if (virtualCamera != null)
             {
-                // Virtual CameraÀÇ Follow ¹× Look At ÇÊµå¸¦ ·ÎÄÃ ÇÃ·¹ÀÌ¾î·Î ¼³Á¤ÇÕ´Ï´Ù
+                // Virtual Cameraï¿½ï¿½ Follow ï¿½ï¿½ Look At ï¿½Êµå¸¦ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½
                 virtualCamera.Follow = transform;
             }
         }
 
     }
 
-    void MoveClient() // Å¬¶óÀÌ¾ðÆ®¿¡¼­ ÀÌµ¿ Ã³¸®
+    void MoveClient() // Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ Ã³ï¿½ï¿½
     {
 
         Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
-        if (movementInput.sqrMagnitude > 0.01f) // movementInputÀÌ 0ÀÎÁö È®ÀÎ
+        if (movementInput.sqrMagnitude > 0.01f) // movementInputï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         {
             Quaternion targetRotation = Quaternion.LookRotation(movementInput);
 
@@ -148,30 +155,30 @@ public class NetworkPlayerController : NetworkBehaviour
 
 
 
-    // ½ºÅ³ Äð´Ù¿îÀ» °ü¸®ÇÏ´Â ÄÚ·çÆ¾
+    // ï¿½ï¿½Å³ ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ú·ï¿½Æ¾
     IEnumerator SkillCooldown()
     {
         while (true)
         {
-            yield return new WaitForSeconds(1f);     // 1ÃÊ¸¶´Ù Ã¼Å©    
+            yield return new WaitForSeconds(1f);     // 1ï¿½Ê¸ï¿½ï¿½ï¿½ Ã¼Å©    
 
 
-            if (isSkillACooldown)                    // ½ºÅ³ A Äð´Ù¿î »óÅÂ È®ÀÎ ¹× Ã³¸®
+            if (isSkillACooldown)                    // ï¿½ï¿½Å³ A ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ Ã³ï¿½ï¿½
             {
-                yield return new WaitForSeconds(5f); //5ÃÊ°£ ´ë±â
-                isSkillACooldown = false;            // Äð´Ù¿î Á¾·á
+                yield return new WaitForSeconds(5f); //5ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½
+                isSkillACooldown = false;            // ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
 
 
-            if (isSkillBCooldown)                    // ½ºÅ³ BÀÇ Äð´Ù¿îÀÌ È°¼ºÈ­µÇ¾î ÀÖ´Â °æ¿ì
+            if (isSkillBCooldown)                    // ï¿½ï¿½Å³ Bï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ï¿½ï¿½ È°ï¿½ï¿½È­ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½
             {
-                yield return new WaitForSeconds(5f); // 5ÃÊ°£ ´ë±â
-                isSkillBCooldown = false;            // Äð´Ù¿î Á¾·á
+                yield return new WaitForSeconds(5f); // 5ï¿½Ê°ï¿½ ï¿½ï¿½ï¿½
+                isSkillBCooldown = false;            // ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
         }
     }
 
-    // ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ ¼³Á¤ ÇÔ¼ö
+    // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
     //private static void SetPlayerData(PlayerData playerData)
     //{
     //    _PlayerName = playerData.name;
@@ -210,11 +217,11 @@ public class NetworkPlayerController : NetworkBehaviour
 
     }
 
-    // ÇÃ·¹ÀÌ¾î°¡ ÇÇÇØ¸¦ ¹ÞÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+    // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½Ø¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
 
     public void TakeDamage(int damageAmout)
     {
-        //Debug.Log($"°ø°Ý ´çÇÔ!!! Current Hp : {_hp}");
+        //Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!!! Current Hp : {_hp}");
         _hp -= damageAmout;
         if (_hp <= 0)
         {
@@ -228,11 +235,11 @@ public class NetworkPlayerController : NetworkBehaviour
         }
     }
 
-    // Áß·ÂÀ» Àû¿ëÇÏ´Â ÇÔ¼ö
+    // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     void ApplyGravity()
     {
 
-        if (!_characterController.isGrounded) // Áß·ÂÀ» Àû¿ëÇÕ´Ï´Ù.
+        if (!_characterController.isGrounded) // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         {
             _velocity += _gravity * Time.deltaTime;
         }
@@ -240,14 +247,14 @@ public class NetworkPlayerController : NetworkBehaviour
         {
             _velocity = 0f;
         }
-        //_moveDirection.y = _velocity; // ¼öÁ÷ ÀÌµ¿À» Àû¿ëÇÕ´Ï´Ù.
+        //_moveDirection.y = _velocity; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     }
 
     #region SEND_MESSAGE
 
     void Move(Vector3 movementInput)
     {
-        // ÀÔ·Â ¹ÞÀº °ªÀ» °¡Á®¿À±â
+        // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Vector3 movement = new Vector3(movementInput.x, 0f, movementInput.z);
         //movement.y = 0f;
         _isRunning = movement.magnitude > 0;
@@ -257,12 +264,12 @@ public class NetworkPlayerController : NetworkBehaviour
         {
             Quaternion targetRotation = Quaternion.LookRotation(movement);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
-            _characterController.Move(movement * Time.deltaTime);// Ä³¸¯ÅÍ¸¦ ÀÌµ¿½ÃÅµ´Ï´Ù.
-            _animator.SetBool("isRunning", _isRunning);// ¶Ù±â »óÅÂ¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+            _characterController.Move(movement * Time.deltaTime);// Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ìµï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
+            _animator.SetBool("isRunning", _isRunning);// ï¿½Ù±ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         }
         else
         {
-            _animator.SetBool("isRunning", false); // ÀÌµ¿ÇÏÁö ¾ÊÀ» ¶§´Â ¶Ù±â »óÅÂ ÇØÁ¦
+            _animator.SetBool("isRunning", false); // ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 
@@ -278,22 +285,22 @@ public class NetworkPlayerController : NetworkBehaviour
         if (skill.getSkillTimes[0] > 0)
             return;
 
-        Vector3 dashDirection = transform.forward; // ÇÃ·¹ÀÌ¾î°¡ º¸°í ÀÖ´Â ¹æÇâÀ¸·Î ´ë½Ã
-        playerSound.Dash();//´ë½Ã »ç¿îµå Ãâ·Â
-        float dashDistance = 5f;  // ´ë½Ã °Å¸®
-        float dashDuration = 0.2f; // ´ë½Ã Áö¼Ó ½Ã°£
+        Vector3 dashDirection = transform.forward; // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        playerSound.Dash();//ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        float dashDistance = 5f;  // ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½
+        float dashDuration = 0.2f; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
 
-        // ´ë½Ã ¸ñÀûÁö À§Ä¡ °è»ê
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½
         Vector3 dashDestination = transform.position + dashDirection * dashDistance;
 
-        // ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡¸¦ ºü¸£°Ô ÀÌµ¿ÇÏ¿© ´ë½Ã ½ÇÇà
+        // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
 
         skill.isHideSkills[0] = true;
         skill.getSkillTimes[0] = skill.skillTimes[0];
     }
 
-    // ÇÃ·¹ÀÌ¾î¸¦ ´ë½Ã ¸ñÀûÁö À§Ä¡·Î ºÎµå·´°Ô ÀÌµ¿½ÃÅ°´Â ÄÚ·çÆ¾
+    // ï¿½Ã·ï¿½ï¿½Ì¾î¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Îµå·´ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾
     IEnumerator MovePlayerToPosition(Vector3 startPosition, Vector3 endPosition, float duration)
     {
         float elapsedTime = 0f;
@@ -305,10 +312,29 @@ public class NetworkPlayerController : NetworkBehaviour
             yield return null;
         }
 
-        transform.position = endPosition;// ÇÃ·¹ÀÌ¾î°¡ Á¤È®ÇÑ À§Ä¡¿¡ µµ´ÞÇÏµµ·Ï º¸Àå
+        transform.position = endPosition;// ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    //´ë½Ã½ºÅ³ Shift ÃßÈÄ º¯°æ¿¹Á¤
+    
+   
+    public void attackEvent(string type)
+    {
+        if (attack != null)
+        {
+            GameObject effect = attack.transform.Find($"attack{type}").gameObject;
+            if (effect.activeSelf)
+            {
+                effect.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                effect.SetActive(true);
+            }
+        }
+    }
+
+    //ï¿½ï¿½Ã½ï¿½Å³ Shift ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½æ¿¹ï¿½ï¿½
+
 
     public void SkillA()
     {
@@ -317,10 +343,10 @@ public class NetworkPlayerController : NetworkBehaviour
         //    skill.HideSkillSetting(1);
         //    return;
         //}
-        _animator.SetInteger("skillA", 0);// ½ºÅ³ A ¾Ö´Ï¸ÞÀÌ¼Ç Àç»ý
+        _animator.SetInteger("skillA", 0);// ï¿½ï¿½Å³ A ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
         _animator.Play("ChargeSkillA_Skill");
-        playerSound.SkillA(); // ½ºÅ³ A »ç¿îµå Ãâ·Â
-       
+        playerSound.SkillA(); // ï¿½ï¿½Å³ A ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+       // SkillAEffectFunction();
     }
 
     public void SkillB()
@@ -332,13 +358,13 @@ public class NetworkPlayerController : NetworkBehaviour
         //}
         if (skill.getSkillTimes[2] > 0) return;
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f)); 
-        playerSound.SkillB();// ½ºÅ³B »ç¿îµå Ãâ·Â
+        playerSound.SkillB();// ï¿½ï¿½Å³B ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     }
 
     public void Click()
     {
         _animator.SetTrigger("onWeaponAttack");
-        playerSound.BaseAttack();//±âº» °ø°Ý »ç¿îµå Ãâ·Â(Çã°ø)
+        playerSound.BaseAttack();//ï¿½âº» ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½)
     }
 
     public void SkillClick()

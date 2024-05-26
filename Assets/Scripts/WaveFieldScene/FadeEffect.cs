@@ -33,6 +33,6 @@ public class FadeEffect : MonoBehaviour
 
     void SceneChange()
     {
-        SceneManager.LoadScene("Boss Field_Junhu");
+        SceneLoader.Instance.LoadSceneAsync("LobbyScene");
     }
 }

@@ -6,28 +6,28 @@ using static DataManager;
 public class playerAnimator : MonoBehaviour
 {
     private System.Random random;
-    //º¯¼öµé ¼±¾ğ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public GameObject skillControlObject;
     public ShieldCollision shieldCollision;
     public SkillControl skill;
     public Animator _animator;
     private CharacterController _characterController;
-    private Vector3 _moveDirection;              // ÇÃ·¹ÀÌ¾îÀÇ ÀÌµ¿ ¹æÇâ
-    private bool _isRunning = false;             // ÇÃ·¹ÀÌ¾î°¡ ´Ş¸®°í ÀÖ´ÂÁö ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private int _skillA = -1;                    // ½ºÅ³ A °¡·»Ã³·³ ºùºù µµ´Â ½ºÅ³
-    private int _skillB = -1;                    // ½ºÅ³ B ¶Ù¾î¼­ ´Ù¸®¿ì½ºÃ³·³ Âï´Â½ºÅ³ 
-    public bool isAction = false;                // ÇÃ·¹ÀÌ¾î°¡ ¾×¼ÇÀ» ¼öÇà ÁßÀÎÁö ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private float _gravity = -9.81f;             // Áß·Â °¡¼Óµµ
-    private float _velocity;                     // ÇÃ·¹ÀÌ¾îÀÇ ¼öÁ÷ ¼Óµµ
-    private static string MyObjectName;          // ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ÀÌ¸§
-    private static string _PlayerName;           // ÇÃ·¹ÀÌ¾î ÀÌ¸§  
-    private  int _hp;                      // ÇÃ·¹ÀÌ¾î Ã¼·Â
-    private static int _level;                   // ÇÃ·¹ÀÌ¾î ·¹º§
-    private static int _str;                     // ÇÃ·¹ÀÌ¾î Èû
-    private static bool isSkillACooldown = false;// ½ºÅ³ A Äğ´Ù¿î ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    private static bool isSkillBCooldown = false;// ½ºÅ³ B Äğ´Ù¿î ¿©ºÎ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±×
-    public float dashCooldownDuration = 5f;      // ´ë½Ã Äğ´Ù¿î Áö¼Ó ½Ã°£(ÃÊ)
-    private bool isDashCooldown = false;         // ´ë½Ã Äğ´Ù¿î »óÅÂ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡
+    private Vector3 _moveDirection;              // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+    private bool _isRunning = false;             // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Ş¸ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private int _skillA = -1;                    // ï¿½ï¿½Å³ A ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³
+    private int _skillB = -1;                    // ï¿½ï¿½Å³ B ï¿½Ù¾î¼­ ï¿½Ù¸ï¿½ï¿½ì½ºÃ³ï¿½ï¿½ ï¿½ï¿½Â½ï¿½Å³ 
+    public bool isAction = false;                // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½×¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private float _gravity = -9.81f;             // ï¿½ß·ï¿½ ï¿½ï¿½ï¿½Óµï¿½
+    private float _velocity;                     // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Óµï¿½
+    private static string MyObjectName;          // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Ì¸ï¿½
+    private static string _PlayerName;           // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ì¸ï¿½  
+    public int _hp = 500;                      // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ Ã¼ï¿½ï¿½
+    private static int _level;                   // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    public int _str;                     // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½
+    private static bool isSkillACooldown = false;// ï¿½ï¿½Å³ A ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    private static bool isSkillBCooldown = false;// ï¿½ï¿½Å³ B ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
+    public float dashCooldownDuration = 5f;      // ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½(ï¿½ï¿½)
+    private bool isDashCooldown = false;         // ï¿½ï¿½ï¿½ ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½
     private bool canInput = true;
     private bool isKnockedBack = false;
     private GameObject attack;
@@ -38,11 +38,11 @@ public class playerAnimator : MonoBehaviour
         get { return bossstart; }
         set { bossstart = value; }
     }
-    [SerializeField] private Vector3 initialPosition; // ÃÊ±â À§Ä¡¸¦ ÀúÀåÇÒ º¯¼ö
+    [SerializeField] private Vector3 initialPosition; // ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     FloatingHealthBar healthBar;
     [SerializeField]
-    private Collider WeaponCollider;             // ¹«±â Äİ¶óÀÌ´õ 
-    [SerializeField] private PlayerAttackSound playerSound; 
+    private Collider WeaponCollider;             // ï¿½ï¿½ï¿½ï¿½ ï¿½İ¶ï¿½ï¿½Ì´ï¿½ 
+    [SerializeField] private PlayerAttackSound playerSound;
     [SerializeField]
     private Canvas _hpCanvas;
 
@@ -56,36 +56,36 @@ public class playerAnimator : MonoBehaviour
     void Start()
     {
         random = new System.Random();
-        if(transform.Find("EffectParents").gameObject != null)
+        if (transform.Find("EffectParents").gameObject != null)
         {
-            attack = transform.Find("EffectParents").gameObject; // °¢ ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ® ³»ºÎÀÇ ÀÌÆåÆ® ºÎ¸ğ ¿ÀºêÁ§Æ®¸¦ Ã£½À´Ï´Ù.
+            attack = transform.Find("EffectParents").gameObject; // ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½ï¿½Ï´ï¿½.
         }
 
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
         //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
         //healthBar.SetTarget(transform);
-        
+
         if (skillControlObject != null)
         {
             skill = skillControlObject.GetComponent<SkillControl>();
         }
 
-        MyObjectName = gameObject.name;          // ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®ÀÇ ÀÌ¸§ °¡Á®¿À±â
-        //PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager¸¦ »ç¿ëÇÏ¿© ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ °¡Á®¿À±â
+        MyObjectName = gameObject.name;          // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         LoadPlayerDataFromUserData();
-        
+        Debug.Log(UserData.Instance.Character.MaxHealth);
         var behaviours = _animator.GetBehaviours<isAttackStop>();
         foreach (var behaviour in behaviours)
         {
             behaviour.shieldCollision = shieldCollision;
         }
-        
+
         //SetPlayerData(playerData);
     }
 
-    // UserData ½Ì±ÛÅæÀ» »ç¿ëÇÏ¿© ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ ·Îµå
+    // UserData ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½
     private void LoadPlayerDataFromUserData()
     {
         if (UserData.Instance != null)
@@ -101,8 +101,8 @@ public class playerAnimator : MonoBehaviour
         Debug.Log($"{_PlayerName}, {_hp}, {_str}");
     }
 
-    // ÇÃ·¹ÀÌ¾î µ¥ÀÌÅÍ ¼³Á¤ ÇÔ¼ö
-    private  void SetPlayerData(PlayerData playerData)
+    // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+    private void SetPlayerData(PlayerData playerData)
     {
         _PlayerName = playerData.name;
         _hp = playerData.hp;
@@ -125,31 +125,40 @@ public class playerAnimator : MonoBehaviour
         }
     }
 
-    public static int getstr
+
+
+    private IEnumerator SkillASlashLoop()
+    {
+        attack.transform.Find($"Slash").gameObject.SetActive(true);
+        yield return new WaitForSeconds(2.9f);
+        attack.transform.Find($"Slash").gameObject.SetActive(false);
+    }
+
+    public int getstr
     {
         get { return _str; }
         set { _str = value; }
     }
     void Update()
     {
-        
+
         ApplyGravity();
-        if (isAction) return; //°ø°İÁßÀÌ°Å³ª 2¹ø½ºÅ³ ¹ßµ¿ÁßÀÏ ¶© Ä³¸¯ÀÌµ¿ XÇÏ±â À§ÇØ return
+        if (isAction) return; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì°Å³ï¿½ 2ï¿½ï¿½ï¿½ï¿½Å³ ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Ìµï¿½ Xï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ return
 
         bool hasControl = (_moveDirection != Vector3.zero);
         if (hasControl && !isKnockedBack)
         {
-            if (_characterController.isGrounded)// ÀÌµ¿ ¹æÇâÀ¸·Î Ä³¸¯ÅÍ¸¦ È¸Àü½ÃÅµ´Ï´Ù.
+            if (_characterController.isGrounded)// ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í¸ï¿½ È¸ï¿½ï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
             {
                 Quaternion targetRotation = Quaternion.LookRotation(_moveDirection);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
             }
-            _characterController.Move(_moveDirection * 6f * Time.deltaTime);// Ä³¸¯ÅÍ¸¦ ÀÌµ¿½ÃÅµ´Ï´Ù.
-            _animator.SetBool("isRunning", _isRunning);// ¶Ù±â »óÅÂ¸¦ ¼³Á¤ÇÕ´Ï´Ù.
+            _characterController.Move(_moveDirection * 6f * Time.deltaTime);// Ä³ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ìµï¿½ï¿½ï¿½Åµï¿½Ï´ï¿½.
+            _animator.SetBool("isRunning", _isRunning);// ï¿½Ù±ï¿½ ï¿½ï¿½ï¿½Â¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         }
         else
         {
-            _animator.SetBool("isRunning", false); // ÀÌµ¿ÇÏÁö ¾ÊÀ» ¶§´Â ¶Ù±â »óÅÂ ÇØÁ¦
+            _animator.SetBool("isRunning", false); // ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
         if (transform.position.y < -10 && bossstart)
         {
@@ -158,26 +167,26 @@ public class playerAnimator : MonoBehaviour
         }
 
     }
-    
-    // ÇÃ·¹ÀÌ¾î°¡ ÇÇÇØ¸¦ ¹ŞÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+
+    // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½Ø¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Ô¼ï¿½
     public void TakeDamage(int damageAmout, string bossAttack = "")
     {
-        //Debug.Log($"°ø°İ ´çÇÔ!!! Current Hp : {_hp}");
+        //Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!!! Current Hp : {_hp}");
         _hp -= damageAmout;
         if (_hp <= 0)
         {
-            
-                
+
+
             _animator.SetTrigger("Die");
-              gameObject.SetActive(false); 
-            
+            gameObject.SetActive(false);
+
         }
         else
         {
-            
 
-            // 0ºÎÅÍ 99 »çÀÌÀÇ Á¤¼ö¸¦ ¹«ÀÛÀ§·Î »ı¼ºÇÏ¿© 15% È®·ü È®ÀÎ
-            if (bossAttack == "noattack" || random.Next(100) < 15) //15% È®·ü
+
+            // 0ï¿½ï¿½ï¿½ï¿½ 99 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ 15% È®ï¿½ï¿½ È®ï¿½ï¿½
+            if (bossAttack == "noattack" || random.Next(100) < 15) //15% È®ï¿½ï¿½
             {
                 _animator.Play("backDown");
                 ApplyKnockback();
@@ -202,11 +211,11 @@ public class playerAnimator : MonoBehaviour
         canInput = true;
         isKnockedBack = false;
     }
-    // Áß·ÂÀ» Àû¿ëÇÏ´Â ÇÔ¼ö
+    // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ô¼ï¿½
     void ApplyGravity()
     {
 
-        if (!_characterController.isGrounded) // Áß·ÂÀ» Àû¿ëÇÕ´Ï´Ù.
+        if (!_characterController.isGrounded) // ï¿½ß·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         {
             _velocity += _gravity * Time.deltaTime;
         }
@@ -214,17 +223,17 @@ public class playerAnimator : MonoBehaviour
         {
             _velocity = 0f;
         }
-        _moveDirection.y = _velocity; // ¼öÁ÷ ÀÌµ¿À» Àû¿ëÇÕ´Ï´Ù.
+        _moveDirection.y = _velocity; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
     }
 
     #region SEND_MESSAGE
     void OnMove(InputValue value)
     {
-        Vector2 input = value.Get<Vector2>(); // ÀÔ·Â ¹ŞÀº °ªÀ» °¡Á®¿À±â
+        Vector2 input = value.Get<Vector2>(); // ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (input != null)
         {
             _moveDirection = new Vector3(input.x, 0f, input.y);
-            _isRunning = _moveDirection.magnitude > 0;// ÀÌµ¿ ÀÔ·ÂÀÌ ÀÖÀ» ¶§¸¸ ¶Ù±â »óÅÂ·Î º¯°æ
+            _isRunning = _moveDirection.magnitude > 0;// ï¿½Ìµï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù±ï¿½ ï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
     public void OnDash(InputValue value = null)
@@ -235,22 +244,22 @@ public class playerAnimator : MonoBehaviour
             return;
         }
         if (skill.getSkillTimes[0] > 0) return;
-        Vector3 dashDirection = transform.forward; // ÇÃ·¹ÀÌ¾î°¡ º¸°í ÀÖ´Â ¹æÇâÀ¸·Î ´ë½Ã
-        if(playerSound!= null) { playerSound.Dash(); }
-        
-        float dashDistance = 5f;  // ´ë½Ã °Å¸®
-        float dashDuration = 0.2f; // ´ë½Ã Áö¼Ó ½Ã
+        Vector3 dashDirection = transform.forward; // ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        if (playerSound != null) { playerSound.Dash(); }
 
-        // ´ë½Ã ¸ñÀûÁö À§Ä¡ °è»ê
+        float dashDistance = 5f;  // ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½
+        float dashDuration = 0.2f; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
+
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½
         Vector3 dashDestination = transform.position + dashDirection * dashDistance;
-
-        // ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡¸¦ ºü¸£°Ô ÀÌµ¿ÇÏ¿© ´ë½Ã ½ÇÇà
+        attack.transform.Find("Dash").gameObject.SetActive(true);
+        // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         StartCoroutine(MovePlayerToPosition(transform.position, dashDestination, dashDuration));
 
-        // ¿©±â¿¡ ´ë½Ã ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı°ú °°Àº Ãß°¡ ÀÛ¾÷À» Ãß°¡ ¿¹Á¤
+        // ï¿½ï¿½ï¿½â¿¡ ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½Û¾ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ÇÃ·¹ÀÌ¾î¸¦ ´ë½Ã ¸ñÀûÁö À§Ä¡·Î ºÎµå·´°Ô ÀÌµ¿½ÃÅ°´Â ÄÚ·çÆ¾
+    // ï¿½Ã·ï¿½ï¿½Ì¾î¸¦ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Îµå·´ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾
     IEnumerator MovePlayerToPosition(Vector3 startPosition, Vector3 endPosition, float duration)
     {
         float elapsedTime = 0f;
@@ -260,9 +269,10 @@ public class playerAnimator : MonoBehaviour
             transform.position = Vector3.Lerp(startPosition, endPosition, elapsedTime / duration);
             elapsedTime += Time.deltaTime;
             yield return null;
+            attack.transform.Find("Dash").gameObject.SetActive(false);
         }
 
-        transform.position = endPosition;// ÇÃ·¹ÀÌ¾î°¡ Á¤È®ÇÑ À§Ä¡¿¡ µµ´ŞÇÏµµ·Ï º¸Àå
+        transform.position = endPosition;// ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     public void OnSkillA(InputValue value = null)
@@ -272,11 +282,12 @@ public class playerAnimator : MonoBehaviour
             skill.HideSkillSetting(1);
             return;
         }
-        if(playerSound != null) { playerSound.SkillA(); }
-        
-        Debug.Log("½ºÅ³ A »ç¿îµå Ãâ·Â");
-        _animator.SetInteger("skillA", 0);// ½ºÅ³ A ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
-        _animator.Play("ChargeSkillA_Skill"); // ½ºÅ³ A ÃæÀü ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı
+        if (playerSound != null) { playerSound.SkillA(); }
+
+        Debug.Log("ï¿½ï¿½Å³ A ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½");
+        _animator.SetInteger("skillA", 0);// ï¿½ï¿½Å³ A ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
+        _animator.Play("ChargeSkillA_Skill"); // ï¿½ï¿½Å³ A ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½
+        StartCoroutine(SkillASlashLoop());
     }
 
     public void OnSkillB(InputValue value = null)
@@ -287,9 +298,9 @@ public class playerAnimator : MonoBehaviour
             return;
         }
         if (skill.getSkillTimes[2] > 0) return;
-        if(playerSound != null) { playerSound.SkillB(); }
-        
-        Debug.Log("½ºÅ³ B »ç¿îµå Ãâ·Â");
+        if (playerSound != null) { playerSound.SkillB(); }
+
+        Debug.Log("ï¿½ï¿½Å³ B ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½");
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
 
     }
@@ -297,18 +308,18 @@ public class playerAnimator : MonoBehaviour
     public void OnClick()
     {
         _animator.SetTrigger("onWeaponAttack");
-        
+
 
     }
     public void SkillClick()
     {
         _animator.SetTrigger("onWeaponAttack");
-        
+
     }
     IEnumerator ActionTimer(string actionName, float time)
     {
         isAction = true;
-        
+
         if (actionName != "none") _animator.Play(actionName);
 
         yield return new WaitForSeconds(time);
@@ -323,4 +334,93 @@ public class playerAnimator : MonoBehaviour
         WeaponCollider.enabled = false;
     }
     #endregion
+
+    // 1 10
+    // 1 16 2 13
+
+    //00
+    public void SkillBEffectGround()
+    {
+        if (attack != null)
+        {
+            GameObject Vortex = attack.transform.Find($"Vortex").gameObject;
+
+            if (Vortex.activeSelf)
+            {
+                Vortex.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                Vortex.SetActive(true);
+            }
+        }
+    }
+
+    //0 27
+    public void SkillBEffectWeapon()
+    {
+        if (attack != null)
+        {
+            GameObject Electric = attack.transform.Find($"Electric").gameObject;
+
+            if (Electric.activeSelf)
+            {
+                StartCoroutine(RepeatPlayParticleSystem(0.1f, 0.5f, 5));
+            }
+            else
+            {
+                Electric.SetActive(true);
+            }
+        }
+    }
+    //1 17
+    public void SkillBEffectExplosion()
+    {
+        if (attack != null)
+        {
+            GameObject Explosion = attack.transform.Find($"Explosion").gameObject;
+            GameObject Electricity = attack.transform.Find($"Electricity").gameObject;
+            GameObject Aura = attack.transform.Find($"Aura").gameObject;
+
+            if (Explosion.activeSelf)
+            {
+                Explosion.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                Explosion.SetActive(true);
+            }
+
+            if (Electricity.activeSelf)
+            {
+                Electricity.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                Electricity.SetActive(true);
+            }
+
+            if (Aura.activeSelf)
+            {
+                Aura.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                Aura.SetActive(true);
+            }
+        }
+    }
+    private IEnumerator RepeatPlayParticleSystem(float interval, float totalDuration, int repeatCount)
+    {
+        float elapsedTime = 0f;
+        int currentCount = 0;
+
+        while (elapsedTime < totalDuration && currentCount < repeatCount)
+        {
+            attack.transform.Find($"Electric").gameObject.GetComponent<ParticleSystem>().Play(); // íŒŒí‹°í´ ì‹œìŠ¤í…œ ì¬ìƒ
+            currentCount++;
+            yield return new WaitForSeconds(interval); // ê°„ê²© ëŒ€ê¸°
+            elapsedTime += interval;
+        }
+    }
 }

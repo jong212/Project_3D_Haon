@@ -60,7 +60,7 @@ Material:
     - _HitSize: 0.35
     - _HitTime: 0
     - _IntersectIntensity: 0.191
-    - _Opacity: 0.5
+    - _Opacity: 0.6
     - _Phong: 0.5
     - _ShieldPatternPower: 10.5
     - _ShieldPatternSize: 1

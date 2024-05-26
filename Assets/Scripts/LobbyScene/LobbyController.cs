@@ -722,79 +722,89 @@ public class LobbyController : MonoBehaviour
 
     private async void OnStartGame()
     {
-        
+
+        //Debug.Log("Starting game...");
+
+        //if (LobbyManager.Instance.lobby.HostId == AuthenticationService.Instance.PlayerId)
+        //{
+        //    Debug.Log("Creating relay as host...");
+
+        //    string joinCode = await RelayManager.Instance.CreateRelay(3);
+        //    if (!string.IsNullOrEmpty(joinCode))
+        //    {
+        //        Debug.Log($"Relay server created. Join code: {joinCode}");
+
+        //        var (allocationId, key, connectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetHostConnectionInfo();
+
+        //        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        //        transport.SetHostRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, true);
+
+        //        NetworkManager.Singleton.StartHost();
+
+        //        var lobbyData = new Dictionary<string, DataObject>
+        //    {
+        //        { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) }
+        //    };
+
+        //        bool updated = await LobbyManager.Instance.UpdateLobbyData(lobbyData);
+        //        if (updated)
+        //        {
+        //            Debug.Log("Host started successfully.");
+
+        //            // Scene 전환 플래그 설정
+        //            string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
+        //            bool flagSet = await LobbyManager.Instance.SetGameStartFlag(sceneName);
+        //            if (flagSet)
+        //            {
+        //                Debug.Log("Game start flag set successfully.");
+        //            }
+        //            else
+        //            {
+        //                Debug.LogError("Failed to set game start flag.");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Debug.LogError("Failed to update lobby data.");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Failed to create relay as host.");
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.Log("Joining relay as client...");
+
+        //    string joinCode = LobbyManager.Instance.lobby.Data["JoinCode"].Value;
+        //    bool success = await RelayManager.Instance.JoinRelay(joinCode);
+        //    if (success)
+        //    {
+        //        var (allocationId, key, connectionData, hostConnectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetClientConnectionInfo();
+
+        //        UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        //        transport.SetClientRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, hostConnectionData, true);
+
+        //        NetworkManager.Singleton.StartClient();
+
+        //        Debug.Log("Client started successfully.");
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Failed to join relay as client.");
+        //    }
+        //}
+
         Debug.Log("Starting game...");
 
-        if (LobbyManager.Instance.lobby.HostId == AuthenticationService.Instance.PlayerId)
-        {
-            Debug.Log("Creating relay as host...");
+        // 싱글 플레이어 모드에서는 네트워크 관련 코드를 모두 제거합니다.
 
-            string joinCode = await RelayManager.Instance.CreateRelay(3);
-            if (!string.IsNullOrEmpty(joinCode))
-            {
-                Debug.Log($"Relay server created. Join code: {joinCode}");
+        // 씬 이름을 mapSelectionData에서 가져옵니다.
+        string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
 
-                var (allocationId, key, connectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetHostConnectionInfo();
-
-                UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-                transport.SetHostRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, true);
-
-                NetworkManager.Singleton.StartHost();
-
-                var lobbyData = new Dictionary<string, DataObject>
-            {
-                { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) }
-            };
-
-                bool updated = await LobbyManager.Instance.UpdateLobbyData(lobbyData);
-                if (updated)
-                {
-                    Debug.Log("Host started successfully.");
-
-                    // Scene 전환 플래그 설정
-                    string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
-                    bool flagSet = await LobbyManager.Instance.SetGameStartFlag(sceneName);
-                    if (flagSet)
-                    {
-                        Debug.Log("Game start flag set successfully.");
-                    }
-                    else
-                    {
-                        Debug.LogError("Failed to set game start flag.");
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Failed to update lobby data.");
-                }
-            }
-            else
-            {
-                Debug.LogError("Failed to create relay as host.");
-            }
-        }
-        else
-        {
-            Debug.Log("Joining relay as client...");
-
-            string joinCode = LobbyManager.Instance.lobby.Data["JoinCode"].Value;
-            bool success = await RelayManager.Instance.JoinRelay(joinCode);
-            if (success)
-            {
-                var (allocationId, key, connectionData, hostConnectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetClientConnectionInfo();
-
-                UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-                transport.SetClientRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, hostConnectionData, true);
-
-                NetworkManager.Singleton.StartClient();
-
-                Debug.Log("Client started successfully.");
-            }
-            else
-            {
-                Debug.LogError("Failed to join relay as client.");
-            }
-        }
+        // 게임 씬을 로드합니다.
+        LoadGameScene(sceneName);
     }
 
     private void LoadGameScene(string sceneName)

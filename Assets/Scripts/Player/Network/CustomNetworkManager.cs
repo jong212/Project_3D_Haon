@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,6 +22,7 @@ public class CustomNetworkManager : MonoBehaviour
         if (NetworkManager.Singleton.IsServer)
         {
             SpawnPlayers();
+
         }
     }
 
@@ -31,13 +31,28 @@ public class CustomNetworkManager : MonoBehaviour
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             SpawnPlayerForClient(client.ClientId);
-            playerPrefab.transform.position = new Vector3(Random.Range(defaultInitialPlanePosition.x, defaultInitialPlanePosition.y), 1, -154);
         }
+
+
     }
 
     private void SpawnPlayerForClient(ulong clientId)
     {
-        GameObject playerInstance = Instantiate(playerPrefab);
-        playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        if (SceneManager.GetActiveScene().name == "WaveField")
+        {
+            GameObject playerInstance = Instantiate(playerPrefab, new Vector3(-16, 1, -154), Quaternion.identity);
+            playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
+        else if (SceneManager.GetActiveScene().name == "BossField")
+        {
+            GameObject playerInstance = Instantiate(playerPrefab, new Vector3(30, -2, -1), Quaternion.identity);
+            playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
+        else
+        {
+            GameObject playerInstance = Instantiate(playerPrefab, new Vector3(), Quaternion.identity);
+            playerInstance.gameObject.SetActive(false);
+        }
+            
     }
 }
