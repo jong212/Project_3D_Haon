@@ -30,22 +30,22 @@ public class playerAnimator : MonoBehaviour
     private bool isDashCooldown = false;         // 대시 쿨다운 상태를 추적하는 플래
     private bool canInput = true;
     private bool isKnockedBack = false;
+    private GameObject attack;
+    
     FloatingHealthBar healthBar;
     [SerializeField]
-    private Collider WeaponCollider;             // 무기 콜라이더
-
-    [SerializeField] private PlayerAttackSound playerSound;
-
+    private Collider WeaponCollider;             // 무기 콜라이더 
+    [SerializeField] private PlayerAttackSound playerSound; 
     [SerializeField]
-    private Canvas _hpCanvas;
-
+    private Canvas _hpCanvas; 
     void Start()
     {
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
         //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
         //healthBar.SetTarget(transform);
-
+         attack = GameObject.Find("EffectParents");
+        
         if (skillControlObject != null)
         {
             skill = skillControlObject.GetComponent<SkillControl>();
@@ -70,7 +70,50 @@ public class playerAnimator : MonoBehaviour
         _level = playerData.level;
         _str = playerData.str;
     }
+    public void attackEvent(string type)
+    {
+        if (type == "1")
+        {
 
+            GameObject obj1 = attack.transform.Find("attack1").gameObject;
+            if(obj1.activeSelf)
+            {
+                obj1.GetComponent<ParticleSystem>().Play();
+            } else
+            {
+                obj1.SetActive(true);
+            }
+            
+        } else if (type =="2")
+        {
+            GameObject obj2 = attack.transform.Find("attack2").gameObject;
+            if (obj2.activeSelf)
+            {
+                obj2.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                obj2.SetActive(true);
+            }
+        } else
+        {
+            GameObject obj3 = attack.transform.Find("attack3").gameObject;
+            if (obj3.activeSelf)
+            {
+                obj3.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                obj3.SetActive(true);
+            }
+        }
+        
+        // static 변수들은 다 public 
+        // 싱글톤은 그래서 public...
+        // 참조해야할  것 같으면 public
+        // 변수값이 복사될 것 같으면 privic
+        // 근데 이제 serialrize 직렬화를 해버리면 
+    }
     public static int getstr
     {
         get { return _str; }
@@ -97,7 +140,7 @@ public class playerAnimator : MonoBehaviour
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
     }
-
+    
     // 플레이어가 피해를 받을 때 호출되는 함수
     public void TakeDamage(int damageAmout)
     {

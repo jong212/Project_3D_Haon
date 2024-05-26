@@ -15,6 +15,13 @@ public class isAttackStop : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        /*AnimatorClipInfo[] clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        if (clipInfo.Length > 0)
+        {
+            string clipName = clipInfo[0].clip.name;
+            Debug.Log("Currently playing animation clip: " + clipName);
+        }
+        Debug.Log(stateInfo.IsName("attackA5"));*/
         playerAnimator = animator.GetComponent<playerAnimator>();
         playerAnimator.isAction = true;
 
