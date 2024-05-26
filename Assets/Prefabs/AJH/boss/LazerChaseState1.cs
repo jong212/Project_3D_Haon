@@ -9,49 +9,75 @@ public class LazerChaseState1 : StateMachineBehaviour
     Transform player;
     GameObject lazerPoint;
     GameObject TargetChange;
+    MonsterInfo monsterInfo;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         agent = animator.GetComponent<NavMeshAgent>();
         lazerPoint = GameObject.FindGameObjectWithTag("Lazer_point");
-        TargetChange = GameObject.FindGameObjectWithTag("Player");
-        if (lazerPoint != null)
-        {
-             player = lazerPoint.transform;
-            // Proceed with your logic using 'player'
+        monsterInfo  = animator.GetComponent<MonsterInfo>();
+        TargetChange = monsterInfo.GetRandomGameObject();
+        if(TargetChange  != null ) {
+            if (lazerPoint != null)
+            {
+                player = lazerPoint.transform;
+                // Proceed with your logic using 'player'
+            }
+            else
+            {
+                player = TargetChange.transform;
+            }
+            agent.speed = 3.5f;
         } else
         {
-            player = TargetChange.transform;
+            Debug.Log("에러처리해야함");
+            return;
         }
-        agent.speed = 3.5f;
+        
 
     }
 
     
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(lazerPoint != null && agent != null){
-            agent.SetDestination(player.position);
-            float distance = Vector3.Distance(player.position, animator.transform.position);
-            if (distance > 3)
-                animator.SetBool("isChasing", false);
-            if (distance < 1.5f)
-                animator.SetBool("isAttacking", true);
-        } else if (TargetChange != null && agent != null)
+        if (TargetChange != null)
         {
-            agent.SetDestination(player.position);
-            float distance = Vector3.Distance(player.position, animator.transform.position);
-            if (distance > 3)
-                animator.SetBool("isChasing", false);
-            if (distance < 1.5f)
-                animator.SetBool("isAttacking", true);
+            if (lazerPoint != null && agent != null)
+            {
+                agent.SetDestination(player.position);
+                float distance = Vector3.Distance(player.position, animator.transform.position);
+                if (distance > 3)
+                    animator.SetBool("isChasing", false);
+                if (distance < 1.5f)
+                    animator.SetBool("isAttacking", true);
+            }
+            else if (TargetChange != null && agent != null)
+            {
+                agent.SetDestination(player.position);
+                float distance = Vector3.Distance(player.position, animator.transform.position);
+                if (distance > 3)
+                    animator.SetBool("isChasing", false);
+                if (distance < 1.5f)
+                    animator.SetBool("isAttacking", true);
+            }
+        } else
+        {
+            Debug.Log("에러처리 해야함");
+            return;
         }
         
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        agent.SetDestination(animator.transform.position);
+        if (TargetChange != null)
+        {
+            agent.SetDestination(animator.transform.position);
+        } else
+        {
+            Debug.Log("에러처리 해야함");
+        }
+            
 
     }
 

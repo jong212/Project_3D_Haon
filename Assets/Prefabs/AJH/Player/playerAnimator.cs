@@ -21,7 +21,7 @@ public class playerAnimator : MonoBehaviour
     private float _velocity;                     // 플레이어의 수직 속도
     private static string MyObjectName;          // 플레이어 오브젝트 이름
     private static string _PlayerName;           // 플레이어 이름  
-    private static int _hp;                      // 플레이어 체력
+    [SerializeField]private  int _hp;                      // 플레이어 체력
     private static int _level;                   // 플레이어 레벨
     private static int _str;                     // 플레이어 힘
     private static bool isSkillACooldown = false;// 스킬 A 쿨다운 여부를 추적하는 플래그
@@ -31,7 +31,14 @@ public class playerAnimator : MonoBehaviour
     private bool canInput = true;
     private bool isKnockedBack = false;
     private GameObject attack;
-    
+
+    private bool bossstart;
+    public bool BossStart
+    {
+        get { return bossstart; }
+        set { bossstart = value; }
+    }
+    [SerializeField] private Vector3 initialPosition; // 초기 위치를 저장할 변수
     FloatingHealthBar healthBar;
     [SerializeField]
     private Collider WeaponCollider;             // 무기 콜라이더 
@@ -41,11 +48,12 @@ public class playerAnimator : MonoBehaviour
     void Start()
     {
         random = new System.Random();
+        attack = transform.Find("EffectParents").gameObject; // 각 플레이어 오브젝트 내부의 이펙트 부모 오브젝트를 찾습니다.
+
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
         //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
         //healthBar.SetTarget(transform);
-        attack = GameObject.Find("EffectParents");
         
         if (skillControlObject != null)
         {
@@ -64,7 +72,7 @@ public class playerAnimator : MonoBehaviour
         SetPlayerData(playerData);
     }
     // 플레이어 데이터 설정 함수
-    private static void SetPlayerData(PlayerData playerData)
+    private  void SetPlayerData(PlayerData playerData)
     {
         _PlayerName = playerData.name;
         _hp = playerData.hp;
@@ -73,48 +81,20 @@ public class playerAnimator : MonoBehaviour
     }
     public void attackEvent(string type)
     {
-        if(attack != null)
+        if (attack != null)
         {
-
-      
-        if (type == "1")
-        {
-
-            GameObject obj1 = attack.transform.Find("attack1").gameObject;
-            if(obj1.activeSelf)
+            GameObject effect = attack.transform.Find($"attack{type}").gameObject;
+            if (effect.activeSelf)
             {
-                obj1.GetComponent<ParticleSystem>().Play();
-            } else
-            {
-                obj1.SetActive(true);
-            }
-            
-        } else if (type =="2")
-        {
-            GameObject obj2 = attack.transform.Find("attack2").gameObject;
-            if (obj2.activeSelf)
-            {
-                obj2.GetComponent<ParticleSystem>().Play();
+                effect.GetComponent<ParticleSystem>().Play();
             }
             else
             {
-                obj2.SetActive(true);
+                effect.SetActive(true);
             }
-        } else
-        {
-            GameObject obj3 = attack.transform.Find("attack3").gameObject;
-            if (obj3.activeSelf)
-            {
-                obj3.GetComponent<ParticleSystem>().Play();
-            }
-            else
-            {
-                obj3.SetActive(true);
-            }
-        }
-
         }
     }
+
     public static int getstr
     {
         get { return _str; }
@@ -122,6 +102,7 @@ public class playerAnimator : MonoBehaviour
     }
     void Update()
     {
+        
         ApplyGravity();
         if (isAction) return; //공격중이거나 2번스킬 발동중일 땐 캐릭이동 X하기 위해 return
 
@@ -140,6 +121,12 @@ public class playerAnimator : MonoBehaviour
         {
             _animator.SetBool("isRunning", false); // 이동하지 않을 때는 뛰기 상태 해제
         }
+        if (transform.position.y < -10 && bossstart)
+        {
+            Vector3 newPosition = new Vector3(transform.position.x, -2, transform.position.z);
+            transform.position = newPosition;
+        }
+
     }
     
     // 플레이어가 피해를 받을 때 호출되는 함수
@@ -149,10 +136,11 @@ public class playerAnimator : MonoBehaviour
         _hp -= damageAmout;
         if (_hp <= 0)
         {
+            
+                
             _animator.SetTrigger("Die");
-
-            gameObject.SetActive(false);
-
+              gameObject.SetActive(false); 
+            
         }
         else
         {

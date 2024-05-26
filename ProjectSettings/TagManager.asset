@@ -21,6 +21,7 @@ TagManager:
   - Wall2
   - BossShield
   - Parents
+  - PoolManager
   layers:
   - Default
   - TransparentFX

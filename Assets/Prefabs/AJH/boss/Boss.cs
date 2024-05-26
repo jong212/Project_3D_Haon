@@ -42,8 +42,7 @@ public class Boss : MonoBehaviour
     public Transform BossShield1;
     public bool LazerStartFiveMin { get;  set; }
     public List<GameObject> players = new List<GameObject>();
-    public string[] playerTags5 = {"Player"};// "Player2", "Player3", "Player4", "Player5" ,
-
+    public GameObject[] playerTags5;
     private IBossState currentState;                                   // 현재 상태
     public string previousState;
     public List<Vector3> setDangerPosition = new List<Vector3>();      // 기믹1 : 몬스터가 공격하는 장판 범위를 리스트에 넣어둠 (스킬 도 이 방향대로 나아가야 해서)
@@ -62,6 +61,7 @@ public class Boss : MonoBehaviour
     /*  초기화  */
     void Start()
     {
+        playerTags5 = GameObject.FindGameObjectsWithTag("Player");
 
         bosssRoomStartCheck = false;                                   // 보스가 활동을 자동으로 하게 하지 않도록 초기화 
         fixHealth = 5000f;
@@ -522,9 +522,9 @@ public class Stage1 : IBossState
     public void Enter(Boss boss)
     {
         boss.bosssRoomStartCheck = false;
-        foreach (string tag in boss.playerTags5)
+       
+        foreach (GameObject player in boss.playerTags5)
         {
-            GameObject player = GameObject.FindGameObjectWithTag(tag);
             if (player != null)
             {
                 boss.players.Add(player);

@@ -15,7 +15,7 @@ public class IdleState : StateMachineBehaviour
     {
         timer = 0;
         
-        //[추격] - 플레이어 transform 값 받아옴
+        //[추격] - 플레이어 transform 값 받아옴        
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
     }

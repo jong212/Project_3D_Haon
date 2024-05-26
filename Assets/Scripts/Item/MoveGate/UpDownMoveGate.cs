@@ -10,9 +10,9 @@ public class UpDownMoveGate : MonoBehaviour
     public bool down = false;
     public bool bossStart = false;
     public float upDownStopSecond = 0;
-
     [SerializeField] private BgmManager bgmManager;
     [SerializeField] private Boss boss;
+    [SerializeField] private playerAnimator playerAnimatorScript;  // playerAnimator 스크립트 참조를 위한 변수
 
     [SerializeField] private bool isMoving = false;
     private int point = 0;
@@ -20,7 +20,7 @@ public class UpDownMoveGate : MonoBehaviour
 
     private void Start()
     {
-        
+        playerAnimatorScript = playerAnimatorScript.GetComponent<playerAnimator>();
     }
     private void Update()
     {
@@ -51,6 +51,7 @@ public class UpDownMoveGate : MonoBehaviour
                 boss.bosssRoomStartCheck = true;
                 bossStart = true;
                 Canvas_Boss.active = true;
+                playerAnimatorScript.BossStart = true;  // playerAnimator 스크립트의 BossStart 속성을 true로 설정
             }
             gate.transform.Translate(Vector3.up * speed * Time.deltaTime);
             Invoke("UpActive", upDownStopSecond);
