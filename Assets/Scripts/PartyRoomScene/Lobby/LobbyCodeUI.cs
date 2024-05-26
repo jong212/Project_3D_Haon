@@ -54,28 +54,28 @@ public class LobbyCodeUI : MonoBehaviour
         LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
     }
 
-    async void Start()
-    {
-        lobbyCode.text = $"Lobby Code : {GameLobbyManager.Instance.GetLobbyCode()}";
+    //async void Start()
+    //{
+    //    lobbyCode.text = $"Lobby Code : {GameLobbyManager.Instance.GetLobbyCode()}";
 
-        if (!GameLobbyManager.Instance.IsHost)
-        {
-            leftButton.gameObject.SetActive(false);
-            rightButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            try
-            {
-                await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
-            }
-            catch (Exception ex)
-            {
-                Debug.Log($"선택 맵 초기화에 실패 : {ex.Message}");
-            }
-        }
+    //    if (!GameLobbyManager.Instance.IsHost)
+    //    {
+    //        leftButton.gameObject.SetActive(false);
+    //        rightButton.gameObject.SetActive(false);
+    //    }
+    //    else
+    //    {
+    //        try
+    //        {
+    //            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Debug.Log($"선택 맵 초기화에 실패 : {ex.Message}");
+    //        }
+    //    }
 
-    }
+    //}
 
 
     private async void OnLeftButtonClicked()

@@ -14,13 +14,11 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     private int maxNumberOfPlayers = 3;
     private bool inGame = false;
 
-
     public bool IsHost => localLobbyPlayerData.Id == LobbyManager.Instance.GetHostId();
 
     private void OnEnable()
     {
         LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
-
     }
 
     private void OnDisable()
@@ -40,16 +38,11 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             bool succeeded = await LobbyManager.Instance.CreateLobby(maxNumberOfPlayers, true, localLobbyPlayerData.Serialize(), lobbyData.Serialize());
             return succeeded;
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.Log($"로비 생성 실패 : {ex.Message}");
             return false;
         }
-    }
-
-    public string GetLobbyCode()
-    {
-        return LobbyManager.Instance.GetLobbyCode();
     }
 
     public async Task<bool> JoinLobby(string code)
@@ -64,15 +57,13 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
             return succeeded;
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.Log($"JoinLobby 중 예외 발생 : {ex.Message}");
             return false;
         }
-
     }
 
-    // Client
     private async void OnLobbyUpdated(Lobby lobby)
     {
         try
@@ -126,11 +117,10 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             if (lobbyData.RelayJoinCode != default && !inGame)
             {
                 await JoinRelayServer(lobbyData.RelayJoinCode);
-                // SceneManager.LoadSceneAsync(lobbyData.SceneName);
                 SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
             }
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError($"로비 업데이트 실패 : {ex.Message}");
         }
@@ -138,7 +128,6 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
     public List<LobbyPlayerData> GetPlayers()
     {
-
         return lobbyPlayerDatas;
     }
 
@@ -150,7 +139,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
     public int GetMapIndex()
     {
-        return lobbyData.mapIndex;
+        return lobbyData.MapIndex;
     }
 
     public async Task<bool> SetSelectedMap(int currentMapIndex, string sceneName)
@@ -161,7 +150,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             lobbyData.SceneName = sceneName;
             return await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError($"맵 선택 실패 : {ex.Message}");
             return false;
@@ -182,14 +171,12 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
             string connectionData = RelayManager.Instance.GetConnectionData();
             await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
 
-            // SceneManager.LoadSceneAsync(lobbyData.SceneName);
             SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError($"게임 시작 실패 : {ex.Message}");
         }
-
     }
 
     private async Task<bool> JoinRelayServer(string relayJoinCode)
@@ -221,7 +208,7 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
 
             return true;
         }
-        catch (Exception ex)
+        catch (System.Exception ex)
         {
             Debug.LogError($"Relay Server 접속 실패 : {ex.Message}");
             return false;

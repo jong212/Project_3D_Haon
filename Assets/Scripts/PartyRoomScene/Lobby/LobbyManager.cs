@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
@@ -9,7 +11,7 @@ using UnityEngine;
 public class LobbyManager : Singleton<LobbyManager>
 {
 
-    private Lobby lobby;
+    public Lobby lobby;
     private Coroutine heartbeatCoroutine;
     private Coroutine refreshLobbyCoroutine;
 
@@ -25,10 +27,9 @@ public class LobbyManager : Singleton<LobbyManager>
 
         CreateLobbyOptions options = new CreateLobbyOptions()
         {
-            Data = SerialzeLobbyData(lobbyData),
+            Data = SerializeLobbyData(lobbyData), // Ensure this is correctly serializing lobbyData
             IsPrivate = isPrivate,
             Player = player,
-
         };
 
         try
@@ -48,8 +49,6 @@ public class LobbyManager : Singleton<LobbyManager>
 
         return true;
     }
-
-
 
     private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSeconds)
     {
@@ -102,8 +101,6 @@ public class LobbyManager : Singleton<LobbyManager>
         }
     }
 
-
-
     private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data)
     {
         Dictionary<string, PlayerDataObject> playerData = new Dictionary<string, PlayerDataObject>();
@@ -115,7 +112,8 @@ public class LobbyManager : Singleton<LobbyManager>
         return playerData;
     }
 
-    private Dictionary<string, DataObject> SerialzeLobbyData(Dictionary<string, string> data)
+    
+    private Dictionary<string, DataObject> SerializeLobbyData(Dictionary<string, string> data)
     {
         Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>();
         foreach (var (key, value) in data)
@@ -132,20 +130,19 @@ public class LobbyManager : Singleton<LobbyManager>
         {
             LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
             LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
-
         }
     }
 
-    public async Task<bool> JoinLobby(string code, Dictionary<string, string> playerData)
+    public async Task<bool> JoinLobby(string lobbyId, Dictionary<string, string> playerData)
     {
-        JoinLobbyByCodeOptions options = new JoinLobbyByCodeOptions
+        JoinLobbyByIdOptions options = new JoinLobbyByIdOptions
         {
             Player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData))
         };
 
         try
         {
-            lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(code, options);
+            lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
         }
         catch (System.Exception ex)
         {
@@ -167,8 +164,6 @@ public class LobbyManager : Singleton<LobbyManager>
         }
 
         return data;
-
-
     }
 
     public async Task<bool> UpdatePlayerData(string playerId, Dictionary<string, string> data, string allocationId = default, string connectionData = default)
@@ -185,7 +180,6 @@ public class LobbyManager : Singleton<LobbyManager>
         try
         {
             await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, playerId, options);
-
         }
         catch (System.Exception ex)
         {
@@ -200,7 +194,7 @@ public class LobbyManager : Singleton<LobbyManager>
 
     public async Task<bool> UpdateLobbyData(Dictionary<string, string> data)
     {
-        Dictionary<string, DataObject> lobbyData = SerialzeLobbyData(data);
+        Dictionary<string, DataObject> lobbyData = SerializeLobbyData(data);
 
         UpdateLobbyOptions options = new UpdateLobbyOptions()
         {
@@ -215,13 +209,45 @@ public class LobbyManager : Singleton<LobbyManager>
         {
             Debug.LogError($"로비 데이터 업데이트 실패 : {ex.Message}");
             return false;
-
         }
 
         LobbyEvents.OnLobbyUpdated(lobby);
 
         return true;
+    }
 
+    public async Task LeaveLobby()
+    {
+        if (lobby != null)
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
+                lobby = null;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Failed to leave lobby: {ex.Message}");
+                throw;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No lobby to leave.");
+        }
+    }
+    public async Task<List<Lobby>> GetLobbies()
+    {
+        try
+        {
+            var queryResponse = await LobbyService.Instance.QueryLobbiesAsync();
+            return queryResponse.Results;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"로비 목록 조회 실패: {ex.Message}");
+            return new List<Lobby>();
+        }
     }
 
     public string GetHostId()
