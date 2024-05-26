@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 
@@ -56,4 +57,8 @@ public class LobbyPlayerData
         };
     }
 
+    internal void Initialize(object data)
+    {
+        throw new NotImplementedException();
+    }
 }

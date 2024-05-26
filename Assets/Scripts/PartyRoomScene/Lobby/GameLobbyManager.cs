@@ -26,24 +26,25 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
         LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
     }
 
-    public async Task<bool> CreateLobby()
-    {
-        try
-        {
-            localLobbyPlayerData = new LobbyPlayerData();
-            localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "HostPlayer");
-            lobbyData = new LobbyData();
-            lobbyData.Initialize(0);
+    
+    //public async Task<bool> CreateLobby()
+    //{
+    //    try
+    //    {
+    //        localLobbyPlayerData = new LobbyPlayerData();
+    //        localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "HostPlayer");
+    //        lobbyData = new LobbyData();
+    //        lobbyData.Initialize(0);
 
-            bool succeeded = await LobbyManager.Instance.CreateLobby(maxNumberOfPlayers, true, localLobbyPlayerData.Serialize(), lobbyData.Serialize());
-            return succeeded;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.Log($"로비 생성 실패 : {ex.Message}");
-            return false;
-        }
-    }
+    //        bool succeeded = await LobbyManager.Instance.CreateLobby(maxNumberOfPlayers, true, localLobbyPlayerData.Serialize(), lobbyData.Serialize());
+    //        return succeeded;
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.Log($"로비 생성 실패 : {ex.Message}");
+    //        return false;
+    //    }
+    //}
 
     public async Task<bool> JoinLobby(string code)
     {

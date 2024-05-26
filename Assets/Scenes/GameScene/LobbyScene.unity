@@ -24819,7 +24819,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1844142958
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26120,6 +26120,7 @@ MonoBehaviour:
   JoinMenuUI: {fileID: 290195465}
   lobbyRoomUI: {fileID: 1916867341}
   lobbyRoomCodeSubmit: {fileID: 1036866897}
+  lobbyRoomCodeInputField: {fileID: 704281956}
   weaponEnhancement: {fileID: 360486578}
   weaponDiminishment: {fileID: 603539414}
   armorEnhancement: {fileID: 997737660}
@@ -26133,11 +26134,12 @@ MonoBehaviour:
   rightButton: {fileID: 862163378}
   mapName: {fileID: 983660983}
   mapSelectionData: {fileID: 11400000, guid: bdf2a4f7e1aecba458dc4eb2a8996ab0, type: 2}
-  scrollViewContentB: {fileID: 2039997048}
-  scrollViewContentC: {fileID: 52110763}
+  LobbyRoomListContent: {fileID: 2039997048}
+  LobbyRoomPlayerListContent: {fileID: 52110763}
   LobbyRoomListPrefab: {fileID: 8641143531889064102, guid: 8be525457bc7d03458528af6e9d43914, type: 3}
   LobbyPlayerNamePrefab: {fileID: 8641143531889064102, guid: 93f80b966edc46943b67909ef97088d0, type: 3}
   leaveRoomButton: {fileID: 273573399}
+  startSceneButton: {fileID: 1048890649}
 --- !u!4 &1909029482
 Transform:
   m_ObjectHideFlags: 0

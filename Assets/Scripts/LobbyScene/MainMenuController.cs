@@ -19,38 +19,38 @@ public class MainMenuController : MonoBehaviour
 
     void OnEnable()
     {
-        hostButton.onClick.AddListener(OnHostClicked);
+        //hostButton.onClick.AddListener(OnHostClicked);
         joinButton.onClick.AddListener(OnJoinClicked);
         submitCodeButton.onClick.AddListener(SubmitCodeClicked);
     }
 
     private void OnDisable()
     {
-        hostButton.onClick.RemoveListener(OnHostClicked);
+        //hostButton.onClick.RemoveListener(OnHostClicked);
         joinButton.onClick.RemoveListener(OnJoinClicked);
         submitCodeButton.onClick.RemoveListener(SubmitCodeClicked);
     }
 
-    private async void OnHostClicked()
-    {
-        try
-        {
-            bool succeeded = await GameLobbyManager.Instance.CreateLobby();
-            if (succeeded)
-            {
-                SceneManager.LoadSceneAsync("LobbyRoomScene");
-            }
-            else
-            {
-                Debug.LogError("로비 생성 실패");
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"로비 생성 실패 : {ex.Message}");
-        }
+    //private async void OnHostClicked()
+    //{
+    //    try
+    //    {
+    //        bool succeeded = await GameLobbyManager.Instance.CreateLobby();
+    //        if (succeeded)
+    //        {
+    //            SceneManager.LoadSceneAsync("LobbyRoomScene");
+    //        }
+    //        else
+    //        {
+    //            Debug.LogError("로비 생성 실패");
+    //        }
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"로비 생성 실패 : {ex.Message}");
+    //    }
 
-    }
+    //}
 
     private void OnJoinClicked()
     {

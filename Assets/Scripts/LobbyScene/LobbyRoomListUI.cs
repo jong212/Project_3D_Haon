@@ -15,20 +15,14 @@ public class LobbyRoomListUI : MonoBehaviour
     private string lobbyId;
     private System.Action<string> onJoinRoomCallback;
 
-    private string selectedLobbyId;
-
-    private void OnEnable()
-    {
-        joinButton.onClick.AddListener(JoinSelectedRoom);
-    }
-
-    private void OnDisable()
-    {
-        joinButton.onClick.RemoveListener(JoinSelectedRoom);
-    }
-
     public void Initialize(Lobby lobby, System.Action<string> onJoinRoom)
     {
+        if (mapNameText == null || titleText == null || playerCountText == null || joinButton == null)
+        {
+            Debug.LogError("UI components not assigned.");
+            return;
+        }
+
         if (MapSelectionData.Instance == null)
         {
             Debug.LogError("MapSelectionData instance is null. Ensure the MapSelectionData asset is placed in the Resources folder.");
@@ -39,7 +33,6 @@ public class LobbyRoomListUI : MonoBehaviour
         {
             int mapIndex = int.Parse(lobby.Data["MapIndex"].Value);
             MapInfo mapInfo = MapSelectionData.Instance.Maps[mapIndex];
-
             mapNameText.text = mapInfo.MapName;
         }
         else
@@ -61,27 +54,6 @@ public class LobbyRoomListUI : MonoBehaviour
         onJoinRoomCallback = onJoinRoom;
 
         joinButton.onClick.AddListener(OnJoinButtonClicked);
-    }
-
-    private async void JoinSelectedRoom()
-    {
-        if (!string.IsNullOrEmpty(selectedLobbyId))
-        {
-            Debug.Log($"Joining room with ID: {selectedLobbyId}");
-            bool success = await LobbyManager.Instance.JoinLobby(selectedLobbyId, new Dictionary<string, string>());
-            if (success)
-            {
-                Debug.Log("Room joined successfully.");
-            }
-            else
-            {
-                Debug.LogError("Failed to join room.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("No room selected to join.");
-        }
     }
 
     private void OnJoinButtonClicked()

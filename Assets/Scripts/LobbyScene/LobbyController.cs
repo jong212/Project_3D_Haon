@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static LobbyEvent;
 
 public class LobbyController : MonoBehaviour
 {
@@ -44,7 +46,7 @@ public class LobbyController : MonoBehaviour
     [SerializeField] private GameObject JoinMenuUI;
     [SerializeField] private GameObject lobbyRoomUI;
     [SerializeField] private Button lobbyRoomCodeSubmit;
-    [SerializeField] private InputField lobbyRoomCodeInputField;
+    [SerializeField] private TMP_InputField lobbyRoomCodeInputField;
 
     [Header("Equip Enhancement")]
     [SerializeField] private Button weaponEnhancement;
@@ -66,11 +68,14 @@ public class LobbyController : MonoBehaviour
     [SerializeField] private MapSelectionData mapSelectionData;
 
     [Header("Room")]
-    [SerializeField] private Transform scrollViewContentB;
-    [SerializeField] private Transform scrollViewContentC;
+    [SerializeField] private Transform LobbyRoomListContent;
+    [SerializeField] private Transform LobbyRoomPlayerListContent;
     [SerializeField] private GameObject LobbyRoomListPrefab;
     [SerializeField] private GameObject LobbyPlayerNamePrefab;
     [SerializeField] private Button leaveRoomButton;
+    [SerializeField] private Button startSceneButton;
+
+
 
     private string selectedLobbyId;
     private int currentMapIndex = 0;
@@ -78,16 +83,19 @@ public class LobbyController : MonoBehaviour
     {
 
         RegisterListeners();
+        LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
     }
 
     private void OnDisable()
     {
         UnregisterListeners();
+        LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
     }
 
     private void Start()
     {
         ChangePlayerNameToPlayerID();
+        _ = LobbyManager.Instance.CheckForGameStart();
     }
 
     private void RegisterListeners()
@@ -133,12 +141,7 @@ public class LobbyController : MonoBehaviour
 
         // Room
         AddListener(leaveRoomButton, OnLeaveRoom);
-
-        LobbyEvent.OnLobbyReady += OnLobbyReady;
-
-
-        LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
-
+        AddListener(startSceneButton, OnStartGame);
 
 
     }
@@ -187,10 +190,8 @@ public class LobbyController : MonoBehaviour
 
         // Room
         RemoveListener(leaveRoomButton, OnLeaveRoom);
+        RemoveListener(startSceneButton, OnStartGame);
 
-        LobbyEvent.OnLobbyReady -= OnLobbyReady;
-
-        LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
 
     }
 
@@ -241,7 +242,6 @@ public class LobbyController : MonoBehaviour
         statUI.SetActive(false);
         mainLobbyUI.SetActive(true);
     }
-
 
 
     // 게임시작 UI
@@ -407,6 +407,7 @@ public class LobbyController : MonoBehaviour
         }
     }
     #endregion
+
     #region 플레이어 ID
     private void ChangePlayerNameToPlayerID()
     {
@@ -424,6 +425,7 @@ public class LobbyController : MonoBehaviour
     }
     #endregion
 
+    #region 방UI 및 나가기
     // 방 참가
     private void OnCreateRoom()
     {
@@ -486,6 +488,7 @@ public class LobbyController : MonoBehaviour
         }
 
     }
+    #endregion
 
     #region 방 만들기
     // 방 만들기
@@ -495,10 +498,10 @@ public class LobbyController : MonoBehaviour
         string sceneName = string.IsNullOrEmpty(lobbyRoomCodeInputField.text) ? "파티사냥 하실분" : lobbyRoomCodeInputField.text;
 
         Dictionary<string, string> lobbyData = new Dictionary<string, string>()
-    {
-        { "MapIndex", $"{currentMapIndex}" }, // Set a default MapIndex
-        { "SceneName", "파티사냥 하실분" } // Set a default SceneName
-    };
+        {
+            { "MapIndex", $"{currentMapIndex}" }, // Set a default MapIndex
+            { "SceneName", sceneName } // Use the sceneName from the input field or default
+        };
 
         bool success = await LobbyManager.Instance.CreateLobby(3, false, new Dictionary<string, string>(), lobbyData);
         if (success)
@@ -513,29 +516,24 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async void JoinRoomButtonClicked()
-    {
-        Debug.Log("Joining room...");
-        await RefreshLobbyList();
-    }
     private async Task RefreshLobbyList()
     {
         var lobbies = await LobbyManager.Instance.GetLobbies();
 
-        foreach (Transform child in scrollViewContentB)
+        foreach (Transform child in LobbyRoomListContent)
         {
             Destroy(child.gameObject);
         }
 
-        foreach (Transform child in scrollViewContentC)
+        foreach (Transform child in LobbyRoomPlayerListContent)
         {
             Destroy(child.gameObject);
         }
 
         foreach (var lobby in lobbies)
         {
-            GameObject lobbyItemB = Instantiate(LobbyRoomListPrefab, scrollViewContentB);
-            GameObject lobbyItemC = Instantiate(LobbyPlayerNamePrefab, scrollViewContentC);
+            GameObject lobbyItemB = Instantiate(LobbyRoomListPrefab, LobbyRoomListContent);
+            GameObject lobbyItemC = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
 
             var lobbyPlayerNameUI = lobbyItemC.GetComponent<LobbyPlayerListUI>();
             var lobbyRoomListUI = lobbyItemB.GetComponent<LobbyRoomListUI>();
@@ -559,6 +557,7 @@ public class LobbyController : MonoBehaviour
         selectedLobbyId = lobbyId;
     }
     #endregion
+
     #region 맵
     private async void OnLeftButtonClicked()
     {
@@ -611,13 +610,87 @@ public class LobbyController : MonoBehaviour
         mapImage.sprite = mapSelectionData.Maps[currentMapIndex].MapImage;
         mapName.text = mapSelectionData.Maps[currentMapIndex].MapName;
     }
+    #endregion
 
-    private void OnLobbyUpdated(Lobby lobby)
+    #region 게임 시작
+    private void OnLobbyUpdated(Lobby updatedLobby)
     {
-        currentMapIndex = GameLobbyManager.Instance.GetMapIndex();
-        UpdateMap();
+        Debug.Log("OnLobbyUpdated called");
+        if (updatedLobby.Data.TryGetValue("GameStart", out var gameStartData) && gameStartData.Value == "true")
+        {
+            Debug.Log("GameStart is true");
+            if (updatedLobby.Data.TryGetValue("SceneName", out var sceneNameData))
+            {
+                string sceneName = sceneNameData.Value;
+                Debug.Log($"Loading scene: {sceneName}");
+                SceneManager.LoadScene(sceneName);
+            }
+            else
+            {
+                Debug.LogWarning("SceneName not found in lobby data");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("GameStart is not true or not found in lobby data");
+        }
     }
+
+    private async void OnStartGame()
+    {
+        Debug.Log("Starting game...");
+        string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
+
+        bool success = await LobbyManager.Instance.StartGame(sceneName);
+        if (success)
+        {
+            Debug.Log("Game started successfully.");
+        }
+        else
+        {
+            Debug.LogError("Failed to start game.");
+        }
+    }
+
+    private async Task StartHost()
+    {
+        string joinCode = await RelayManager.Instance.CreateRelay(3); // 최대 3명의 플레이어
+        if (!string.IsNullOrEmpty(joinCode))
+        {
+            Debug.Log($"Relay server created. Join code: {joinCode}");
+            var (allocationId, key, connectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetHostConnectionInfo();
+
+            UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetHostRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, true);
+
+            NetworkManager.Singleton.StartHost();
+        }
+        else
+        {
+            Debug.LogError("Failed to create relay.");
+        }
+    }
+
+    private async Task JoinHost(string joinCode)
+    {
+        bool success = await RelayManager.Instance.JoinRelay(joinCode);
+        if (success)
+        {
+            var (allocationId, key, connectionData, hostConnectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetClientConnectionInfo();
+
+            UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.SetClientRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, hostConnectionData, true);
+
+            NetworkManager.Singleton.StartClient();
+        }
+        else
+        {
+            Debug.LogError("Failed to join relay.");
+        }
+    }
+
     #endregion
 }
+
 
 

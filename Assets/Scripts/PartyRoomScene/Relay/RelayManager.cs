@@ -7,9 +7,7 @@ using UnityEngine;
 public class RelayManager : Singleton<RelayManager>
 {
     private bool isHost = false;
-
-
-    private string joinCode;
+    public string joinCode;
     private string ip;
     private int port;
     private byte[] key;
@@ -17,8 +15,6 @@ public class RelayManager : Singleton<RelayManager>
     private byte[] hostConnectionData;
     private System.Guid allocationId;
     private byte[] allocationIdBytes;
-
-
 
     public bool IsHost
     {
@@ -51,7 +47,6 @@ public class RelayManager : Singleton<RelayManager>
             Debug.Log($"Failed to create relay: {ex.Message}");
             return null;
         }
-
     }
 
     public async Task<bool> JoinRelay(string joinCode)
@@ -74,12 +69,6 @@ public class RelayManager : Singleton<RelayManager>
                 return false;
             }
 
-            if (allocation.ServerEndpoints == null)
-            {
-                Debug.LogError("JoinRelay: ServerEndpoints is null.");
-                return false;
-            }
-
             RelayServerEndpoint dtlsEndpoint = allocation.ServerEndpoints.FirstOrDefault(conn => conn.ConnectionType == "dtls");
             if (dtlsEndpoint == null)
             {
@@ -95,12 +84,6 @@ public class RelayManager : Singleton<RelayManager>
             connectionData = allocation.ConnectionData;
             hostConnectionData = allocation.HostConnectionData;
             key = allocation.Key;
-
-            if (ip == null || port == 0 || allocationIdBytes == null || connectionData == null || hostConnectionData == null || key == null)
-            {
-                Debug.LogError("JoinRelay: One or more required values are null or invalid.");
-                return false;
-            }
 
             Debug.Log("JoinRelay: Successfully joined the relay server.");
             return true;
@@ -121,7 +104,6 @@ public class RelayManager : Singleton<RelayManager>
     {
         return connectionData.ToString();
     }
-
 
     public (byte[] AllocationId, byte[] Key, byte[] ConnectionData, string dtlsAddress, int dtlsPort) GetHostConnectionInfo()
     {

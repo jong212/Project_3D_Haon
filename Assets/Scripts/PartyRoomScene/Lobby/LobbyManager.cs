@@ -7,7 +7,6 @@ using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
-
 public class LobbyManager : Singleton<LobbyManager>
 {
 
@@ -20,222 +19,87 @@ public class LobbyManager : Singleton<LobbyManager>
         return lobby?.LobbyCode;
     }
 
-    public async Task<bool> CreateLobby(int maxPlayer, bool isPrivate, Dictionary<string, string> data, Dictionary<string, string> lobbyData)
+    public async Task<bool> CreateLobby(int maxPlayers, bool isPrivate, Dictionary<string, string> playerData, Dictionary<string, string> lobbyData)
     {
-        Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
-        Player player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
-
-        CreateLobbyOptions options = new CreateLobbyOptions()
-        {
-            Data = SerializeLobbyData(lobbyData), // Ensure this is correctly serializing lobbyData
-            IsPrivate = isPrivate,
-            Player = player,
-        };
-
         try
         {
-            lobby = await LobbyService.Instance.CreateLobbyAsync("Lobby", maxPlayer, options);
+            // 릴레이 서버 생성
+            string joinCode = await RelayManager.Instance.CreateRelay(maxPlayers);
+            if (string.IsNullOrEmpty(joinCode))
+            {
+                Debug.LogError("Failed to create relay.");
+                return false;
+            }
+
+            // 로비 데이터에 릴레이 joinCode 추가
+            lobbyData["RelayJoinCode"] = joinCode;
+
+            // 로비 생성
+            var options = new CreateLobbyOptions
+            {
+                Data = SerializeLobbyData(lobbyData),
+                IsPrivate = isPrivate
+            };
+
+            lobby = await LobbyService.Instance.CreateLobbyAsync("MyLobby", maxPlayers, options);
+            Debug.Log($"Lobby created with ID: {lobby.Id}");
+
+            return true;
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"로비 생성 실패 : {ex.Message}");
+            Debug.LogError($"Failed to create lobby: {ex.Message}");
             return false;
         }
-
-        Debug.Log($"Lobby create with lobby ID : {lobby.Id}");
-
-        heartbeatCoroutine = StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 1f));
-        refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 1f));
-
-        return true;
     }
-
-    private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSeconds)
-    {
-        while (true)
-        {
-            try
-            {
-                LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
-            }
-            catch (System.Exception ex)
-            {
-                Debug.LogError($"heartbeat 전송 실패 : {ex.Message}");
-            }
-            yield return new WaitForSecondsRealtime(waitTimeSeconds);
-        }
-    }
-
-    private IEnumerator RefreshLobbyCoroutine(string lobbyId, float waitTimeSeconds)
-    {
-        while (true)
-        {
-            var refreshTask = RefreshLobbyAsync(lobbyId);
-
-            yield return new WaitUntil(() => refreshTask.IsCompleted);
-
-            if (refreshTask.IsFaulted)
-            {
-                Debug.Log($"로비 새로고침 실패 : {refreshTask.Exception}");
-            }
-
-            yield return new WaitForSecondsRealtime(waitTimeSeconds);
-        }
-    }
-
-    private async Task RefreshLobbyAsync(string lobbyId)
-    {
-        try
-        {
-            Lobby newLobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
-
-            if (newLobby.LastUpdated > lobby.LastUpdated)
-            {
-                lobby = newLobby;
-                LobbyEvents.OnLobbyUpdated?.Invoke(lobby);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.Log($"로비 새로고침 실패 : {ex.Message}");
-        }
-    }
-
-    private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data)
-    {
-        Dictionary<string, PlayerDataObject> playerData = new Dictionary<string, PlayerDataObject>();
-        foreach (var (key, value) in data)
-        {
-            playerData.Add(key, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, value));
-        }
-
-        return playerData;
-    }
-
-    
-    private Dictionary<string, DataObject> SerializeLobbyData(Dictionary<string, string> data)
-    {
-        Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>();
-        foreach (var (key, value) in data)
-        {
-            lobbyData.Add(key, new DataObject(DataObject.VisibilityOptions.Member, value));
-        }
-
-        return lobbyData;
-    }
-
-    public void OnApplicationQuit()
-    {
-        if (lobby != null && lobby.HostId == AuthenticationService.Instance.PlayerId)
-        {
-            LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
-            LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
-        }
-    }
-
     public async Task<bool> JoinLobby(string lobbyId, Dictionary<string, string> playerData)
     {
-        JoinLobbyByIdOptions options = new JoinLobbyByIdOptions
-        {
-            Player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData))
-        };
-
         try
         {
+            // 로비 참가
+            var options = new JoinLobbyByIdOptions
+            {
+                Player = new Player(AuthenticationService.Instance.PlayerId, null, SerializePlayerData(playerData))
+            };
+
             lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobbyId, options);
+            Debug.Log($"Joined lobby with ID: {lobby.Id}");
+
+            // 릴레이 joinCode 가져오기
+            if (lobby.Data.TryGetValue("RelayJoinCode", out var relayJoinCodeData))
+            {
+                string relayJoinCode = relayJoinCodeData.Value;
+                bool relaySuccess = await RelayManager.Instance.JoinRelay(relayJoinCode);
+                if (!relaySuccess)
+                {
+                    Debug.LogError("Failed to join relay.");
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogError("RelayJoinCode not found in lobby data.");
+                return false;
+            }
+
+            return true;
         }
         catch (System.Exception ex)
         {
-            Debug.LogError($"로비 참가 실패 : {ex.Message}");
+            Debug.LogError($"Failed to join lobby: {ex.Message}");
             return false;
         }
-
-        refreshLobbyCoroutine = StartCoroutine(RefreshLobbyCoroutine(lobby.Id, 5f)); // Interval increased to 5 seconds
-        return true;
-    }
-
-    public List<Dictionary<string, PlayerDataObject>> GetPlayerData()
-    {
-        List<Dictionary<string, PlayerDataObject>> data = new List<Dictionary<string, PlayerDataObject>>();
-
-        foreach (Player player in lobby.Players)
-        {
-            data.Add(player.Data);
-        }
-
-        return data;
-    }
-
-    public async Task<bool> UpdatePlayerData(string playerId, Dictionary<string, string> data, string allocationId = default, string connectionData = default)
-    {
-        Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
-
-        UpdatePlayerOptions options = new UpdatePlayerOptions()
-        {
-            Data = playerData,
-            AllocationId = allocationId,
-            ConnectionInfo = connectionData,
-        };
-
-        try
-        {
-            await LobbyService.Instance.UpdatePlayerAsync(lobby.Id, playerId, options);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"플레이어 데이터 업데이트 실패 : {ex.Message}");
-            return false;
-        }
-
-        LobbyEvents.OnLobbyUpdated(lobby);
-
-        return true;
-    }
-
-    public async Task<bool> UpdateLobbyData(Dictionary<string, string> data)
-    {
-        Dictionary<string, DataObject> lobbyData = SerializeLobbyData(data);
-
-        UpdateLobbyOptions options = new UpdateLobbyOptions()
-        {
-            Data = lobbyData
-        };
-
-        try
-        {
-            lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, options);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"로비 데이터 업데이트 실패 : {ex.Message}");
-            return false;
-        }
-
-        LobbyEvents.OnLobbyUpdated(lobby);
-
-        return true;
     }
 
     public async Task LeaveLobby()
     {
         if (lobby != null)
         {
-            try
-            {
-                await LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
-                lobby = null;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to leave lobby: {ex.Message}");
-                throw;
-            }
-        }
-        else
-        {
-            Debug.LogWarning("No lobby to leave.");
+            await LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
+            lobby = null;
         }
     }
+
     public async Task<List<Lobby>> GetLobbies()
     {
         try
@@ -243,15 +107,148 @@ public class LobbyManager : Singleton<LobbyManager>
             var queryResponse = await LobbyService.Instance.QueryLobbiesAsync();
             return queryResponse.Results;
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            Debug.LogError($"로비 목록 조회 실패: {ex.Message}");
+            Debug.LogError($"Failed to get lobbies: {ex.Message}");
             return new List<Lobby>();
         }
     }
+    //private IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float interval)
+    //{
+    //    while (true)
+    //    {
+    //        var task = LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
+    //        yield return new WaitUntil(() => task.IsCompleted);
+
+    //        if (task.IsFaulted)
+    //        {
+    //            Debug.LogError($"Failed to send heartbeat: {task.Exception}");
+    //        }
+    //        yield return new WaitForSeconds(interval);
+    //    }
+    //}
+
+    //private IEnumerator RefreshLobbyCoroutine(string lobbyId, float interval)
+    //{
+    //    while (true)
+    //    {
+    //        var task = LobbyService.Instance.GetLobbyAsync(lobbyId);
+    //        yield return new WaitUntil(() => task.IsCompleted);
+
+    //        if (task.IsFaulted)
+    //        {
+    //            Debug.LogError($"Failed to refresh lobby: {task.Exception}");
+    //        }
+    //        else
+    //        {
+    //            lobby = task.Result;
+    //            LobbyEvents.OnLobbyUpdated?.Invoke(lobby);
+    //        }
+    //        yield return new WaitForSeconds(interval);
+    //    }
+    //}
+
+    private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data)
+    {
+        Dictionary<string, PlayerDataObject> playerData = new Dictionary<string, PlayerDataObject>();
+        foreach (var kvp in data)
+        {
+            playerData[kvp.Key] = new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, kvp.Value);
+        }
+        return playerData;
+    }
+
+    private Dictionary<string, DataObject> SerializeLobbyData(Dictionary<string, string> data)
+    {
+        Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>();
+        foreach (var kvp in data)
+        {
+            lobbyData[kvp.Key] = new DataObject(DataObject.VisibilityOptions.Public, kvp.Value);
+        }
+        return lobbyData;
+    }
+
+    public async Task<bool> StartGame(string sceneName)
+    {
+        try
+        {
+            Dictionary<string, DataObject> updatedData = new Dictionary<string, DataObject>(lobby.Data);
+
+            if (updatedData.ContainsKey("GameStart"))
+            {
+                updatedData["GameStart"] = new DataObject(DataObject.VisibilityOptions.Public, "true");
+            }
+            else
+            {
+                updatedData.Add("GameStart", new DataObject(DataObject.VisibilityOptions.Public, "true"));
+            }
+
+            if (updatedData.ContainsKey("SceneName"))
+            {
+                updatedData["SceneName"] = new DataObject(DataObject.VisibilityOptions.Public, sceneName);
+            }
+            else
+            {
+                updatedData.Add("SceneName", new DataObject(DataObject.VisibilityOptions.Public, sceneName));
+            }
+
+            lobby = await LobbyService.Instance.UpdateLobbyAsync(lobby.Id, new UpdateLobbyOptions { Data = updatedData });
+
+            // 이벤트 발생
+            LobbyEvents.RaiseOnLobbyUpdated(lobby);
+
+            return true;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Failed to start game: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task CheckForGameStart()
+    {
+        while (true)
+        {
+            if (lobby != null)
+            {
+                try
+                {
+                    var updatedLobby = await LobbyService.Instance.GetLobbyAsync(lobby.Id);
+                    LobbyEvents.RaiseOnLobbyUpdated(updatedLobby);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Error checking for game start: {ex.Message}");
+                }
+            }
+            await Task.Delay(3000); // 3초마다 확인
+        }
+    }
+
 
     public string GetHostId()
     {
-        return lobby.HostId;
+        return "";
+    }
+
+    internal IEnumerable<object> GetPlayerData()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal async Task<bool> UpdatePlayerData(string id, Dictionary<string, string> dictionary)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal async Task<bool> UpdateLobbyData(Dictionary<string, string> dictionary)
+    {
+        throw new NotImplementedException();
+    }
+
+    internal async Task UpdatePlayerData(string id, Dictionary<string, string> dictionary, string allocationId, string connectionData)
+    {
+        throw new NotImplementedException();
     }
 }
