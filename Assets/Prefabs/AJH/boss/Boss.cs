@@ -238,7 +238,7 @@ public class Boss : MonoBehaviour
         
         yield return new WaitForSeconds(1f);
         float lazerMonTimer = 0f;
-        float lazerMonInterval = 100f;
+        float lazerMonInterval = 10f;
 
         float lazerMon1Timer = 0f;        
         float lazerMon1Interval = 5f;

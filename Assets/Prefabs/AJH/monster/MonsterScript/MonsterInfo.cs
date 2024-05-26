@@ -43,8 +43,8 @@ public class MonsterInfo : MonoBehaviour
             this._str = 10;
         } else if (gameObject.name == "LazerMon(Clone)")
         {
-            this._hp = 100;
-            this._str = 100;
+            this._hp = 10;
+            this._str = 10;
         }
     }
    

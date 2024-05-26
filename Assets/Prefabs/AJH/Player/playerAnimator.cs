@@ -5,7 +5,7 @@ using static DataManager;
 
 public class playerAnimator : MonoBehaviour
 {
-
+    private System.Random random;
     //변수들 선언
     public GameObject skillControlObject;
     public ShieldCollision shieldCollision;
@@ -40,11 +40,12 @@ public class playerAnimator : MonoBehaviour
     private Canvas _hpCanvas; 
     void Start()
     {
+        random = new System.Random();
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
         //healthBar = hpObject.GetComponentInChildren<FloatingHealthBar>();
         //healthBar.SetTarget(transform);
-         attack = GameObject.Find("EffectParents");
+        attack = GameObject.Find("EffectParents");
         
         if (skillControlObject != null)
         {
@@ -142,7 +143,7 @@ public class playerAnimator : MonoBehaviour
     }
     
     // 플레이어가 피해를 받을 때 호출되는 함수
-    public void TakeDamage(int damageAmout)
+    public void TakeDamage(int damageAmout, string bossAttack = "")
     {
         //Debug.Log($"공격 당함!!! Current Hp : {_hp}");
         _hp -= damageAmout;
@@ -150,11 +151,19 @@ public class playerAnimator : MonoBehaviour
         {
             _animator.SetTrigger("Die");
 
+            gameObject.SetActive(false);
+
         }
         else
         {
-            _animator.Play("backDown");
-            ApplyKnockback();
+            
+
+            // 0부터 99 사이의 정수를 무작위로 생성하여 15% 확률 확인
+            if (bossAttack == "noattack" || random.Next(100) < 15) //15% 확률
+            {
+                _animator.Play("backDown");
+                ApplyKnockback();
+            }
 
         }
     }
@@ -209,7 +218,8 @@ public class playerAnimator : MonoBehaviour
         }
         if (skill.getSkillTimes[0] > 0) return;
         Vector3 dashDirection = transform.forward; // 플레이어가 보고 있는 방향으로 대시
-        playerSound.Dash();
+        if(playerSound!= null) { playerSound.Dash(); }
+        
         float dashDistance = 5f;  // 대시 거리
         float dashDuration = 0.2f; // 대시 지속 시
 
@@ -244,7 +254,8 @@ public class playerAnimator : MonoBehaviour
             skill.HideSkillSetting(1);
             return;
         }
-        playerSound.SkillA();
+        if(playerSound != null) { playerSound.SkillA(); }
+        
         Debug.Log("스킬 A 사운드 출력");
         _animator.SetInteger("skillA", 0);// 스킬 A 애니메이션 재생
         _animator.Play("ChargeSkillA_Skill"); // 스킬 A 충전 애니메이션 재생
@@ -258,7 +269,8 @@ public class playerAnimator : MonoBehaviour
             return;
         }
         if (skill.getSkillTimes[2] > 0) return;
-        playerSound.SkillB();
+        if(playerSound != null) { playerSound.SkillB(); }
+        
         Debug.Log("스킬 B 사운드 출력");
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
 
