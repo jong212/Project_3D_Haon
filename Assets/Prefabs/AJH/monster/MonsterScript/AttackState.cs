@@ -7,8 +7,8 @@ using UnityEngine;
 public class AttackState : StateMachineBehaviour
 {
     Transform player;
-    playerAnimator playerinfo;
-    
+    //playerAnimator playerinfo;
+    NetworkPlayerController playerinfo;
     MonsterInfo monsterinfo;
     float interval = 3f;
     float timer = 0;
@@ -17,8 +17,8 @@ public class AttackState : StateMachineBehaviour
     {
         interval = stateInfo.length;
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        playerinfo = player.GetComponent<playerAnimator>();
-        //playerinfo = player.GetComponent<NetworkPlayerController>();
+        //playerinfo = player.GetComponent<playerAnimator>();
+        playerinfo = player.GetComponent<NetworkPlayerController>();
         monsterinfo = animator.GetComponent<MonsterInfo>();
 
 
