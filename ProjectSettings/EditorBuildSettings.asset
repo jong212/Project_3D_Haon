@@ -15,12 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/GameScene/LobbyScene.unity
     guid: 4b9449e4d05c5e5429f176a82bb253e9
   - enabled: 1
-    path: Assets/Scenes/GameScene/LobbyRoomScene.unity
-    guid: a30bc3bac037925448a673638e04ea90
+    path: Assets/Scenes/GameScene/Wave_Field.unity
+    guid: 280b23fc055e6e847962c0b31073ed6d
   - enabled: 1
-    path: Assets/Scenes/GameScene/WaveField.unity
-    guid: bd23e790ac914054b89814723ec117cd
-  - enabled: 1
-    path: Assets/Scenes/GameScene/BossField.unity
-    guid: 259f2218ca1da5a47a79b5ffb48d3fd2
+    path: Assets/Scenes/GameScene/Boss Field.unity
+    guid: 5305389d7b18d8e47b453737f61506a0
   m_configObjects: {}

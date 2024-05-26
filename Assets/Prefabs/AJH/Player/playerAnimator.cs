@@ -21,7 +21,7 @@ public class playerAnimator : MonoBehaviour
     private float _velocity;                     // 플레이어의 수직 속도
     private static string MyObjectName;          // 플레이어 오브젝트 이름
     private static string _PlayerName;           // 플레이어 이름  
-    [SerializeField]private  int _hp;                      // 플레이어 체력
+    private  int _hp;                      // 플레이어 체력
     private static int _level;                   // 플레이어 레벨
     private static int _str;                     // 플레이어 힘
     private static bool isSkillACooldown = false;// 스킬 A 쿨다운 여부를 추적하는 플래그
@@ -44,11 +44,22 @@ public class playerAnimator : MonoBehaviour
     private Collider WeaponCollider;             // 무기 콜라이더 
     [SerializeField] private PlayerAttackSound playerSound; 
     [SerializeField]
-    private Canvas _hpCanvas; 
+    private Canvas _hpCanvas;
+
+    private void Awake()
+    {
+        _animator = GetComponent<Animator>();
+        _characterController = GetComponent<CharacterController>();
+
+    }
+
     void Start()
     {
         random = new System.Random();
-        attack = transform.Find("EffectParents").gameObject; // 각 플레이어 오브젝트 내부의 이펙트 부모 오브젝트를 찾습니다.
+        if(transform.Find("EffectParents").gameObject != null)
+        {
+            attack = transform.Find("EffectParents").gameObject; // 각 플레이어 오브젝트 내부의 이펙트 부모 오브젝트를 찾습니다.
+        }
 
         //GameObject hpObject = Instantiate(PrefabReference.Instance.hpBarPrefab);
         //hpObject.transform.SetParent(_hpCanvas.transform);
@@ -64,13 +75,12 @@ public class playerAnimator : MonoBehaviour
         //PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager를 사용하여 플레이어 데이터 가져오기
 
         LoadPlayerDataFromUserData();
-        _animator = GetComponent<Animator>();
+        
         var behaviours = _animator.GetBehaviours<isAttackStop>();
         foreach (var behaviour in behaviours)
         {
             behaviour.shieldCollision = shieldCollision;
         }
-        _characterController = GetComponent<CharacterController>();
         
         //SetPlayerData(playerData);
     }
