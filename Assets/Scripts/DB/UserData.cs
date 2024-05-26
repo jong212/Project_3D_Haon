@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -7,23 +8,18 @@ public class UserData : Singleton<UserData>
     public string UserId { get; set; }
     public CharacterData Character { get; set; }
 
-    private string saveDataUrl;
-    private string loadDataUrl;
+    private const string ApiEndpoint = "/api/players";
+
+    private string SaveDataUrl => $"{RemoteConfigManager.ServerUrl}{ApiEndpoint}";
+    private string LoadDataUrl => $"{RemoteConfigManager.ServerUrl}{ApiEndpoint}";
 
     IEnumerator Start()
     {
-        while (string.IsNullOrEmpty(RemoteConfigManager.ServerUrl))
-        {
-            yield return null;
-        }
-
-        saveDataUrl = $"{RemoteConfigManager.ServerUrl}/api/players";
-        loadDataUrl = $"{RemoteConfigManager.ServerUrl}/api/players";
+        yield return new WaitUntil(() => !string.IsNullOrEmpty(RemoteConfigManager.ServerUrl));
 
         Debug.Log($"Server URL: {RemoteConfigManager.ServerUrl}");
-        Debug.Log($"Save Data URL: {saveDataUrl}");
-        Debug.Log($"Load Data URL: {loadDataUrl}");
-
+        Debug.Log($"Save Data URL: {SaveDataUrl}");
+        Debug.Log($"Load Data URL: {LoadDataUrl}");
     }
 
     public void LoadPlayerData(string userId, CharacterData character)
@@ -39,12 +35,8 @@ public class UserData : Singleton<UserData>
 
     private IEnumerator SavePlayerDataToDatabase(CharacterData characterData)
     {
-        string url = $"{saveDataUrl}/{UserId}";
-        Debug.Log($"Saving player data to URL: {url}");
-
+        string url = $"{SaveDataUrl}/{UserId}";
         string jsonData = JsonUtility.ToJson(characterData);
-        Debug.Log($"Saving player data to URL: {url}");
-        Debug.Log($"Request Body: {jsonData}");
 
         using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
         {
@@ -61,38 +53,81 @@ public class UserData : Singleton<UserData>
             }
             else
             {
-                Debug.LogError($"Error saving player data: {request.error}");
-                Debug.LogError($"Response Code: {request.responseCode}");
-                Debug.LogError($"Response Text: {request.downloadHandler.text}");
+                LogError(request, "Error saving player data");
             }
         }
     }
 
-    public void LoadPlayerDataFromServer(string playerName)
+    public async Task<string> LoadPlayerNameFromServer(string playerId)
     {
-        StartCoroutine(LoadPlayerDataFromDatabase(playerName));
+        CharacterData characterData = await LoadPlayerDataFromDatabase(playerId);
+        return characterData?.PlayerName;
     }
 
-    private IEnumerator LoadPlayerDataFromDatabase(string playerName)
+    public async Task LoadPlayerDataFromServer(string playerId)
     {
-        string url = $"{loadDataUrl}/{playerName}";
+        Character = await LoadPlayerDataFromDatabase(playerId);
+        if (Character != null)
+        {
+            Debug.Log("Player data loaded successfully.");
+        }
+    }
+
+    private async Task<CharacterData> LoadPlayerDataFromDatabase(string playerId)
+    {
+        string url = $"{LoadDataUrl}/{playerId}";
 
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
-            yield return request.SendWebRequest();
+            await request.SendWebRequestAsync();
 
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string jsonResult = request.downloadHandler.text;
-                CharacterData characterData = JsonUtility.FromJson<CharacterData>(jsonResult);
-                Character = characterData;
-                Debug.Log("Player data loaded successfully.");
+                return JsonUtility.FromJson<CharacterData>(jsonResult);
             }
             else
             {
-                Debug.LogError("Error loading player data: " + request.error);
+                LogError(request, "Error loading player data");
+                return null;
             }
         }
     }
+
+    private void LogError(UnityWebRequest request, string message)
+    {
+        Debug.LogError($"{message}: {request.error}");
+        Debug.LogError($"Response Code: {request.responseCode}");
+        Debug.LogError($"Response Text: {request.downloadHandler.text}");
+    }
 }
 
+public static class UnityWebRequestExtensions
+{
+    public static Task<UnityWebRequest> SendWebRequestAsync(this UnityWebRequest request)
+    {
+        var tcs = new TaskCompletionSource<UnityWebRequest>();
+        request.SendWebRequest().completed += operation =>
+        {
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                tcs.SetException(new UnityWebRequestException(request));
+            }
+            else
+            {
+                tcs.SetResult(request);
+            }
+        };
+        return tcs.Task;
+    }
+}
+
+public class UnityWebRequestException : System.Exception
+{
+    public UnityWebRequest Request { get; }
+
+    public UnityWebRequestException(UnityWebRequest request) : base(request.error)
+    {
+        Request = request;
+    }
+}

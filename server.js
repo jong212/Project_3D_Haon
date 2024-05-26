@@ -208,9 +208,14 @@ app.get('/api/players/:id', async (req, res) => {
         const { id } = req.params;
         const pool = await sql.connect(dbConfig);
         const result = await pool.request()
-            .input('GetPlayerID', sql.Int, id)
-            .query('SELECT * FROM Players WHERE PlayerID = @GetPlayerID');
-        res.json(result.recordset);
+            .input('PlayerID', sql.Int, id) // 'GetPlayerID'에서 'PlayerID'로 변경
+            .query('SELECT * FROM Players WHERE PlayerID = @PlayerID');
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({ message: 'Player not found' });
+        }
+
+        res.json(result.recordset[0]); // result.recordset[0]을 반환하여 단일 플레이어 정보 반환
     } catch (err) {
         console.error('데이터 조회 오류:', err);
         res.status(500).send('서버 오류');

@@ -1,30 +1,20 @@
+using System.Threading.Tasks;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class LobbyPlayerListUI : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI playerName;
+    [SerializeField] private TextMeshProUGUI playerNameText;
 
-    public void Initialize()
+    public void Initialize(string playerName)
     {
-        if (playerName == null)
+        if (playerNameText == null)
         {
-            Debug.LogError("playerName is not assigned.");
+            Debug.LogError("playerNameText is not assigned.");
             return;
         }
 
-        Debug.Log("Initializing LobbyPlayerListUI...");
-
-
-        if (UserData.Instance != null && UserData.Instance.Character != null)
-        {
-            playerName.text = UserData.Instance.Character.PlayerName;
-        }
-        else
-        {
-            playerName.text = "Unknown";
-            Debug.LogError("Character data is not loaded in UserData.");
-        }
-
+        playerNameText.text = playerName;
     }
 }

@@ -14,17 +14,17 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     private int maxNumberOfPlayers = 3;
     private bool inGame = false;
 
-    public bool IsHost => localLobbyPlayerData.Id == LobbyManager.Instance.GetHostId();
+    //public bool IsHost => localLobbyPlayerData.Id == LobbyManager.Instance.GetHostId();
 
-    private void OnEnable()
-    {
-        LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
-    }
+    //private void OnEnable()
+    //{
+    //    LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
+    //}
 
-    private void OnDisable()
-    {
-        LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
-    }
+    //private void OnDisable()
+    //{
+    //    LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
+    //}
 
     
     //public async Task<bool> CreateLobby()
@@ -46,173 +46,172 @@ public class GameLobbyManager : Singleton<GameLobbyManager>
     //    }
     //}
 
-    public async Task<bool> JoinLobby(string code)
-    {
-        try
-        {
-            localLobbyPlayerData = new LobbyPlayerData();
-            localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "JoinPlayer");
+    //public async Task<bool> JoinLobby(string code)
+    //{
+    //    try
+    //    {
+    //        localLobbyPlayerData = new LobbyPlayerData();
+    //        localLobbyPlayerData.Initialize(AuthenticationService.Instance.PlayerId, "JoinPlayer");
 
-            bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
-            Debug.Log(succeeded ? "로비 입장 성공." : "로비 입장 실패.");
+    //        bool succeeded = await LobbyManager.Instance.JoinLobby(code, localLobbyPlayerData.Serialize());
+    //        Debug.Log(succeeded ? "로비 입장 성공." : "로비 입장 실패.");
 
-            return succeeded;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.Log($"JoinLobby 중 예외 발생 : {ex.Message}");
-            return false;
-        }
-    }
+    //        return succeeded;
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.Log($"JoinLobby 중 예외 발생 : {ex.Message}");
+    //        return false;
+    //    }
+   //
+    //private async void OnLobbyUpdated(Lobby lobby)
+    //{
+    //    try
+    //    {
+    //        var playerData = LobbyManager.Instance.GetPlayerData();
+    //        lobbyPlayerDatas.Clear();
 
-    private async void OnLobbyUpdated(Lobby lobby)
-    {
-        try
-        {
-            var playerData = LobbyManager.Instance.GetPlayerData();
-            lobbyPlayerDatas.Clear();
+    //        int numberOfPlayerReady = 0;
 
-            int numberOfPlayerReady = 0;
+    //        foreach (var data in playerData)
+    //        {
+    //            var lobbyPlayerData = new LobbyPlayerData();
+    //            lobbyPlayerData.Initialize(data);
 
-            foreach (var data in playerData)
-            {
-                var lobbyPlayerData = new LobbyPlayerData();
-                lobbyPlayerData.Initialize(data);
+    //            if (lobbyPlayerData.IsReady)
+    //            {
+    //                numberOfPlayerReady++;
+    //            }
 
-                if (lobbyPlayerData.IsReady)
-                {
-                    numberOfPlayerReady++;
-                }
+    //            if (lobbyPlayerData.Id == AuthenticationService.Instance.PlayerId)
+    //            {
+    //                localLobbyPlayerData = lobbyPlayerData;
 
-                if (lobbyPlayerData.Id == AuthenticationService.Instance.PlayerId)
-                {
-                    localLobbyPlayerData = lobbyPlayerData;
+    //                var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
+    //                foreach (var pointer in characterPointers)
+    //                {
+    //                    if (pointer.PlayerId == lobbyPlayerData.Id)
+    //                    {
+    //                        pointer.ActivateCharacterPointer();
+    //                    }
+    //                    else
+    //                    {
+    //                        pointer.DeActivateCharacterPointer();
+    //                    }
+    //                }
+    //            }
 
-                    var characterPointers = Resources.FindObjectsOfTypeAll<LobbyCharacterPointer>();
-                    foreach (var pointer in characterPointers)
-                    {
-                        if (pointer.PlayerId == lobbyPlayerData.Id)
-                        {
-                            pointer.ActivateCharacterPointer();
-                        }
-                        else
-                        {
-                            pointer.DeActivateCharacterPointer();
-                        }
-                    }
-                }
+    //            lobbyPlayerDatas.Add(lobbyPlayerData);
+    //        }
 
-                lobbyPlayerDatas.Add(lobbyPlayerData);
-            }
+    //        lobbyData = new LobbyData();
+    //        lobbyData.Initialize(lobby.Data);
 
-            lobbyData = new LobbyData();
-            lobbyData.Initialize(lobby.Data);
+    //        LobbyEvent.OnLobbyUpdated?.Invoke();
 
-            LobbyEvent.OnLobbyUpdated?.Invoke();
+    //        if (numberOfPlayerReady == lobby.Players.Count)
+    //        {
+    //            LobbyEvent.OnLobbyReady?.Invoke();
+    //        }
 
-            if (numberOfPlayerReady == lobby.Players.Count)
-            {
-                LobbyEvent.OnLobbyReady?.Invoke();
-            }
+    //        if (lobbyData.RelayJoinCode != default && !inGame)
+    //        {
+    //            await JoinRelayServer(lobbyData.RelayJoinCode);
+    //            SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
+    //        }
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"로비 업데이트 실패 : {ex.Message}");
+    //    }
+    //}
 
-            if (lobbyData.RelayJoinCode != default && !inGame)
-            {
-                await JoinRelayServer(lobbyData.RelayJoinCode);
-                SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"로비 업데이트 실패 : {ex.Message}");
-        }
-    }
+    //public List<LobbyPlayerData> GetPlayers()
+    //{
+    //    return lobbyPlayerDatas;
+    //}
 
-    public List<LobbyPlayerData> GetPlayers()
-    {
-        return lobbyPlayerDatas;
-    }
+    //public async Task<bool> SetPlayerReady()
+    //{
+    //    localLobbyPlayerData.IsReady = true;
+    //    return await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize());
+    //}
 
-    public async Task<bool> SetPlayerReady()
-    {
-        localLobbyPlayerData.IsReady = true;
-        return await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize());
-    }
+    //public int GetMapIndex()
+    //{
+    //    return lobbyData.MapIndex;
+    //}
 
-    public int GetMapIndex()
-    {
-        return lobbyData.MapIndex;
-    }
+    //public async Task<bool> SetSelectedMap(int currentMapIndex, string sceneName)
+    //{
+    //    try
+    //    {
+    //        lobbyData.MapIndex = currentMapIndex;
+    //        lobbyData.SceneName = sceneName;
+    //        return await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"맵 선택 실패 : {ex.Message}");
+    //        return false;
+    //    }
+    //}
 
-    public async Task<bool> SetSelectedMap(int currentMapIndex, string sceneName)
-    {
-        try
-        {
-            lobbyData.MapIndex = currentMapIndex;
-            lobbyData.SceneName = sceneName;
-            return await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"맵 선택 실패 : {ex.Message}");
-            return false;
-        }
-    }
+    //public async Task StartGame()
+    //{
+    //    try
+    //    {
+    //        string relayJoinCode = await RelayManager.Instance.CreateRelay(maxNumberOfPlayers);
+    //        inGame = true;
 
-    public async Task StartGame()
-    {
-        try
-        {
-            string relayJoinCode = await RelayManager.Instance.CreateRelay(maxNumberOfPlayers);
-            inGame = true;
+    //        lobbyData.RelayJoinCode = relayJoinCode;
+    //        await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
 
-            lobbyData.RelayJoinCode = relayJoinCode;
-            await LobbyManager.Instance.UpdateLobbyData(lobbyData.Serialize());
+    //        string allocationId = RelayManager.Instance.GetAllocationId();
+    //        string connectionData = RelayManager.Instance.GetConnectionData();
+    //        await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
 
-            string allocationId = RelayManager.Instance.GetAllocationId();
-            string connectionData = RelayManager.Instance.GetConnectionData();
-            await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
+    //        SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"게임 시작 실패 : {ex.Message}");
+    //    }
+    //}
 
-            SceneLoader.Instance.LoadSceneAsync(lobbyData.SceneName);
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"게임 시작 실패 : {ex.Message}");
-        }
-    }
+    //private async Task<bool> JoinRelayServer(string relayJoinCode)
+    //{
+    //    if (string.IsNullOrEmpty(relayJoinCode))
+    //    {
+    //        Debug.LogError("JoinRelayServer: joinCode is null or empty.");
+    //        return false;
+    //    }
 
-    private async Task<bool> JoinRelayServer(string relayJoinCode)
-    {
-        if (string.IsNullOrEmpty(relayJoinCode))
-        {
-            Debug.LogError("JoinRelayServer: joinCode is null or empty.");
-            return false;
-        }
+    //    try
+    //    {
+    //        Debug.Log("JoinRelayServer: Attempting to join relay server with code: " + relayJoinCode);
+    //        inGame = true;
+    //        bool relayJoined = await RelayManager.Instance.JoinRelay(relayJoinCode);
 
-        try
-        {
-            Debug.Log("JoinRelayServer: Attempting to join relay server with code: " + relayJoinCode);
-            inGame = true;
-            bool relayJoined = await RelayManager.Instance.JoinRelay(relayJoinCode);
+    //        if (!relayJoined)
+    //        {
+    //            Debug.LogError("Failed to join the relay server.");
+    //            return false;
+    //        }
 
-            if (!relayJoined)
-            {
-                Debug.LogError("Failed to join the relay server.");
-                return false;
-            }
+    //        Debug.Log("JoinRelayServer: Successfully joined the relay server.");
 
-            Debug.Log("JoinRelayServer: Successfully joined the relay server.");
+    //        string allocationId = RelayManager.Instance.GetAllocationId();
+    //        string connectionData = RelayManager.Instance.GetConnectionData();
+    //        Debug.Log($"JoinRelayServer: AllocationId: {allocationId}, ConnectionData: {connectionData}");
+    //        await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
 
-            string allocationId = RelayManager.Instance.GetAllocationId();
-            string connectionData = RelayManager.Instance.GetConnectionData();
-            Debug.Log($"JoinRelayServer: AllocationId: {allocationId}, ConnectionData: {connectionData}");
-            await LobbyManager.Instance.UpdatePlayerData(localLobbyPlayerData.Id, localLobbyPlayerData.Serialize(), allocationId, connectionData);
-
-            return true;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Relay Server 접속 실패 : {ex.Message}");
-            return false;
-        }
-    }
+    //        return true;
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"Relay Server 접속 실패 : {ex.Message}");
+    //        return false;
+    //    }
+    //}
 }

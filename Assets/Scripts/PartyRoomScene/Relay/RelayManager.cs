@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Relay;
@@ -102,7 +103,7 @@ public class RelayManager : Singleton<RelayManager>
 
     public string GetConnectionData()
     {
-        return connectionData.ToString();
+        return BitConverter.ToString(connectionData);
     }
 
     public (byte[] AllocationId, byte[] Key, byte[] ConnectionData, string dtlsAddress, int dtlsPort) GetHostConnectionInfo()

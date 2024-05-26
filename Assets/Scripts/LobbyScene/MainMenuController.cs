@@ -17,19 +17,19 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] TextMeshProUGUI codeText;
 
 
-    void OnEnable()
-    {
-        //hostButton.onClick.AddListener(OnHostClicked);
-        joinButton.onClick.AddListener(OnJoinClicked);
-        submitCodeButton.onClick.AddListener(SubmitCodeClicked);
-    }
+    //void OnEnable()
+    //{
+    //    //hostButton.onClick.AddListener(OnHostClicked);
+    //    joinButton.onClick.AddListener(OnJoinClicked);
+    //    submitCodeButton.onClick.AddListener(SubmitCodeClicked);
+    //}
 
-    private void OnDisable()
-    {
-        //hostButton.onClick.RemoveListener(OnHostClicked);
-        joinButton.onClick.RemoveListener(OnJoinClicked);
-        submitCodeButton.onClick.RemoveListener(SubmitCodeClicked);
-    }
+    //private void OnDisable()
+    //{
+    //    //hostButton.onClick.RemoveListener(OnHostClicked);
+    //    joinButton.onClick.RemoveListener(OnJoinClicked);
+    //    submitCodeButton.onClick.RemoveListener(SubmitCodeClicked);
+    //}
 
     //private async void OnHostClicked()
     //{
@@ -60,28 +60,28 @@ public class MainMenuController : MonoBehaviour
         joinScreen.SetActive(true);
     }
 
-    private async void SubmitCodeClicked()
-    {
+    //private async void SubmitCodeClicked()
+    //{
 
-        string code = codeText.text;
-        code = code.Substring(0, code.Length - 1);
+    //    string code = codeText.text;
+    //    code = code.Substring(0, code.Length - 1);
 
-        try
-        {
-            bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
-            if (succeeded)
-            {
+    //    try
+    //    {
+    //        bool succeeded = await GameLobbyManager.Instance.JoinLobby(code);
+    //        if (succeeded)
+    //        {
                 
-                SceneManager.LoadSceneAsync("LobbyRoomScene");
-            }
-            else
-            {
-                Debug.LogError("로비 입장 실패");
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"로비 입장 실패 : {ex.Message}");
-        }
-    }
+    //            SceneManager.LoadSceneAsync("LobbyRoomScene");
+    //        }
+    //        else
+    //        {
+    //            Debug.LogError("로비 입장 실패");
+    //        }
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"로비 입장 실패 : {ex.Message}");
+    //    }
+    //}
 }

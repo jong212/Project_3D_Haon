@@ -6,14 +6,24 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Data/MapSelectionData", fileName ="MapSelectionData")]
 public class MapSelectionData : ScriptableObject
 {
-    public static MapSelectionData Instance;
+    private static MapSelectionData _instance;
+    public static MapSelectionData Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = Resources.Load<MapSelectionData>("MapSelectionData");
+                if (_instance == null)
+                {
+                    Debug.LogError("Failed to load MapSelectionData from Resources.");
+                }
+            }
+            return _instance;
+        }
+    }
 
     public List<MapInfo> Maps;
-
-    private void OnEnable()
-    {
-        Instance = this;
-    }
 }
 
 [Serializable]

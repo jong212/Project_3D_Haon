@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Services.Authentication;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -46,6 +48,7 @@ public class LobbyController : MonoBehaviour
     [SerializeField] private GameObject JoinMenuUI;
     [SerializeField] private GameObject lobbyRoomUI;
     [SerializeField] private Button lobbyRoomCodeSubmit;
+    [SerializeField] private Button lobbyRoomConnect;
     [SerializeField] private TMP_InputField lobbyRoomCodeInputField;
 
     [Header("Equip Enhancement")]
@@ -92,11 +95,6 @@ public class LobbyController : MonoBehaviour
         LobbyEvents.OnLobbyUpdated -= OnLobbyUpdated;
     }
 
-    private void Start()
-    {
-        ChangePlayerNameToPlayerID();
-        _ = LobbyManager.Instance.CheckForGameStart();
-    }
 
     private void RegisterListeners()
     {
@@ -111,6 +109,7 @@ public class LobbyController : MonoBehaviour
         // Lobby
         AddListener(backToGameStart, BackToGameStartUI);
         AddListener(lobbyRoomCodeSubmit, RoomCodeSubmit);
+        AddListener(lobbyRoomConnect, LobbyRoomConnect);
 
 
         // Enhancement
@@ -159,7 +158,7 @@ public class LobbyController : MonoBehaviour
         // Lobby
         RemoveListener(backToGameStart, BackToGameStartUI);
         RemoveListener(lobbyRoomCodeSubmit, RoomCodeSubmit);
-
+        RemoveListener(lobbyRoomConnect, LobbyRoomConnect);
 
         // Enhancement
         RemoveListener(equipButton, EquipEnhancementUI);
@@ -217,8 +216,7 @@ public class LobbyController : MonoBehaviour
     }
     #endregion
 
-    #region MainUI
-    //장비 강화
+    #region MainUI Methods
     private void EquipEnhancementUI()
     {
         mainLobbyUI.SetActive(false);
@@ -226,7 +224,6 @@ public class LobbyController : MonoBehaviour
         statUI.SetActive(true);
     }
 
-    //스탯 강화
     private void StatusEnhancementUI()
     {
         mainLobbyUI.SetActive(false);
@@ -234,7 +231,6 @@ public class LobbyController : MonoBehaviour
         statUI.SetActive(true);
     }
 
-    // 강화창 뒤로가기
     private void BackToMainUI()
     {
         equipEnhancementUI.SetActive(false);
@@ -243,16 +239,29 @@ public class LobbyController : MonoBehaviour
         mainLobbyUI.SetActive(true);
     }
 
-
-    // 게임시작 UI
     private void GameStartEnter()
     {
         gameStartUI.SetActive(true);
         settingUI.SetActive(false);
     }
-    #endregion
 
-    // 게임시작 UI 종료
+    private async Task CheckForGameStart()
+    {
+        while (true)
+        {
+            await Task.Delay(1000);
+
+            if (LobbyManager.Instance.lobby != null && LobbyManager.Instance.lobby.Data.TryGetValue("GameStart", out var gameStartData) && gameStartData.Value == "true")
+            {
+                if (LobbyManager.Instance.lobby.Data.TryGetValue("SceneName", out var sceneNameData))
+                {
+                    string sceneName = sceneNameData.Value;
+                    SceneLoader.Instance.LoadSceneAsync(sceneName);
+                }
+            }
+        }
+    }
+
     private void OnClickGameStartExit()
     {
         gameStartUI.SetActive(false);
@@ -269,9 +278,9 @@ public class LobbyController : MonoBehaviour
         joinRoomButton.gameObject.SetActive(true);
         backToGameStart.gameObject.SetActive(false);
     }
+    #endregion
 
-    #region 강화
-    // 공격력을 보석으로 업그레이드
+    #region Enhancement Methods
     public void JewelUpGradeATK()
     {
         if (UserData.Instance.Character.Gems > UserData.Instance.Character.AttackEnhancement)
@@ -288,7 +297,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 공격력을 보석으로 다운그레이드
     public void JewelDownGradeATK()
     {
         if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
@@ -305,7 +313,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 체력을 보석으로 업그레이드
     public void JewelUpGradeHP()
     {
         if (UserData.Instance.Character.Gems > UserData.Instance.Character.HealthEnhancement * 5)
@@ -322,7 +329,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 체력을 보석으로 다운그레이드
     public void JewelDownGradeHP()
     {
         if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
@@ -339,7 +345,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 공격력을 코인으로 업그레이드
     public void CoinUpGradeATK()
     {
         if (UserData.Instance.Character.Coins > UserData.Instance.Character.AttackEnhancement * 5)
@@ -356,7 +361,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 공격력을 코인으로 다운그레이드
     public void CoinDownGradeATK()
     {
         if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
@@ -373,7 +377,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 체력을 코인으로 업그레이드
     public void CoinUpGradeHP()
     {
         if (UserData.Instance.Character.Coins > UserData.Instance.Character.HealthEnhancement * 5)
@@ -390,7 +393,6 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    // 체력을 코인으로 다운그레이드
     public void CoinDownGradeHP()
     {
         if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
@@ -407,8 +409,11 @@ public class LobbyController : MonoBehaviour
         }
     }
     #endregion
-
-    #region 플레이어 ID
+    private async void Start()
+    {
+        await RefreshLobbyList();
+    }
+    #region Player Info
     private void ChangePlayerNameToPlayerID()
     {
         isName = !isName;
@@ -425,57 +430,51 @@ public class LobbyController : MonoBehaviour
     }
     #endregion
 
-    #region 방UI 및 나가기
-    // 방 참가
+    #region Lobby Management
     private void OnCreateRoom()
     {
-
         createRoomButton.gameObject.SetActive(false);
         joinRoomButton.gameObject.SetActive(false);
         JoinMenuUI.SetActive(true);
         backToGameStart.gameObject.SetActive(true);
-
+        startSceneButton.gameObject.SetActive(true);
     }
 
-    // 방 입장
-    private void OnJoinRoom()
+    private async void OnJoinRoom()
     {
-
         createRoomButton.gameObject.SetActive(false);
         joinRoomButton.gameObject.SetActive(false);
         lobbyRoomUI.SetActive(true);
         backToGameStart.gameObject.SetActive(true);
+        startSceneButton.gameObject.SetActive(false);
+        await RefreshLobbyList();
     }
 
-    // 방 나가기
     private async void OnLeaveRoom()
     {
-
         backToGameStart.gameObject.SetActive(true);
         closeGameStartUIButton.gameObject.SetActive(true);
 
-        // 참가한 로비 나가기
         Debug.Log("Leaving room...");
 
-        // 사용자가 현재 방에 있는지 확인
         if (LobbyManager.Instance.lobby != null)
         {
             try
             {
-                // 로비에서 플레이어 제거
-                await LobbyManager.Instance.LeaveLobby();
+                bool success = await LobbyManager.Instance.LeaveLobby();
 
-                // UI 업데이트
-                JoinMenuUI.SetActive(false);
-                lobbyRoomUI.SetActive(false);
-                leaveRoomButton.gameObject.SetActive(false);
-                backToGameStart.gameObject.SetActive(true);
-                closeGameStartUIButton.gameObject.SetActive(true);
-                createRoomButton.gameObject.SetActive(true);
-                joinRoomButton.gameObject.SetActive(true);
+                if (success)
+                {
+                    await RefreshLobbyList();
+                    ClearPlayerListUI();
+                    UpdateUIAfterLeavingRoom();
 
-                Debug.Log("Room left successfully.");
-                await RefreshLobbyList();
+                    Debug.Log("Room left successfully.");
+                }
+                else
+                {
+                    Debug.LogError("Failed to leave the lobby.");
+                }
             }
             catch (Exception ex)
             {
@@ -486,25 +485,40 @@ public class LobbyController : MonoBehaviour
         {
             Debug.LogWarning("Not currently in any room.");
         }
-
     }
-    #endregion
+    private void ClearPlayerListUI()
+    {
+        foreach (Transform child in LobbyRoomPlayerListContent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
 
-    #region 방 만들기
-    // 방 만들기
+    private void UpdateUIAfterLeavingRoom()
+    {
+        JoinMenuUI.SetActive(false);
+        lobbyRoomUI.SetActive(false);
+        leaveRoomButton.gameObject.SetActive(false);
+        backToGameStart.gameObject.SetActive(true);
+        closeGameStartUIButton.gameObject.SetActive(true);
+        createRoomButton.gameObject.SetActive(true);
+        joinRoomButton.gameObject.SetActive(true);
+    }
+
     private async void RoomCodeSubmit()
     {
         Debug.Log("Creating room...");
         string sceneName = string.IsNullOrEmpty(lobbyRoomCodeInputField.text) ? "파티사냥 하실분" : lobbyRoomCodeInputField.text;
 
-        Dictionary<string, string> lobbyData = new Dictionary<string, string>()
-        {
-            { "MapIndex", $"{currentMapIndex}" }, // Set a default MapIndex
-            { "SceneName", sceneName } // Use the sceneName from the input field or default
-        };
+        Dictionary<string, DataObject> lobbyData = new Dictionary<string, DataObject>()
+    {
+        { "MapIndex", new DataObject(DataObject.VisibilityOptions.Public, $"{currentMapIndex}") },
+        { "SceneName", new DataObject(DataObject.VisibilityOptions.Public, sceneName) },
+        { "GameStart", new DataObject(DataObject.VisibilityOptions.Member, "false") }
+    };
 
-        bool success = await LobbyManager.Instance.CreateLobby(3, false, new Dictionary<string, string>(), lobbyData);
-        if (success)
+        var lobby = await LobbyManager.Instance.CreateLobby(sceneName, 3, lobbyData);
+        if (lobby != null)
         {
             Debug.Log("Room created successfully.");
             UpdateUIAfterRoomCreation();
@@ -516,32 +530,56 @@ public class LobbyController : MonoBehaviour
         }
     }
 
-    private async Task RefreshLobbyList()
+    private void Update()
     {
-        var lobbies = await LobbyManager.Instance.GetLobbies();
-
-        foreach (Transform child in LobbyRoomListContent)
+        if (LobbyManager.Instance.lobby != null && LobbyManager.Instance.lobby.Data.ContainsKey("GameStart"))
         {
-            Destroy(child.gameObject);
-        }
-
-        foreach (Transform child in LobbyRoomPlayerListContent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        foreach (var lobby in lobbies)
-        {
-            GameObject lobbyItemB = Instantiate(LobbyRoomListPrefab, LobbyRoomListContent);
-            GameObject lobbyItemC = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
-
-            var lobbyPlayerNameUI = lobbyItemC.GetComponent<LobbyPlayerListUI>();
-            var lobbyRoomListUI = lobbyItemB.GetComponent<LobbyRoomListUI>();
-            lobbyPlayerNameUI.Initialize();
-            lobbyRoomListUI.Initialize(lobby, SelectLobby);
+            if (LobbyManager.Instance.lobby.Data["GameStart"].Value == "true")
+            {
+                string sceneName = LobbyManager.Instance.lobby.Data["SceneName"].Value;
+                LoadGameScene(sceneName);
+            }
         }
     }
 
+    private async Task RefreshLobbyList()
+    {
+        try
+        {
+            var lobbies = await LobbyManager.Instance.GetLobbies();
+
+            foreach (Transform child in LobbyRoomListContent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var lobby in lobbies)
+            {
+                GameObject lobbyItem = Instantiate(LobbyRoomListPrefab, LobbyRoomListContent);
+                var lobbyRoomListUI = lobbyItem.GetComponent<LobbyRoomListUI>();
+                await lobbyRoomListUI.Initialize(lobby, JoinLobby, lobbyRoomCodeInputField.GetComponent<TMP_InputFieldManager>().GetHiddenTitleText());
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Failed to refresh lobby list: {ex.Message}");
+        }
+    }
+    private async void JoinLobby(string lobbyId)
+    {
+        Debug.Log($"Joining lobby with ID: {lobbyId}");
+
+        bool success = await LobbyManager.Instance.JoinLobby(lobbyId, new Dictionary<string, PlayerDataObject>());
+        if (success)
+        {
+            Debug.Log("Room joined successfully.");
+            // 추가적인 로직을 여기서 처리합니다. 예를 들어, 로비 UI 업데이트 또는 씬 전환
+        }
+        else
+        {
+            Debug.LogError("Failed to join room.");
+        }
+    }
     private void UpdateUIAfterRoomCreation()
     {
         JoinMenuUI.SetActive(false);
@@ -551,15 +589,61 @@ public class LobbyController : MonoBehaviour
         leaveRoomButton.gameObject.SetActive(true);
     }
 
-
     private void SelectLobby(string lobbyId)
     {
         selectedLobbyId = lobbyId;
     }
+
+    private async void JoinRoomButtonClicked()
+    {
+        Debug.Log("Joining room...");
+        await RefreshLobbyList();
+    }
+
+    private async void DisplayPlayerList(string lobbyId)
+    {
+        try
+        {
+            Lobby selectedLobby = await LobbyService.Instance.GetLobbyAsync(lobbyId);
+
+            foreach (Transform child in LobbyRoomPlayerListContent)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var player in selectedLobby.Players)
+            {
+                string playerName = await GetPlayerName(player.Id);
+                GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
+                var playerNameUI = playerItem.GetComponent<LobbyPlayerListUI>();
+                playerNameUI.Initialize(playerName);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to display player list: {ex.Message}");
+        }
+    }
+
+    private async Task<string> GetPlayerName(string playerId)
+    {
+        Debug.Log($"Fetching player name for player ID: {playerId}");
+
+        await UserData.Instance.LoadPlayerDataFromServer(playerId);
+
+        if (UserData.Instance.Character != null)
+        {
+            Debug.Log($"Player name fetched: {UserData.Instance.Character.PlayerName}");
+            return UserData.Instance.Character.PlayerName;
+        }
+
+        Debug.LogError("Failed to fetch player name, returning 'Unknown'");
+        return "Unknown";
+    }
     #endregion
 
-    #region 맵
-    private async void OnLeftButtonClicked()
+    #region Map Management
+    private void OnLeftButtonClicked()
     {
         if (currentMapIndex - 1 > 0)
         {
@@ -571,90 +655,197 @@ public class LobbyController : MonoBehaviour
         }
 
         UpdateMap();
-        try
-        {
-            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
-        }
-        catch (Exception ex)
-        {
-            Debug.Log($"맵 바꾸기 실패 : {ex.Message}");
-        }
+
+        Debug.Log($"Selected map index: {currentMapIndex}, scene name: {mapSelectionData.Maps[currentMapIndex].SceneName}");
+
     }
 
-
-
-    private async void OnRightButtonClicked()
+    private void OnRightButtonClicked()
     {
-        if (currentMapIndex + 1 < mapSelectionData.Maps.Count - 1)
+        if (currentMapIndex + 1 < mapSelectionData.Maps.Count)
         {
             currentMapIndex++;
         }
         else
         {
-            currentMapIndex = mapSelectionData.Maps.Count - 1;
+            currentMapIndex = 0; // 처음으로 돌아갑니다.
         }
 
         UpdateMap();
 
-        try
-        {
-            await GameLobbyManager.Instance.SetSelectedMap(currentMapIndex, mapSelectionData.Maps[currentMapIndex].SceneName);
-        }
-        catch (Exception ex)
-        {
-            Debug.Log($"맵 바꾸기 실패 : {ex.Message}");
-        }
+        // 추가적인 작업이 필요하면 여기서 처리합니다.
+        Debug.Log($"Selected map index: {currentMapIndex}, scene name: {mapSelectionData.Maps[currentMapIndex].SceneName}");
     }
+
     private void UpdateMap()
     {
-        mapImage.sprite = mapSelectionData.Maps[currentMapIndex].MapImage;
-        mapName.text = mapSelectionData.Maps[currentMapIndex].MapName;
+        var mapInfo = MapSelectionData.Instance.Maps[currentMapIndex];
+        mapImage.sprite = mapInfo.MapImage;
+        mapName.text = mapInfo.MapName;
     }
     #endregion
 
-    #region 게임 시작
-    private void OnLobbyUpdated(Lobby updatedLobby)
+    #region Game Start
+    private async void OnLobbyUpdated(Lobby updatedLobby)
     {
-        Debug.Log("OnLobbyUpdated called");
-        if (updatedLobby.Data.TryGetValue("GameStart", out var gameStartData) && gameStartData.Value == "true")
+        await UpdatePlayerListUI(updatedLobby);
+    }
+
+
+    private async Task UpdatePlayerListUI(Lobby lobby)
+    {
+        if (!ValidateLobbyData(lobby))
         {
-            Debug.Log("GameStart is true");
-            if (updatedLobby.Data.TryGetValue("SceneName", out var sceneNameData))
-            {
-                string sceneName = sceneNameData.Value;
-                Debug.Log($"Loading scene: {sceneName}");
-                SceneManager.LoadScene(sceneName);
-            }
-            else
-            {
-                Debug.LogWarning("SceneName not found in lobby data");
-            }
+            return;
         }
-        else
+
+        foreach (Transform child in LobbyRoomPlayerListContent)
         {
-            Debug.LogWarning("GameStart is not true or not found in lobby data");
+            Destroy(child.gameObject);
+        }
+
+        foreach (var player in lobby.Players)
+        {
+            GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
+            var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
+
+            if (playerUI == null)
+            {
+                Debug.LogError("LobbyPlayerListUI component is missing on LobbyPlayerNamePrefab.");
+                continue;
+            }
+
+            string playerName = await GetPlayerName(player.Id);
+            playerUI.Initialize(playerName);
         }
     }
 
     private async void OnStartGame()
     {
+        
         Debug.Log("Starting game...");
-        string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
 
-        bool success = await LobbyManager.Instance.StartGame(sceneName);
-        if (success)
+        if (LobbyManager.Instance.lobby.HostId == AuthenticationService.Instance.PlayerId)
         {
-            Debug.Log("Game started successfully.");
+            Debug.Log("Creating relay as host...");
+
+            string joinCode = await RelayManager.Instance.CreateRelay(3);
+            if (!string.IsNullOrEmpty(joinCode))
+            {
+                Debug.Log($"Relay server created. Join code: {joinCode}");
+
+                var (allocationId, key, connectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetHostConnectionInfo();
+
+                UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+                transport.SetHostRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, true);
+
+                NetworkManager.Singleton.StartHost();
+
+                var lobbyData = new Dictionary<string, DataObject>
+            {
+                { "JoinCode", new DataObject(DataObject.VisibilityOptions.Member, joinCode) }
+            };
+
+                bool updated = await LobbyManager.Instance.UpdateLobbyData(lobbyData);
+                if (updated)
+                {
+                    Debug.Log("Host started successfully.");
+
+                    // Scene 전환 플래그 설정
+                    string sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
+                    bool flagSet = await LobbyManager.Instance.SetGameStartFlag(sceneName);
+                    if (flagSet)
+                    {
+                        Debug.Log("Game start flag set successfully.");
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to set game start flag.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Failed to update lobby data.");
+                }
+            }
+            else
+            {
+                Debug.LogError("Failed to create relay as host.");
+            }
         }
         else
         {
-            Debug.LogError("Failed to start game.");
+            Debug.Log("Joining relay as client...");
+
+            string joinCode = LobbyManager.Instance.lobby.Data["JoinCode"].Value;
+            bool success = await RelayManager.Instance.JoinRelay(joinCode);
+            if (success)
+            {
+                var (allocationId, key, connectionData, hostConnectionData, dtlsAddress, dtlsPort) = RelayManager.Instance.GetClientConnectionInfo();
+
+                UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+                transport.SetClientRelayData(dtlsAddress, (ushort)dtlsPort, allocationId, key, connectionData, hostConnectionData, true);
+
+                NetworkManager.Singleton.StartClient();
+
+                Debug.Log("Client started successfully.");
+            }
+            else
+            {
+                Debug.LogError("Failed to join relay as client.");
+            }
         }
     }
 
+    private void LoadGameScene(string sceneName)
+    {
+        //sceneName = mapSelectionData.Maps[currentMapIndex].SceneName;
+        SceneLoader.Instance.LoadSceneAsync(sceneName);
+    }
+
+    private async Task<bool> StartGame(string sceneName)
+    {
+        try
+        {
+            var updatedData = new Dictionary<string, DataObject>();
+
+            foreach (var data in LobbyManager.Instance.lobby.Data)
+            {
+                updatedData[data.Key] = new DataObject(data.Value.Visibility, data.Value.Value);
+            }
+
+            if (updatedData.ContainsKey("GameStart"))
+            {
+                updatedData["GameStart"] = new DataObject(updatedData["GameStart"].Visibility, "true");
+            }
+            else
+            {
+                updatedData["GameStart"] = new DataObject(DataObject.VisibilityOptions.Public, "true");
+            }
+
+            if (updatedData.ContainsKey("SceneName"))
+            {
+                updatedData["SceneName"] = new DataObject(updatedData["SceneName"].Visibility, sceneName);
+            }
+            else
+            {
+                updatedData["SceneName"] = new DataObject(DataObject.VisibilityOptions.Public, sceneName);
+            }
+
+            await LobbyService.Instance.UpdateLobbyAsync(LobbyManager.Instance.lobby.Id, new UpdateLobbyOptions { Data = updatedData });
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Failed to start game: {ex.Message}");
+            return false;
+        }
+    }
+
+
     private async Task StartHost()
     {
-        string joinCode = await RelayManager.Instance.CreateRelay(3); // 최대 3명의 플레이어
+        string joinCode = await RelayManager.Instance.CreateRelay(3);
         if (!string.IsNullOrEmpty(joinCode))
         {
             Debug.Log($"Relay server created. Join code: {joinCode}");
@@ -688,8 +879,61 @@ public class LobbyController : MonoBehaviour
             Debug.LogError("Failed to join relay.");
         }
     }
-
     #endregion
+
+    private async void LobbyRoomConnect()
+    {
+        Debug.Log($"Joining room with ID: {selectedLobbyId}");
+
+        var playerData = new Dictionary<string, PlayerDataObject>
+        {
+            // 필요한 플레이어 데이터를 여기에 추가합니다. 예: {"PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, "PlayerName")}
+        };
+
+        bool success = await LobbyManager.Instance.JoinLobby(selectedLobbyId, playerData);
+        if (success)
+        {
+            Debug.Log("Room joined successfully.");
+            await UpdatePlayerListUI(LobbyManager.Instance.lobby);
+        }
+        else
+        {
+            Debug.LogError("Failed to join room.");
+        }
+    }
+
+    private async Task RefreshPlayerList()
+    {
+        foreach (Transform child in LobbyRoomPlayerListContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (var player in LobbyManager.Instance.lobby.Players)
+        {
+            GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
+            var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
+            string playerName = await UserData.Instance.LoadPlayerNameFromServer(player.Id);
+            playerUI.Initialize(playerName);
+        }
+    }
+
+    private bool ValidateLobbyData(Lobby lobby)
+    {
+        if (lobby == null)
+        {
+            Debug.LogError("Lobby is null.");
+            return false;
+        }
+
+        if (lobby.Data == null)
+        {
+            Debug.LogError("Lobby data dictionary is null.");
+            return false;
+        }
+
+        return true;
+    }
 }
 
 
