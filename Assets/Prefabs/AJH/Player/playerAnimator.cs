@@ -72,6 +72,10 @@ public class playerAnimator : MonoBehaviour
     }
     public void attackEvent(string type)
     {
+        if(attack != null)
+        {
+
+      
         if (type == "1")
         {
 
@@ -107,12 +111,8 @@ public class playerAnimator : MonoBehaviour
                 obj3.SetActive(true);
             }
         }
-        
-        // static 변수들은 다 public 
-        // 싱글톤은 그래서 public...
-        // 참조해야할  것 같으면 public
-        // 변수값이 복사될 것 같으면 privic
-        // 근데 이제 serialrize 직렬화를 해버리면 
+
+        }
     }
     public static int getstr
     {
