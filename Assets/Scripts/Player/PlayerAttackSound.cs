@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class PlayerAttackSound : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class PlayerAttackSound : MonoBehaviour
     [SerializeField] private AudioClip skillBSound;
     [SerializeField] private AudioClip dashSound;
     [SerializeField] private AudioClip monsterDieSound;
+
     
     public void BaseAttack()
     { 
