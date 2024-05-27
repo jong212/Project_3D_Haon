@@ -108,7 +108,7 @@ public class isAttackStop : StateMachineBehaviour
 
             if (otherCollider.gameObject.tag == "Monster")
             {
-                otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
+                otherCollider.GetComponent<MonsterInfo>().TakeDamage(playerAnimator.getstr);
             }
             else if (otherCollider.gameObject.name == "DestroyBox")
             {

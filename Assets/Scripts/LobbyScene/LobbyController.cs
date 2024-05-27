@@ -486,11 +486,23 @@ public class LobbyController : MonoBehaviour
             Debug.LogWarning("Not currently in any room.");
         }
     }
+
+
     private void ClearPlayerListUI()
     {
-        foreach (Transform child in LobbyRoomPlayerListContent)
+        if (LobbyRoomPlayerListContent != null)
         {
-            Destroy(child.gameObject);
+            foreach (Transform child in LobbyRoomPlayerListContent)
+            {
+                if (child != null)
+                {
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("LobbyRoomPlayerListContent is null. Cannot clear player list UI.");
         }
     }
 
@@ -548,23 +560,39 @@ public class LobbyController : MonoBehaviour
         {
             var lobbies = await LobbyManager.Instance.GetLobbies();
 
-            foreach (Transform child in LobbyRoomListContent)
+            // 현재 UI 요소가 파괴되지 않았는지 확인합니다.
+            if (LobbyRoomListContent != null)
             {
-                Destroy(child.gameObject);
-            }
+                foreach (Transform child in LobbyRoomListContent)
+                {
+                    if (child != null)
+                    {
+                        Destroy(child.gameObject);
+                    }
+                }
 
-            foreach (var lobby in lobbies)
+                foreach (var lobby in lobbies)
+                {
+                    if (LobbyRoomListContent != null)
+                    {
+                        GameObject lobbyItem = Instantiate(LobbyRoomListPrefab, LobbyRoomListContent);
+                        var lobbyRoomListUI = lobbyItem.GetComponent<LobbyRoomListUI>();
+                        await lobbyRoomListUI.Initialize(lobby, JoinLobby, lobbyRoomCodeInputField.GetComponent<TMP_InputFieldManager>().GetHiddenTitleText());
+                    }
+                }
+            }
+            else
             {
-                GameObject lobbyItem = Instantiate(LobbyRoomListPrefab, LobbyRoomListContent);
-                var lobbyRoomListUI = lobbyItem.GetComponent<LobbyRoomListUI>();
-                await lobbyRoomListUI.Initialize(lobby, JoinLobby, lobbyRoomCodeInputField.GetComponent<TMP_InputFieldManager>().GetHiddenTitleText());
+                Debug.LogWarning("LobbyRoomListContent is null. Cannot refresh lobby list.");
             }
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError($"Failed to refresh lobby list: {ex.Message}");
         }
     }
+
+
     private async void JoinLobby(string lobbyId)
     {
         Debug.Log($"Joining lobby with ID: {lobbyId}");
@@ -699,24 +727,37 @@ public class LobbyController : MonoBehaviour
             return;
         }
 
-        foreach (Transform child in LobbyRoomPlayerListContent)
+        if (LobbyRoomPlayerListContent != null)
         {
-            Destroy(child.gameObject);
-        }
-
-        foreach (var player in lobby.Players)
-        {
-            GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
-            var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
-
-            if (playerUI == null)
+            foreach (Transform child in LobbyRoomPlayerListContent)
             {
-                Debug.LogError("LobbyPlayerListUI component is missing on LobbyPlayerNamePrefab.");
-                continue;
+                if (child != null)
+                {
+                    Destroy(child.gameObject);
+                }
             }
 
-            string playerName = await GetPlayerName(player.Id);
-            playerUI.Initialize(playerName);
+            foreach (var player in lobby.Players)
+            {
+                if (LobbyRoomPlayerListContent != null)
+                {
+                    GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
+                    var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
+
+                    if (playerUI == null)
+                    {
+                        Debug.LogError("LobbyPlayerListUI component is missing on LobbyPlayerNamePrefab.");
+                        continue;
+                    }
+
+                    string playerName = await GetPlayerName(player.Id);
+                    playerUI.Initialize(playerName);
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("LobbyRoomPlayerListContent is null. Cannot update player list UI.");
         }
     }
 
@@ -916,15 +957,25 @@ public class LobbyController : MonoBehaviour
     {
         foreach (Transform child in LobbyRoomPlayerListContent)
         {
-            Destroy(child.gameObject);
+            if (child != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         foreach (var player in LobbyManager.Instance.lobby.Players)
         {
-            GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
-            var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
-            string playerName = await UserData.Instance.LoadPlayerNameFromServer(player.Id);
-            playerUI.Initialize(playerName);
+            if (LobbyRoomPlayerListContent != null)
+            {
+                GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
+                var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
+                string playerName = await UserData.Instance.LoadPlayerNameFromServer(player.Id);
+                playerUI.Initialize(playerName);
+            }
+            else
+            {
+                Debug.LogWarning("LobbyRoomPlayerListContent is null while refreshing player list.");
+            }
         }
     }
 

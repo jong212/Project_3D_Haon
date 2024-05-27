@@ -48,7 +48,7 @@ public class NetworkPlayerStateChange : StateMachineBehaviour
             if (otherCollider.gameObject.tag == "Monster")
             {
 
-                otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
+                otherCollider.GetComponent<MonsterInfo>().TakeDamage(200);
 
             }
             //파괴 되는 오브젝트 조건 추가(준후)

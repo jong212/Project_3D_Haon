@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class LobbyManager : SceneSingleton<LobbyManager>
     private Coroutine refreshLobbyCoroutine;
 
     public static event Action<Lobby> OnLobbyUpdated;
-
+    
     public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, Dictionary<string, DataObject> lobbyData)
     {
         Dictionary<string, PlayerDataObject> playerDataObjects = new Dictionary<string, PlayerDataObject>();
@@ -88,9 +89,20 @@ public class LobbyManager : SceneSingleton<LobbyManager>
             var queryResponse = await LobbyService.Instance.QueryLobbiesAsync();
             return queryResponse.Results;
         }
+        catch (RequestFailedException ex)
+        {
+           // Debug.LogError($"Failed to get lobbies: {ex.Message} (Error Code: {ex.ErrorCode})");
+
+            // 특정 오류 코드 처리
+            if (ex.ErrorCode == 401)
+            {
+                Debug.LogError("Unauthorized access - please check your authentication settings.");
+            }
+            return new List<Lobby>();
+        }
         catch (Exception ex)
         {
-            Debug.LogError($"Failed to get lobbies: {ex.Message}");
+            Debug.LogError($"An unexpected error occurred: {ex.Message}");
             return new List<Lobby>();
         }
     }
