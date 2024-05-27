@@ -51,9 +51,6 @@ public class MonsterInfo : MonoBehaviour
     }
     public GameObject GetRandomGameObject() //3
     {
-
- 
-
         playerTags5 = GameObject.FindGameObjectsWithTag("Player");
         if (playerTags5 == null || playerTags5.Length == 0)
         {
@@ -75,19 +72,22 @@ public class MonsterInfo : MonoBehaviour
             {
                 playerSound.MonsterDie();//몬스터 사망 사운드 출력}
                 transform.GetComponent<CapsuleCollider>().enabled = false;
-
             }
-            else
+        }
+        else
+        {
+            animator.SetTrigger("damage");
+            if (monsterType.monsterType == 1)
             {
-                animator.SetTrigger("damage");
-                if (monsterType.monsterType == 1)
-                {
-                    playerSound.BiologyAttack();// 생물형 몬스터 타격음
-                }
-                else if (monsterType.monsterType == 2)
-                {
-                    playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
-                }
+                playerSound.BiologyAttack();// 생물형 몬스터 타격음
+            }
+            else if (monsterType.monsterType == 2)
+            {
+                playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
+            }
+            else if (monsterType == null)
+            {
+                return;
             }
         }
     }
