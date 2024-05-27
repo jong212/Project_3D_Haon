@@ -20,27 +20,18 @@ public class ShieldCollision1 : MonoBehaviour
 
     void Start()
     {
-        // Ensure the renderer and material are assigned before accessing them
         if (GetComponent<Renderer>())
         {
             mat = GetComponent<Renderer>().sharedMaterial;
             if (mat != null)
             {
-                mat.SetFloat("_Opacity", 0.600f); // Initialize the opacity to 0.600f
-                opacity = mat.GetFloat("_Opacity"); // Then get the initial opacity value
+                mat.SetFloat("_Opacity", 0.600f);
+                opacity = mat.GetFloat("_Opacity");
             }
         }
 
-        // Ensure the particles are correctly assigned
-        if (particle != null)
-        {
-            particle = particle.GetComponent<ParticleSystem>();
-        }
-
-        if (particle2 != null)
-        {
-            particle2 = particle2.GetComponent<ParticleSystem>();
-        }
+        particle = particle?.GetComponent<ParticleSystem>();
+        particle2 = particle2?.GetComponent<ParticleSystem>();
 
         if (player != null)
         {
@@ -66,7 +57,7 @@ public class ShieldCollision1 : MonoBehaviour
             {
                 hitTime = 0;
             }
-            mat?.SetFloat("_HitTime", hitTime); // Ensure mat is not null
+            mat?.SetFloat("_HitTime", hitTime);
         }
     }
 
@@ -79,26 +70,24 @@ public class ShieldCollision1 : MonoBehaviour
             {
                 if (_collisionTag.Length > 0 && other.CompareTag(_collisionTag[i]))
                 {
-                    //Debug.Log("hit");
                     mat.SetVector("_HitPosition", transform.InverseTransformPoint(other.transform.position));
-                    hitTime = 0.5f; // Set to a smaller value for faster reset
+                    hitTime = 500;
 
-                    opacity -= 0.050f; // Subtract 0.050 from the opacity
+                    opacity -= 0.050f;
                     if (opacity < 0 && !EnterCheck)
                     {
                         EnterCheck = true;
-                        opacity = 0; // Ensure opacity does not go below 0
-                        particle.Play();
+                        opacity = 0;
+                        particle?.Play();
                         StartCoroutine(objectOff());
                     }
                     else
                     {
-                        particle2.Play();
+                        particle2?.Play();
                     }
-                    mat.SetFloat("_Opacity", opacity); // Assign the updated opacity back to the material
-
-                    mat.SetFloat("_HitTime", hitTime);
-                    break; // Exit the loop after handling the hit
+                    mat?.SetFloat("_Opacity", opacity);
+                    mat?.SetFloat("_HitTime", hitTime);
+                    break;
                 }
             }
         }
