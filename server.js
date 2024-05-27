@@ -202,36 +202,47 @@ app.get('/api/login/:id', async (req, res) => {
     }
 });
 
-// 플레이어 정보 조회 엔드포인트
 app.get('/api/players/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request()
-            .input('PlayerID', sql.Int, id) // 'GetPlayerID'에서 'PlayerID'로 변경
-            .query('SELECT * FROM Players WHERE PlayerID = @PlayerID');
+  try {
+    const { id } = req.params;
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request()
+      .input('PlayerID', sql.Int, id) // 'GetPlayerID'에서 'PlayerID'로 변경
+      .query('SELECT * FROM Players WHERE PlayerID = @PlayerID');
 
-        if (result.recordset.length === 0) {
-            return res.status(404).json({ message: 'Player not found' });
-        }
-
-        res.json(result.recordset[0]); // result.recordset[0]을 반환하여 단일 플레이어 정보 반환
-    } catch (err) {
-        console.error('데이터 조회 오류:', err);
-        res.status(500).send('서버 오류');
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ message: 'Player not found' });
     }
+
+    res.json(result.recordset[0]); // result.recordset[0]을 반환하여 단일 플레이어 정보 반환
+  } catch (err) {
+    console.error('데이터 조회 오류:', err);
+    res.status(500).send('서버 오류');
+  }
 });
 
-// 모든 플레이어 정보 조회 엔드포인트
-app.get('/api/players', async (req, res) => {
-    try {
-        const pool = await sql.connect(dbConfig);
-        const result = await pool.request().query('SELECT * FROM Players');
-        res.json(result.recordset);
-    } catch (err) {
-        console.error('데이터 조회 오류:', err);
-        res.status(500).send('서버 오류');
+
+
+app.get('/api/players/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Received request for PlayerID: ${id}`);
+    const pool = await sql.connect(dbConfig);
+    const result = await pool.request()
+      .input('PlayerID', sql.Int, id)
+      .query('SELECT * FROM Players WHERE PlayerID = @PlayerID');
+
+    if (result.recordset.length === 0) {
+      console.log('Player not found');
+      return res.status(404).json({ message: 'Player not found' });
     }
+
+    console.log('Player data found:', result.recordset[0]);
+    res.json(result.recordset[0]);
+  } catch (err) {
+    console.error('데이터 조회 오류:', err);
+    res.status(500).send('서버 오류');
+  }
 });
 
 // 특정 플레이어 정보 조회 시 Username 포함 엔드포인트
@@ -276,75 +287,99 @@ app.get('/api/players/with-username', async (req, res) => {
     }
 });
 
-// 플레이어 정보 업데이트 엔드포인트
+// 플레이어 정보 업데이트 또는 생성 엔드포인트
 app.put('/api/players/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const {
-            PlayerName, Gems, Coins, MaxHealth,
-            HealthEnhancement, AttackPower, AttackEnhancement,
-            WeaponEnhancement, ArmorEnhancement
-        } = req.body;
+  try {
+    const { id } = req.params;
+    const {
+      PlayerName, Gems, Coins, MaxHealth,
+      HealthEnhancement, AttackPower, AttackEnhancement,
+      WeaponEnhancement, ArmorEnhancement
+    } = req.body;
 
-        // 음수 값 검증
-        if (Gems < 0 || Coins < 0 || MaxHealth < 0 ||
-            HealthEnhancement < 0 || AttackPower < 0 ||
-            AttackEnhancement < 0 || WeaponEnhancement < 0 ||
-            ArmorEnhancement < 0) {
-            return res.status(400).json({ message: 'Negative values are not allowed' });
-        }
+    console.log(`Received PUT request for PlayerID: ${id}`);
+    console.log(`Request Body: ${JSON.stringify(req.body)}`);
 
-        const pool = await sql.connect(dbConfig);
-
-        // 플레이어가 존재하는지 확인
-        const playerCheckResult = await pool.request()
-            .input('PlayerID', sql.Int, id)
-            .query('SELECT COUNT(*) AS count FROM Players WHERE PlayerID = @PlayerID');
-
-        if (playerCheckResult.recordset[0].count === 0) {
-            return res.status(404).send('플레이어 정보를 찾을 수 없습니다.');
-        }
-
-        console.log(`Updating player data for PlayerID: ${id}`);
-        console.log(`Request Body: ${JSON.stringify(req.body)}`);
-
-        const result = await pool.request()
-            .input('UpdatePlayerID', sql.Int, id)
-            .input('UpdatePlayerName', sql.NVarChar, PlayerName)
-            .input('UpdateGems', sql.Int, Gems)
-            .input('UpdateCoins', sql.Int, Coins)
-            .input('UpdateMaxHealth', sql.Int, MaxHealth)
-            .input('UpdateHealthEnhancement', sql.Int, HealthEnhancement)
-            .input('UpdateAttackPower', sql.Int, AttackPower)
-            .input('UpdateAttackEnhancement', sql.Int, AttackEnhancement)
-            .input('UpdateWeaponEnhancement', sql.Int, WeaponEnhancement)
-            .input('UpdateArmorEnhancement', sql.Int, ArmorEnhancement)
-            .query(`
-                UPDATE Players SET 
-                  PlayerName = @UpdatePlayerName,
-                  Gems = @UpdateGems,
-                  Coins = @UpdateCoins,
-                  MaxHealth = @UpdateMaxHealth,
-                  HealthEnhancement = @UpdateHealthEnhancement,
-                  AttackPower = @UpdateAttackPower,
-                  AttackEnhancement = @UpdateAttackEnhancement,
-                  WeaponEnhancement = @UpdateWeaponEnhancement,
-                  ArmorEnhancement = @UpdateArmorEnhancement
-                WHERE PlayerID = @UpdatePlayerID
-            `);
-
-        if (result.rowsAffected[0] > 0) {
-            res.status(200).send('플레이어 정보 업데이트 성공');
-            console.log('플레이어 정보 업데이트 성공');
-        } else {
-            res.status(404).send('플레이어 정보를 찾을 수 없습니다.');
-            console.log('플레이어 정보를 찾을 수 없습니다.');
-        }
-    } catch (err) {
-        console.error('데이터 업데이트 오류:', err);
-        res.status(500).send('서버 오류');
+    if (Gems < 0 || Coins < 0 || MaxHealth < 0 ||
+      HealthEnhancement < 0 || AttackPower < 0 ||
+      AttackEnhancement < 0 || WeaponEnhancement < 0 ||
+      ArmorEnhancement < 0) {
+      return res.status(400).json({ message: 'Negative values are not allowed' });
     }
+
+    const pool = await sql.connect(dbConfig);
+
+    // 플레이어가 존재하는지 확인
+    const playerCheckResult = await pool.request()
+      .input('PlayerID', sql.Int, id)
+      .query('SELECT * FROM Players WHERE PlayerID = @PlayerID');
+
+    console.log(`Player Check Result: ${JSON.stringify(playerCheckResult.recordset)}`);
+
+    if (playerCheckResult.recordset.length === 0) {
+      console.log('Player not found, creating new player entry');
+      // 플레이어가 존재하지 않으면 새로 생성
+      const createPlayerResult = await pool.request()
+        .input('UserID', sql.Int, id)
+        .input('PlayerName', sql.NVarChar, PlayerName)
+        .input('Gems', sql.Int, Gems)
+        .input('Coins', sql.Int, Coins)
+        .input('MaxHealth', sql.Int, MaxHealth)
+        .input('HealthEnhancement', sql.Int, HealthEnhancement)
+        .input('AttackPower', sql.Int, AttackPower)
+        .input('AttackEnhancement', sql.Int, AttackEnhancement)
+        .input('WeaponEnhancement', sql.Int, WeaponEnhancement)
+        .input('ArmorEnhancement', sql.Int, ArmorEnhancement)
+        .query(`
+          INSERT INTO Players (UserID, PlayerName, Gems, Coins, MaxHealth, HealthEnhancement, AttackPower, AttackEnhancement, WeaponEnhancement, ArmorEnhancement)
+          VALUES (@UserID, @PlayerName, @Gems, @Coins, @MaxHealth, @HealthEnhancement, @AttackPower, @AttackEnhancement, @WeaponEnhancement, @ArmorEnhancement)
+        `);
+
+      if (createPlayerResult.rowsAffected[0] > 0) {
+        return res.status(201).send('플레이어 정보 생성 성공');
+      } else {
+        return res.status(500).send('플레이어 정보 생성 실패');
+      }
+    }
+
+    const result = await pool.request()
+      .input('UpdatePlayerID', sql.Int, id)
+      .input('UpdatePlayerName', sql.NVarChar, PlayerName)
+      .input('UpdateGems', sql.Int, Gems)
+      .input('UpdateCoins', sql.Int, Coins)
+      .input('UpdateMaxHealth', sql.Int, MaxHealth)
+      .input('UpdateHealthEnhancement', sql.Int, HealthEnhancement)
+      .input('UpdateAttackPower', sql.Int, AttackPower)
+      .input('UpdateAttackEnhancement', sql.Int, AttackEnhancement)
+      .input('UpdateWeaponEnhancement', sql.Int, WeaponEnhancement)
+      .input('UpdateArmorEnhancement', sql.Int, ArmorEnhancement)
+      .query(`
+        UPDATE Players SET 
+          PlayerName = @UpdatePlayerName,
+          Gems = @UpdateGems,
+          Coins = @UpdateCoins,
+          MaxHealth = @UpdateMaxHealth,
+          HealthEnhancement = @UpdateHealthEnhancement,
+          AttackPower = @UpdateAttackPower,
+          AttackEnhancement = @UpdateAttackEnhancement,
+          WeaponEnhancement = @UpdateWeaponEnhancement,
+          ArmorEnhancement = @UpdateArmorEnhancement
+        WHERE PlayerID = @UpdatePlayerID
+      `);
+
+    if (result.rowsAffected[0] > 0) {
+      res.status(200).send('플레이어 정보 업데이트 성공');
+      console.log('플레이어 정보 업데이트 성공');
+    } else {
+      res.status(404).send('플레이어 정보를 찾을 수 없습니다.');
+      console.log('플레이어 정보를 찾을 수 없습니다.');
+    }
+  } catch (err) {
+    console.error('데이터 업데이트 오류:', err);
+    res.status(500).send('서버 오류');
+  }
 });
+
 
 // 몬스터 정보 조회 엔드포인트
 app.get('/api/monsters', async (req, res) => {
@@ -358,6 +393,10 @@ app.get('/api/monsters', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
+app.get('/api/test', (req, res) => {
+    res.send('Test endpoint is working');
+});
+
+app.listen(port, '0.0.0.0', () => {
     console.log(`서버가 http://localhost:${port} 에서 실행 중입니다`);
 });

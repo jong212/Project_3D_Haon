@@ -38,6 +38,9 @@ public class UserData : Singleton<UserData>
         string url = $"{SaveDataUrl}/{UserId}";
         string jsonData = JsonUtility.ToJson(characterData);
 
+        Debug.Log($"Saving player data to URL: {url}");
+        Debug.Log($"JSON data: {jsonData}");
+
         using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
         {
             byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
@@ -72,7 +75,6 @@ public class UserData : Singleton<UserData>
             Debug.Log("Player data loaded successfully.");
         }
     }
-
     private async Task<CharacterData> LoadPlayerDataFromDatabase(string playerId)
     {
         string url = $"{LoadDataUrl}/{playerId}";
