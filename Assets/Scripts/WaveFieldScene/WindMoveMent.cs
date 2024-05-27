@@ -18,16 +18,16 @@ public class WindMoveMent : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            if(other.GetComponent<NetworkPlayerController>() != null)
+            if(other.GetComponent<playerAnimator>() != null)
             {
-                other.GetComponent<NetworkPlayerController>().enabled = false;
+                other.GetComponent<playerAnimator>().enabled = false;
             }
 
             player.transform.Translate(Vector3.zero);
             windEffect.gameObject.SetActive(true);
             Invoke("StopWind" , stopWindTime);
 
-            other.GetComponent<NetworkPlayerController>().enabled = true;
+            other.GetComponent<playerAnimator>().enabled = true;
         }
     }
 

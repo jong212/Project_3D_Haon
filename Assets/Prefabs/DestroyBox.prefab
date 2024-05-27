@@ -243,6 +243,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ba89510cd3bae34dacd068244453e66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemDrop: {fileID: 0}
+  box: {fileID: 4344020357572672}
   effect: {fileID: 19800018, guid: a40b64bf23366dc42a892af2c6ff6140, type: 3}
   boxHp: 2
   itemProbability: 1
