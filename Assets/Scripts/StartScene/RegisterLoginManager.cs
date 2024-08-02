@@ -15,7 +15,6 @@ public class RegisterLoginManager : MonoBehaviour
     [SerializeField] private TMP_InputField loginPasswordField;
     [SerializeField] private TMP_InputField registerUsernameField;
     [SerializeField] private TMP_InputField registerPasswordField;
-    [SerializeField] private TMP_InputField registerPlayerNameField;
     [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private GameObject authPanel;
     [SerializeField] private TextMeshProUGUI loginText;
@@ -87,7 +86,7 @@ public class RegisterLoginManager : MonoBehaviour
             yield break;
         }
 
-        string query = $"INSERT INTO u_info (Nickname, Password, PlayerName) VALUES ('{registerUsernameField.text}', '{registerPasswordField.text}', '{registerPlayerNameField.text}')";
+        string query = $"INSERT INTO u_info (Nickname, Password) VALUES ('{registerUsernameField.text}', '{registerPasswordField.text}')";
 
         using (MySqlCommand cmd = new MySqlCommand(query, _dbConnection))
         {
@@ -98,7 +97,8 @@ public class RegisterLoginManager : MonoBehaviour
             }
             catch (Exception e)
             {
-                ShowFeedback("Error: " + e.Message);
+                //ShowFeedback("Error: " + e.Message);
+                ShowFeedback("이미 가입 된 아이디입니다.");
             }
         }
     }
