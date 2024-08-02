@@ -28,11 +28,11 @@ public class UserData : Singleton<UserData>
     public void InitializeUserData()
     {
         // UserId와 Character 데이터를 수동으로 설정합니다.
-        UserId = "exampleUserId";
+        UserId = "";
         Character = new CharacterData
         {
-            PlayerName = "examplePlayerName",
-            PlayerId = "examplePlayerId",
+            /*PlayerName = "examplePlayerName",
+            PlayerId = "examplePlayerId",*/
             Gems = 100,
             Coins = 50,
             MaxHealth = 100,
