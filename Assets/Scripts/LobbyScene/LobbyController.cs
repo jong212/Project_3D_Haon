@@ -288,7 +288,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.AttackPower++;
             UserData.Instance.Character.Gems -= UserData.Instance.Character.AttackEnhancement;
             UserData.Instance.Character.AttackEnhancement++;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Jewel upgraded ATK");
         }
         else
@@ -304,7 +303,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.AttackPower--;
             UserData.Instance.Character.Gems += (UserData.Instance.Character.AttackEnhancement - 1);
             UserData.Instance.Character.AttackEnhancement--;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Jewel downgraded ATK");
         }
         else
@@ -320,7 +318,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.MaxHealth += 5;
             UserData.Instance.Character.Gems -= UserData.Instance.Character.HealthEnhancement * 5;
             UserData.Instance.Character.HealthEnhancement++;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Jewel upgraded HP");
         }
         else
@@ -336,7 +333,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.MaxHealth -= 5;
             UserData.Instance.Character.Gems += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
             UserData.Instance.Character.HealthEnhancement--;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Jewel downgraded HP");
         }
         else
@@ -352,7 +348,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.AttackPower++;
             UserData.Instance.Character.Coins -= UserData.Instance.Character.AttackEnhancement * 5;
             UserData.Instance.Character.AttackEnhancement++;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Coin upgraded ATK");
         }
         else
@@ -368,7 +363,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.AttackPower--;
             UserData.Instance.Character.Coins += (UserData.Instance.Character.AttackEnhancement - 1) * 5;
             UserData.Instance.Character.AttackEnhancement--;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Coin downgraded ATK");
         }
         else
@@ -384,7 +378,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.MaxHealth += 5;
             UserData.Instance.Character.Coins -= UserData.Instance.Character.HealthEnhancement * 5;
             UserData.Instance.Character.HealthEnhancement++;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Coin upgraded HP");
         }
         else
@@ -400,7 +393,6 @@ public class LobbyController : MonoBehaviour
             UserData.Instance.Character.MaxHealth -= 5;
             UserData.Instance.Character.Coins += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
             UserData.Instance.Character.HealthEnhancement--;
-            UserData.Instance.SavePlayerData();
             Debug.Log("Coin downgraded HP");
         }
         else
@@ -412,6 +404,7 @@ public class LobbyController : MonoBehaviour
     private async void Start()
     {
         await RefreshLobbyList();
+
     }
     #region Player Info
     private void ChangePlayerNameToPlayerID()
@@ -657,7 +650,6 @@ public class LobbyController : MonoBehaviour
     {
         Debug.Log($"Fetching player name for player ID: {playerId}");
 
-        await UserData.Instance.LoadPlayerDataFromServer(playerId);
 
         if (UserData.Instance.Character != null)
         {
@@ -969,8 +961,6 @@ public class LobbyController : MonoBehaviour
             {
                 GameObject playerItem = Instantiate(LobbyPlayerNamePrefab, LobbyRoomPlayerListContent);
                 var playerUI = playerItem.GetComponent<LobbyPlayerListUI>();
-                string playerName = await UserData.Instance.LoadPlayerNameFromServer(player.Id);
-                playerUI.Initialize(playerName);
             }
             else
             {

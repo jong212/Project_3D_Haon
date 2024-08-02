@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class RemoteConfigManager : Singleton<RemoteConfigManager>
 {
-    public static string ServerUrl { get; private set; }
+    public static string _ip { get; private set; }
+    public static string _dbName { get; private set; }
+    public static string _Uid { get; private set; }
+    public static string _Pwd { get; private set; }
+    public static string _Port { get; private set; }
 
     private void Awake()
     {
@@ -25,7 +29,11 @@ public class RemoteConfigManager : Singleton<RemoteConfigManager>
     {
         if (configResponse.requestOrigin == ConfigOrigin.Remote)
         {
-            ServerUrl = RemoteConfigService.Instance.appConfig.GetString("server_url");
+            _ip = RemoteConfigService.Instance.appConfig.GetString("server_url");
+            _dbName = RemoteConfigService.Instance.appConfig.GetString("server_dbname");
+            _Uid = RemoteConfigService.Instance.appConfig.GetString("server_uid");
+            _Pwd = RemoteConfigService.Instance.appConfig.GetString("server_pwd");
+            _Port = RemoteConfigService.Instance.appConfig.GetString("server_port");
         }
         else
         {
