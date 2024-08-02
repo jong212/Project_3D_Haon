@@ -299,7 +299,7 @@ public class playerAnimator : MonoBehaviour
         }
         if (skill.getSkillTimes[2] > 0) return;
         if (playerSound != null) { playerSound.SkillB(); }
-
+        _animator.Play("SkillA_unlock 1");
         Debug.Log("��ų B ���� ���");
         StartCoroutine(ActionTimer("SkillA_unlock 1", 2.2f));
 
