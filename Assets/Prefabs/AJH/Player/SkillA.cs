@@ -40,7 +40,7 @@ public class SkillA : StateMachineBehaviour
         {
             if(otherCollider.tag == "Monster")
             {
-                otherCollider.GetComponent<MonsterInfo>().TakeDamage(10);
+                otherCollider.GetComponent<MonsterInfo>().TakeDamage(playerAnimator.getstr);
             }
             if (otherCollider.tag == "Boss")
             {

@@ -21,9 +21,9 @@ public class playerAnimator : MonoBehaviour
     private float _velocity;                     // �÷��̾��� ���� �ӵ�
     private static string MyObjectName;          // �÷��̾� ������Ʈ �̸�
     private static string _PlayerName;           // �÷��̾� �̸�  
-    public int _hp = 500;                      // �÷��̾� ü��
+    public int _hp = 9000;                      // �÷��̾� ü��
     private static int _level;                   // �÷��̾� ����
-    public int _str;                     // �÷��̾� ��
+    public int _str=200;                     // �÷��̾� ��
     private static bool isSkillACooldown = false;// ��ų A ��ٿ� ���θ� �����ϴ� �÷���
     private static bool isSkillBCooldown = false;// ��ų B ��ٿ� ���θ� �����ϴ� �÷���
     public float dashCooldownDuration = 5f;      // ��� ��ٿ� ���� �ð�(��)
@@ -75,7 +75,7 @@ public class playerAnimator : MonoBehaviour
         //PlayerData playerData = DataManager.Instance.GetPlayer($"{MyObjectName}"); // DataManager�� ����Ͽ� �÷��̾� ������ ��������
 
         LoadPlayerDataFromUserData();
-        Debug.Log(UserData.Instance.Character.MaxHealth);
+        //Debug.Log(UserData.Instance.Character.MaxHealth);
         var behaviours = _animator.GetBehaviours<isAttackStop>();
         foreach (var behaviour in behaviours)
         {
@@ -90,15 +90,15 @@ public class playerAnimator : MonoBehaviour
     {
         if (UserData.Instance != null)
         {
-            _PlayerName = UserData.Instance.Character.PlayerName;
-            _hp = UserData.Instance.Character.MaxHealth;
-            _str = UserData.Instance.Character.AttackPower;
+            //_PlayerName = UserData.Instance.Character.PlayerName;
+            _hp = 9000;
+            _str = 200;
         }
         else
         {
             Debug.LogError("UserData is not loaded or user is not logged in.");
         }
-        Debug.Log($"{_PlayerName}, {_hp}, {_str}");
+       // Debug.Log($"{_PlayerName}, {_hp}, {_str}");
     }
 
     // �÷��̾� ������ ���� �Լ�
@@ -186,7 +186,7 @@ public class playerAnimator : MonoBehaviour
 
 
             // 0���� 99 ������ ������ �������� �����Ͽ� 15% Ȯ�� Ȯ��
-            if (bossAttack == "noattack" || random.Next(100) < 15) //15% Ȯ��
+            if (bossAttack == "noattack" || random.Next(100) < 2) //15% Ȯ��
             {
                 _animator.Play("backDown");
                 ApplyKnockback();

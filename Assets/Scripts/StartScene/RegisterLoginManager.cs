@@ -3,38 +3,58 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.UI;
+using MySql.Data.MySqlClient;
+using System.Data;
+using System.Collections.Generic;
 
 public class RegisterLoginManager : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] private TMP_InputField loginUsernameField;
     [SerializeField] private TMP_InputField loginPasswordField;
-    [SerializeField] private TMP_InputField RegisterUsernameField;
-    [SerializeField] private TMP_InputField RegisterPasswordField;
-    [SerializeField] private TMP_InputField RegisterPlayerNameField;
+    [SerializeField] private TMP_InputField registerUsernameField;
+    [SerializeField] private TMP_InputField registerPasswordField;
+    [SerializeField] private TMP_InputField registerPlayerNameField;
     [SerializeField] private TextMeshProUGUI feedbackText;
     [SerializeField] private GameObject authPanel;
     [SerializeField] private TextMeshProUGUI loginText;
-    
-    private string registerUrl;
-    private string loginUrl;
+    private string _loginip;
+    private string _dbName;
+    private string _uid;
+    private string _pwd;
+    private string _port;
+
+    [Header("DB Connection Info")]
+    private MySqlConnection _dbConnection;
 
     public static bool isLogin = false;
     public static event Action OnLoginSuccess;
 
     IEnumerator Start()
     {
-        // Remote Config 값이 로드될 때까지 대기
-        while (string.IsNullOrEmpty(RemoteConfigManager.ServerUrl))
+        while (string.IsNullOrEmpty(RemoteConfigManager._ip))
         {
+            Debug.Log("test");
             yield return null;
         }
+        _loginip = RemoteConfigManager._ip;
+        _dbName = RemoteConfigManager._dbName;
+        _uid = RemoteConfigManager._Uid;
+        _pwd = RemoteConfigManager._Pwd;
+        _port = RemoteConfigManager._Port;
+        Debug.Log(_loginip);
 
-        registerUrl = $"{RemoteConfigManager.ServerUrl}/api/register";
-        loginUrl = $"{RemoteConfigManager.ServerUrl}/api/login";
-
-        Debug.Log("Register URL: " + registerUrl);
-        Debug.Log("Login URL: " + loginUrl);
+        _dbConnection = new MySqlConnection($"Server={_loginip};Database={_dbName};Uid={_uid};Pwd={_pwd};Port={_port};");
+        try
+        {
+            _dbConnection.Open();
+            Debug.Log("Database connection successful");
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Database connection failed: {e}");
+        }
     }
 
     public void OnRegisterButtonClicked()
@@ -55,65 +75,32 @@ public class RegisterLoginManager : MonoBehaviour
 
     IEnumerator RegisterUser()
     {
-        if (string.IsNullOrEmpty(RegisterUsernameField.text))
+        if (string.IsNullOrEmpty(registerUsernameField.text))
         {
             ShowFeedback("아이디를 입력해주세요");
             yield break;
         }
 
-        if (string.IsNullOrEmpty(RegisterPasswordField.text))
+        if (string.IsNullOrEmpty(registerPasswordField.text))
         {
             ShowFeedback("패스워드를 입력해주세요");
             yield break;
         }
 
-        var formData = new RegisterData
+        string query = $"INSERT INTO u_info (Nickname, Password, PlayerName) VALUES ('{registerUsernameField.text}', '{registerPasswordField.text}', '{registerPlayerNameField.text}')";
+
+        using (MySqlCommand cmd = new MySqlCommand(query, _dbConnection))
         {
-            Username = RegisterUsernameField.text,
-            Password = RegisterPasswordField.text,
-            PlayerName = RegisterPlayerNameField.text
-        };
-
-        string jsonData = JsonUtility.ToJson(formData);
-
-        using (UnityWebRequest request = new UnityWebRequest(registerUrl, "POST"))
-        {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
+            try
             {
+                cmd.ExecuteNonQuery();
                 ShowFeedback("회원가입 성공");
             }
-            else
+            catch (Exception e)
             {
-                if (request.responseCode == 409)
-                {
-                    var response = JsonUtility.FromJson<ErrorResponse>(request.downloadHandler.text);
-                    if (response.errorCode == "USERNAME_EXISTS")
-                    {
-                        ShowFeedback("아이디가 이미 있습니다.");
-                    }
-                    else if (response.errorCode == "PLAYERNAME_EXISTS")
-                    {
-                        ShowFeedback("플레이어 이름이 이미 있습니다.");
-                    }
-                }
-                else if (request.responseCode == 500)
-                {
-                    ShowFeedback("서버 오류");
-                }
-                else
-                {
-                    ShowFeedback("Error: " + request.error);
-                }
+                ShowFeedback("Error: " + e.Message);
             }
         }
-
     }
 
     IEnumerator LoginUser()
@@ -130,64 +117,40 @@ public class RegisterLoginManager : MonoBehaviour
             yield break;
         }
 
-        var formData = new LoginData
+        string query = $"SELECT Password FROM u_info WHERE Nickname = '{loginUsernameField.text}'";
+
+        using (MySqlCommand cmd = new MySqlCommand(query, _dbConnection))
         {
-            Username = loginUsernameField.text,
-            Password = loginPasswordField.text
-        };
-
-        string jsonData = JsonUtility.ToJson(formData);
-
-        using (UnityWebRequest request = new UnityWebRequest(loginUrl, "POST"))
-        {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
+            try
             {
-                var response = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
-                UserData.Instance.UserId = response.UserId;
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    string dbPassword = reader.GetString("Password");
+                    reader.Close();
 
-                CharacterData character = new CharacterData
-                {
-                    PlayerId = response.Character.PlayerId,
-                    PlayerName = response.Character.PlayerName,
-                    Gems = response.Character.Gems,
-                    Coins = response.Character.Coins,
-                    MaxHealth = response.Character.MaxHealth,
-                    HealthEnhancement = response.Character.HealthEnhancement,
-                    AttackPower = response.Character.AttackPower,
-                    AttackEnhancement = response.Character.AttackEnhancement,
-                    WeaponEnhancement = response.Character.WeaponEnhancement,
-                    ArmorEnhancement = response.Character.ArmorEnhancement
-                };
-                UserData.Instance.Character = character;
-
-                ShowFeedback("로그인 성공");
-                isLogin = true;
-                yield return new WaitForSeconds(1);
-                loginText.gameObject.SetActive(false);
-                authPanel.SetActive(false);
-                OnLoginSuccess?.Invoke();
-            }
-            else
-            {
-                if (request.responseCode == 500)
-                {
-                    ShowFeedback("서버 오류");
-                }
-                else if (request.responseCode == 404)
-                {
-                    ShowFeedback("아이디가 없거나 비밀번호가 틀렸습니다");
+                    if (dbPassword == loginPasswordField.text)
+                    {
+                        ShowFeedback("로그인 성공");
+                        isLogin = true;
+                        //yield return new WaitForSeconds(1);
+                        loginText.gameObject.SetActive(false);
+                        authPanel.SetActive(false);
+                        OnLoginSuccess?.Invoke();
+                    }
+                    else
+                    {
+                        ShowFeedback("비밀번호가 일치하지 않습니다.");
+                    }
                 }
                 else
                 {
-                    ShowFeedback("Error: " + request.error);
+                    ShowFeedback("아이디가 존재하지 않습니다.");
                 }
+            }
+            catch (Exception e)
+            {
+                ShowFeedback("Error: " + e.Message);
             }
         }
     }
@@ -197,5 +160,4 @@ public class RegisterLoginManager : MonoBehaviour
         feedbackText.text = message;
         feedbackText.DOFade(1, 1).OnComplete(() => feedbackText.DOFade(0, 2));
     }
-
 }

@@ -22,7 +22,7 @@ public class FadeEffect : MonoBehaviour
 
         fadeStartTime += delayTime;
         color.a = Mathf.Clamp01(0 + fadeStartTime);
-        Debug.Log($"{color.a}");
+        //Debug.Log($"{color.a}");
         image.color = color;
 
         if (color.a == 1)

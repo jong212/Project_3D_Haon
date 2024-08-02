@@ -76,19 +76,26 @@ public class MonsterInfo : MonoBehaviour
         }
         else
         {
-            animator.SetTrigger("damage");
-            if (monsterType.monsterType == 1)
+            
+            if(monsterType != null)
             {
-                playerSound.BiologyAttack();// 생물형 몬스터 타격음
+                animator.SetTrigger("damage");
+                if (monsterType.monsterType == 1)
+                {
+                    playerSound.BiologyAttack();// 생물형 몬스터 타격음
+                }
+                else if (monsterType.monsterType == 2)
+                {
+                    playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
+                }
+                else
+                {
+                    Debug.Log("타입없음");
+                }
             }
-            else if (monsterType.monsterType == 2)
-            {
-                playerSound.NonBiologyAttack(); // 비생물형 몬스터 타격음
-            }
-            else if (monsterType == null)
-            {
+            else
                 return;
-            }
+            
         }
     }
 }

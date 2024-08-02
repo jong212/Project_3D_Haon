@@ -1,115 +1,156 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+
 public class Setting_1 : MonoBehaviour
 {
+    private void Start()
+    {
+        // UserData를 초기화합니다.
+        UserData.Instance.InitializeUserData();
+
+        // 데이터가 로드된 후에만 캐릭터 데이터에 접근할 수 있습니다.
+        if (UserData.Instance.Character != null)
+        {
+            Debug.Log("Character data is loaded and ready to use.");
+        }
+        else
+        {
+            Debug.LogError("Failed to load character data.");
+        }
+    }
+
     public static void JewelUpGradeATK()
     {
-        if (UserData.Instance.Character.Gems > UserData.Instance.Character.AttackEnhancement)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.Gems > UserData.Instance.Character.AttackEnhancement)
         {
             UserData.Instance.Character.AttackPower++;
             UserData.Instance.Character.Gems -= UserData.Instance.Character.AttackEnhancement;
             UserData.Instance.Character.AttackEnhancement++;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or not enough gems.");
         }
     }
 
-    // 공격력을 보석으로 다운그레이드
     public static void JewelDownGradeATK()
     {
-        if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
         {
             UserData.Instance.Character.AttackPower--;
             UserData.Instance.Character.Gems += (UserData.Instance.Character.AttackEnhancement - 1);
             UserData.Instance.Character.AttackEnhancement--;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or cannot downgrade ATK.");
         }
     }
 
-    // 체력을 보석으로 업그레이드
     public static void JewelUpGradeHP()
     {
-        if (UserData.Instance.Character.Gems > UserData.Instance.Character.HealthEnhancement * 5)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.Gems > UserData.Instance.Character.HealthEnhancement * 5)
         {
             UserData.Instance.Character.MaxHealth += 5;
             UserData.Instance.Character.Gems -= UserData.Instance.Character.HealthEnhancement * 5;
             UserData.Instance.Character.HealthEnhancement++;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or not enough gems.");
         }
     }
 
-    // 체력을 보석으로 다운그레이드
     public static void JewelDownGradeHP()
     {
-        if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
         {
             UserData.Instance.Character.MaxHealth -= 5;
             UserData.Instance.Character.Gems += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
             UserData.Instance.Character.HealthEnhancement--;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or cannot downgrade HP.");
         }
     }
 
-    // 공격력을 코인으로 업그레이드
     public static void CoinUpGradeATK()
     {
-        if (UserData.Instance.Character.Coins > UserData.Instance.Character.AttackEnhancement * 5)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.Coins > UserData.Instance.Character.AttackEnhancement * 5)
         {
             UserData.Instance.Character.AttackPower++;
             UserData.Instance.Character.Coins -= UserData.Instance.Character.AttackEnhancement * 5;
             UserData.Instance.Character.AttackEnhancement++;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or not enough coins.");
         }
     }
 
-    // 공격력을 코인으로 다운그레이드
     public static void CoinDownGradeATK()
     {
-        if (UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.AttackPower > 0 && UserData.Instance.Character.AttackEnhancement > 0)
         {
             UserData.Instance.Character.AttackPower--;
             UserData.Instance.Character.Coins += (UserData.Instance.Character.AttackEnhancement - 1) * 5;
             UserData.Instance.Character.AttackEnhancement--;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or cannot downgrade ATK.");
         }
     }
 
-    // 체력을 코인으로 업그레이드
     public static void CoinUpGradeHP()
     {
-        if (UserData.Instance.Character.Coins > UserData.Instance.Character.HealthEnhancement * 5)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.Coins > UserData.Instance.Character.HealthEnhancement * 5)
         {
             UserData.Instance.Character.MaxHealth += 5;
             UserData.Instance.Character.Coins -= UserData.Instance.Character.HealthEnhancement * 5;
             UserData.Instance.Character.HealthEnhancement++;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or not enough coins.");
         }
     }
 
-    // 체력을 코인으로 다운그레이드
     public static void CoinDownGradeHP()
     {
-        if (UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
+        if (UserData.Instance.Character != null && UserData.Instance.Character.MaxHealth > 0 && UserData.Instance.Character.HealthEnhancement > 0)
         {
             UserData.Instance.Character.MaxHealth -= 5;
             UserData.Instance.Character.Coins += (UserData.Instance.Character.HealthEnhancement - 1) * 5;
             UserData.Instance.Character.HealthEnhancement--;
-            UserData.Instance.SavePlayerData();
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded or cannot downgrade HP.");
         }
     }
 
-    // 코인 증가
     public static void PlusCoins()
     {
-        UserData.Instance.Character.Coins++;
-        UserData.Instance.SavePlayerData();
+        if (UserData.Instance.Character != null)
+        {
+            UserData.Instance.Character.Coins++;
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded.");
+        }
     }
 
-    // 보석 증가
     public static void PlusJewels()
     {
-        UserData.Instance.Character.Gems++;
-        UserData.Instance.SavePlayerData();
+        if (UserData.Instance.Character != null)
+        {
+            UserData.Instance.Character.Gems++;
+        }
+        else
+        {
+            Debug.LogWarning("Character data is not loaded.");
+        }
     }
-
 }

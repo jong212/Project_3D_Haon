@@ -5,45 +5,36 @@ using System.Threading.Tasks;
 
 public class AuthenticationManager : MonoBehaviour
 {
+    public static bool IsAuthenticated { get; private set; }
+
     async void Start()
     {
-        await InitializeUnityServices();
-        SetupEvents();
-        await SignInAnonymouslyAsync();
+        await InitializeServices();
     }
 
-    private async Task InitializeUnityServices()
-    {
-        await UnityServices.InitializeAsync();
-    }
-
-    private void SetupEvents()
-    {
-        AuthenticationService.Instance.SignedIn += () =>
-        {
-            Debug.Log("Signed in!");
-        };
-
-        AuthenticationService.Instance.SignInFailed += (err) =>
-        {
-            Debug.LogError($"Sign in failed: {err}");
-        };
-
-        AuthenticationService.Instance.SignedOut += () =>
-        {
-            Debug.Log("Signed out!");
-        };
-    }
-
-    private async Task SignInAnonymouslyAsync()
+    private async Task InitializeServices()
     {
         try
         {
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            await UnityServices.InitializeAsync();
+            Debug.Log("Unity Services Initialized");
+
+            if (!AuthenticationService.Instance.IsSignedIn && !AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log($"Signed in: {AuthenticationService.Instance.PlayerId}");
+            }
+
+            IsAuthenticated = AuthenticationService.Instance.IsSignedIn;
+            Debug.Log($"Authentication Status: {IsAuthenticated}");
         }
         catch (AuthenticationException ex)
         {
-            Debug.LogError($"Sign in failed: {ex}");
+            Debug.LogError($"AuthenticationException: {ex.Message}");
+        }
+        catch (RequestFailedException ex)
+        {
+            Debug.LogError($"RequestFailedException: {ex.Message}");
         }
     }
 }
