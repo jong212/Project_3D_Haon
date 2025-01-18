@@ -18,3 +18,11 @@
 
 내용 : 3D 팀프로젝트 완료 후 따로 포크 해 둔 깃 
 
+[기술문서 PDF](https://drive.google.com/file/d/1q72274Q46U_KU8nF52CXqM2GgdXWxfwL/view?usp=sharing)<br><br>
+
+<a href="https://drive.google.com/file/d/1q72274Q46U_KU8nF52CXqM2GgdXWxfwL/view?usp=sharing" target="_blank">
+    <img src="https://github.com/user-attachments/assets/bc7c88fa-2240-47cb-a29c-e65806675710" alt="기술문서" >
+</a>
+
+
+![스크린샷 2025-01-18 220811]()
